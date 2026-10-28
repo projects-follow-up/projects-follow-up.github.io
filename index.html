@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>منصة متابعة المشاريع</title>
+  <meta name="apple-mobile-web-app-title" content="متابعة المشاريع">
+  <meta name="theme-color" content="#0f5c55">
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+:root{
+  --bg:#f4f6f5; --card:#fff; --ink:#1d2a2a; --muted:#5d6b6a; --line:#dfe5e3;
+  --pri:#0f5c55; --pri-2:#0b4843; --pri-soft:#e3f0ee;
+  --red:#b42318; --red-soft:#fdecea; --amber:#a15c07; --amber-soft:#fff4e0;
+  --purple:#6b3fa0; --purple-soft:#f2ecfa; --blue:#1f5fa8; --blue-soft:#e8f0fb;
+  --grey:#6b7280; --grey-soft:#eef0f2; --green:#1e7a46; --green-soft:#e6f4ec;
+  --r:12px; --shadow:0 1px 2px rgba(16,40,38,.06),0 2px 8px rgba(16,40,38,.05);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic",Tahoma,Arial,sans-serif;font-size:15px;line-height:1.6}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--pri)}
+.hidden{display:none!important}
+.wrap{max-width:1180px;margin:0 auto;padding:16px}
+
+/* Top bar */
+.top{background:var(--pri);color:#fff;position:sticky;top:0;z-index:20}
+.top .wrap{display:flex;align-items:center;gap:12px;padding-top:10px;padding-bottom:10px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:17px;margin-inline-end:auto;display:flex;align-items:center;gap:8px}
+.brand svg{flex:none}
+.nav{display:flex;gap:4px;flex-wrap:wrap}
+.nav button{background:transparent;border:0;color:#d6ece9;padding:7px 12px;border-radius:8px;cursor:pointer}
+.nav button.on,.nav button:hover{background:rgba(255,255,255,.14);color:#fff}
+.who{font-size:13px;color:#cfe6e2;display:flex;gap:8px;align-items:center}
+.who button{background:rgba(255,255,255,.12);border:0;color:#fff;border-radius:8px;padding:5px 10px;cursor:pointer}
+
+/* Generic */
+h1{font-size:22px;margin:4px 0 14px}
+h2{font-size:17px;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
+.muted{color:var(--muted)} .small{font-size:13px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:42px;text-decoration:none;color:var(--ink)}
+.btn:hover{border-color:#b9c6c3}
+.btn.pri{background:var(--pri);border-color:var(--pri);color:#fff;font-weight:600}
+.btn.pri:hover{background:var(--pri-2)}
+.btn.danger{color:var(--red);border-color:#f0c8c3}
+.btn.sm{min-height:34px;padding:5px 12px;font-size:14px}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.back{background:none;border:0;color:var(--pri);cursor:pointer;padding:4px 0;margin-bottom:6px;font-size:15px}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:14px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px;cursor:pointer;text-align:start;box-shadow:var(--shadow);border-top:4px solid var(--grey)}
+.kpi:hover{transform:translateY(-1px)}
+.kpi .n{font-size:30px;font-weight:700;line-height:1.1}
+.kpi .l{font-size:14px;color:var(--muted)}
+.kpi.red{border-top-color:var(--red)} .kpi.red .n{color:var(--red)}
+.kpi.amber{border-top-color:#d98a10} .kpi.amber .n{color:var(--amber)}
+.kpi.purple{border-top-color:var(--purple)} .kpi.purple .n{color:var(--purple)}
+.kpi.dark{border-top-color:#7a2e2e} .kpi.dark .n{color:#7a2e2e}
+.kpi.grey .n{color:var(--grey)}
+.kpi.pri{border-top-color:var(--pri)} .kpi.pri .n{color:var(--pri)}
+
+/* Badges */
+.badge{display:inline-block;font-size:12.5px;padding:2px 9px;border-radius:999px;white-space:nowrap;font-weight:500}
+.b-red{background:var(--red-soft);color:var(--red)} .b-amber{background:var(--amber-soft);color:var(--amber)}
+.b-purple{background:var(--purple-soft);color:var(--purple)} .b-grey{background:var(--grey-soft);color:var(--grey)}
+.b-blue{background:var(--blue-soft);color:var(--blue)} .b-green{background:var(--green-soft);color:var(--green)}
+.b-dark{background:#f6e7e7;color:#7a2e2e} .b-pri{background:var(--pri-soft);color:var(--pri)}
+.b-review{background:#fffbe6;color:#7a5d00;border:1px dashed #d9b84a}
+.badges{display:flex;gap:5px;flex-wrap:wrap}
+
+/* Filters + list */
+.filters{display:grid;grid-template-columns:2fr repeat(4,1fr);gap:8px;margin-bottom:12px}
+.filters input,.filters select,.field input,.field select,.field textarea{width:100%;border:1px solid #cdd7d4;border-radius:10px;padding:9px 11px;background:#fff;min-height:42px}
+.field textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid #9fd0c8;border-color:var(--pri)}
+.plist{display:flex;flex-direction:column;gap:8px}
+.pitem{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) 150px 170px;gap:12px;align-items:center}
+.pitem:hover{border-color:#9fbfb9}
+.pitem .nm{font-weight:600}
+.pitem .meta{font-size:13px;color:var(--muted)}
+.bar{height:8px;background:#e7ecea;border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--pri)}
+.count{font-size:14px;color:var(--muted);margin:0 0 8px}
+
+/* Detail */
+.dhead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.kv{display:grid;grid-template-columns:170px minmax(0,1fr);gap:6px 12px;font-size:14.5px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;word-break:break-word}
+.big-progress{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.big-progress .bar{flex:1;height:12px}
+.big-progress b{font-size:22px}
+.note{background:#f8faf9;border:1px solid var(--line);border-radius:10px;padding:10px 12px;white-space:pre-wrap}
+.warnbox{background:var(--amber-soft);border:1px solid #f1d39a;color:#6b3f00;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:14px}
+.timeline{list-style:none;margin:0;padding:0}
+.timeline li{border-inline-start:3px solid var(--pri-soft);padding:2px 14px 12px;position:relative}
+.timeline li:before{content:"";position:absolute;inset-inline-start:-7px;top:8px;width:11px;height:11px;border-radius:50%;background:var(--pri)}
+.att{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.att:last-child{border-bottom:0}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:start;vertical-align:top}
+table.t th{color:var(--muted);font-weight:600;background:#fafcfb}
+table.t td.num,table.t th.num{text-align:center}
+table.t td.click{cursor:pointer;color:var(--pri);font-weight:600}
+.tscroll{overflow-x:auto}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(15,30,28,.45);z-index:50;display:flex;align-items:flex-start;justify-content:center;padding:24px 12px;overflow-y:auto}
+.modal{background:#fff;border-radius:14px;width:100%;max-width:620px;padding:18px 18px 14px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.modal h2{display:flex;justify-content:space-between;align-items:center}
+.modal .x{background:none;border:0;font-size:24px;cursor:pointer;color:var(--muted);line-height:1}
+.field{margin-bottom:12px}
+.field label{display:block;font-weight:600;margin-bottom:4px;font-size:14px}
+.field .hint{font-size:12.5px;color:var(--muted);margin-top:3px}
+.check{display:flex;align-items:center;gap:8px;font-weight:600;cursor:pointer}
+.check input{width:20px;height:20px}
+.actions{display:flex;gap:8px;justify-content:flex-start;margin-top:8px;flex-wrap:wrap}
+.err{background:var(--red-soft);color:var(--red);border-radius:10px;padding:9px 12px;margin-bottom:10px;font-size:14px}
+.okbox{background:var(--green-soft);color:var(--green);border-radius:10px;padding:12px;margin-bottom:10px}
+.prog{height:14px;background:#e7ecea;border-radius:99px;overflow:hidden;margin:10px 0 4px}
+.prog>i{display:block;height:100%;background:var(--pri);width:0;transition:width .3s}
+.range{display:flex;gap:10px;align-items:center}
+.range input[type=range]{flex:1}
+.range input[type=number]{width:90px}
+
+/* Toast + loading */
+.toast{position:fixed;bottom:18px;inset-inline-start:50%;transform:translateX(50%);background:#123;color:#fff;padding:12px 18px;border-radius:12px;z-index:80;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:92vw}
+.toast.ok{background:var(--green)} .toast.bad{background:var(--red)}
+.loading{display:flex;align-items:center;gap:10px;color:var(--muted);padding:30px 0;justify-content:center}
+.spin{width:22px;height:22px;border:3px solid #cfe1dd;border-top-color:var(--pri);border-radius:50%;animation:sp 0.8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Login */
+.login{max-width:420px;margin:8vh auto;padding:0 16px}
+.login .card{padding:24px}
+.login h1{text-align:center}
+.codein{letter-spacing:10px;text-align:center;font-size:24px!important;direction:ltr}
+
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;cursor:pointer}
+.tabs button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+
+.ltr{direction:ltr;unicode-bidi:embed}
+.print-only{display:none}
+
+@media (max-width:820px){
+  .filters{grid-template-columns:1fr 1fr}
+  .filters .s{grid-column:1/-1}
+  .pitem{grid-template-columns:1fr;gap:6px}
+  .grid2{grid-template-columns:1fr}
+  .kv{grid-template-columns:1fr;gap:0 0}
+  .kv dt{margin-top:8px;font-size:13px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpi .n{font-size:26px}
+  .who .em{display:none}
+  .wrap{padding:12px}
+  h1{font-size:19px}
+}
+
+@media print{
+  @page{size:A4;margin:12mm}
+  body{background:#fff;font-size:12px}
+  .top,.no-print,.btn,.back,.filters,.tabs{display:none!important}
+  .print-only{display:block}
+  .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}
+  .wrap{max-width:none;padding:0}
+  .kpi{box-shadow:none}
+  a{color:inherit;text-decoration:none}
+}
+</style>
+
+</head>
+<body>
+  <div id="app"><div class="loading"><div class="spin"></div> جارٍ التحميل...</div></div>
+  <div id="modal-root"></div>
+  <script>
+(function () {
+  var API = "https://script.google.com/macros/s/AKfycbwueYjuyDTLFPOkq0G6BD_jipK620mORN8FtsaZqbS6iK3FCN-e2smK2XHEM2flbe15/exec";
+  function runner(ok, fail) {
+    return {
+      withSuccessHandler: function (h) { return runner(h, fail); },
+      withFailureHandler: function (h) { return runner(ok, h); },
+      api: function (req) {
+        fetch(API, { method: 'POST', body: JSON.stringify(req), headers: { 'Content-Type': 'text/plain;charset=utf-8' }, credentials: 'omit', redirect: 'follow' })
+          .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+          .then(function (data) { ok && ok(data); })
+          .catch(function (e) { fail && fail(e); });
+      }
+    };
+  }
+  window.google = { script: {
+    run: runner(null, null),
+    history: {
+      push: function (state) { try { history.pushState(state, ''); } catch (e) { } },
+      setChangeHandler: function (fn) { window.addEventListener('popstate', function (ev) { fn({ state: ev.state }); }); }
+    }
+  } };
+})();
+</script>
+<script>
+(function () {
+'use strict';
+
+// ---------- State & utilities ----------
+var S = { token: null, boot: null, view: null, params: {}, detail: null, f: {}, admin: null, adminTab: 'users' };
+var $app = document.getElementById('app');
+var $modal = document.getElementById('modal-root');
+
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { } }
+function esc(s) { return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function rid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 10); }
+function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+function fmtDate(iso) { if (!iso) return '—'; var p = String(iso).slice(0, 10).split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : esc(iso); }
+function fmtStamp(s) { if (!s) return '—'; return fmtDate(String(s).slice(0, 10)) + (String(s).length > 10 ? ' ' + String(s).slice(11, 16) : ''); }
+function fmtNum(n) { return n === '' || n === null || n === undefined || isNaN(Number(n)) ? '—' : Number(n).toLocaleString('en-US', { maximumFractionDigits: 2 }); }
+function fmtSize(b) { b = Number(b) || 0; return b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB'; }
+function addDays(iso, n) {
+  var p = String(iso).split('-');
+  if (p.length !== 3) return '';
+  return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2]) + n * 86400000).toISOString().slice(0, 10);
+}
+function $(sel, root) { return (root || document).querySelector(sel); }
+function val(id) { var el = document.getElementById(id); if (!el) return ''; return el.type === 'checkbox' ? el.checked : el.value.trim(); }
+
+function call(action, payload, opts) {
+  opts = opts || {};
+  return new Promise(function (resolve, reject) {
+    google.script.run
+      .withSuccessHandler(function (r) {
+        if (!r) return reject(new Error('لم يصل رد من الخادم. حاول مرة أخرى.'));
+        if (r.ok) return resolve(r.data);
+        if (r.auth) { endSession(); }
+        reject(new Error(r.error || 'حدث خطأ'));
+      })
+      .withFailureHandler(function (e) {
+        reject(new Error('تعذر الاتصال بالخادم. تحقق من الإنترنت ثم حاول مرة أخرى.' + (e && e.message ? ' (' + e.message + ')' : '')));
+      })
+      .api({ action: action, token: S.token, payload: payload || {}, requestId: opts.requestId || null });
+  });
+}
+
+var toastTimer;
+function toast(msg, kind) {
+  var t = document.getElementById('toast');
+  if (!t) { t = document.createElement('div'); t.id = 'toast'; document.body.appendChild(t); }
+  t.className = 'toast ' + (kind || '');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { t.style.display = 'none'; }, kind === 'bad' ? 7000 : 4000);
+}
+function loading(msg) { return '<div class="loading"><div class="spin"></div> ' + esc(msg || 'جارٍ التحميل...') + '</div>'; }
+
+// ---------- Domain helpers ----------
+var IND = {
+  overdue: { label: 'تجاوزت موعد الإنجاز', cls: 'red' },
+  approaching: { label: 'تقترب من موعد الإنجاز', cls: 'amber' },
+  stopped: { label: 'مشاريع متوقفة', cls: 'dark' },
+  needsDecision: { label: 'تحتاج قراراً إدارياً', cls: 'purple' },
+  stale: { label: 'لم تُحدَّث مؤخراً', cls: 'grey' },
+  missingDocs: { label: 'مستندات مطلوبة ناقصة', cls: 'amber' }
+};
+function role() { return S.boot ? S.boot.user.role : ''; }
+function deptRole() { return role() === 'dept_head' || role() === 'engineer'; }
+// Shows a person's name (and job title) instead of the bare email when they are a registered user.
+function who(email, withTitle) {
+  var p = S.boot && S.boot.people ? S.boot.people[email] : null;
+  if (!email) return '—';
+  if (!p || !p.name) return '<span class="ltr">' + esc(email) + '</span>';
+  return '<span title="' + esc(email) + '">' + esc(p.name) + (withTitle && p.title ? ' <span class="muted">(' + esc(p.title) + ')</span>' : '') + '</span>';
+}
+function isMgmt() { return role() === 'admin' || role() === 'management'; }
+function deptName(id) { var d = (S.boot.departments || []).filter(function (x) { return x.id === id; })[0]; return d ? d.name : id; }
+function proj(id) { return S.boot.projects.filter(function (p) { return p.id === id; })[0]; }
+function editableProjects() {
+  if (role() === 'admin') return S.boot.projects;
+  if (!deptRole()) return [];
+  return S.boot.projects.filter(function (p) { return S.boot.user.deptIds.indexOf(p.deptId) >= 0; });
+}
+
+function statusBadge(s) {
+  var cls = { 'منجز': 'b-green', 'قيد التنفيذ': 'b-blue', 'متوقف': 'b-dark', 'قيد الاستلام': 'b-pri', 'لم يبدأ': 'b-grey' }[s] || 'b-grey';
+  return '<span class="badge ' + cls + '">' + esc(s || 'غير محدد') + '</span>';
+}
+function indBadges(p) {
+  var i = p.ind, out = [];
+  if (i.overdue) out.push('<span class="badge b-red">متجاوز بـ ' + (-i.daysLeft) + ' يوم</span>');
+  if (i.approaching) out.push('<span class="badge b-amber">متبقٍ ' + i.daysLeft + ' يوم</span>');
+  if (i.stopped) out.push('<span class="badge b-dark">متوقف</span>');
+  if (i.needsDecision) out.push('<span class="badge b-purple">يحتاج قراراً إدارياً</span>');
+  if (i.awaitingClosure) out.push('<span class="badge b-blue">سُلّم فعلياً - بانتظار الإغلاق</span>');
+  if (i.stale) out.push('<span class="badge b-grey">' + (i.daysSinceUpdate === null ? 'لم يُحدَّث بعد' : (i.neverUpdated ? 'لم يُحدَّث منذ إضافته قبل ' : 'آخر تحديث قبل ') + i.daysSinceUpdate + ' يوم') + '</span>');
+  if (i.noEndDate) out.push('<span class="badge b-grey">لا يوجد تاريخ إنجاز</span>');
+  if (i.missingDocs) out.push('<span class="badge b-amber" title="' + esc(p.missingDocs.join('، ')) + '">مستندات ناقصة (' + p.missingDocs.length + ')</span>');
+  return '<div class="badges">' + out.join('') + '</div>';
+}
+function progressText(p) {
+  if (p.progress === '' || p.progress === null) return p.status === 'منجز' ? 'منجز' : 'غير مُدخلة';
+  return fmtNum(p.progress) + '%';
+}
+function progressBar(p) {
+  var v = p.progress === '' ? (p.status === 'منجز' ? 100 : 0) : Math.min(100, Number(p.progress));
+  return '<div class="bar" title="نسبة الإنجاز الفعلية"><i style="width:' + v + '%"></i></div>';
+}
+function attentionScore(p) {
+  var i = p.ind;
+  if (!i.active) return 90;
+  if (i.overdue) return 0; if (i.stopped) return 1; if (i.needsDecision) return 2; if (i.approaching) return 3; if (i.stale) return 5;
+  return 6;
+}
+function sortProjects(list) {
+  return list.slice().sort(function (a, b) {
+    var d = attentionScore(a) - attentionScore(b);
+    if (d) return d;
+    var x = a.ind.daysLeft === null ? 99999 : a.ind.daysLeft, y = b.ind.daysLeft === null ? 99999 : b.ind.daysLeft;
+    return x - y;
+  });
+}
+
+// ---------- Navigation ----------
+function go(view, params, noPush) {
+  S.view = view; S.params = params || {};
+  if (!noPush) { try { google.script.history.push({ v: view, p: JSON.stringify(S.params) }); } catch (e) { } }
+  render();
+  window.scrollTo(0, 0);
+}
+try {
+  google.script.history.setChangeHandler(function (e) {
+    var st = e.state || {};
+    if (!S.boot) return;
+    S.view = st.v || homeView();
+    try { S.params = st.p ? JSON.parse(st.p) : {}; } catch (x) { S.params = {}; }
+    closeModal(true);
+    render();
+  });
+} catch (e) { }
+
+function homeView() { return deptRole() ? 'mine' : 'dash'; }
+
+function navItems() {
+  var r = role(), items = [];
+  if (deptRole()) items.push(['mine', 'مشاريعي'], ['dash', 'لوحة المتابعة'], ['upload', 'رفع مستند'], ['report', 'تقرير']);
+  else {
+    items.push(['dash', 'لوحة المتابعة'], ['list', 'جميع المشاريع']);
+    if (r === 'admin') items.push(['upload', 'رفع مستند']);
+    items.push(['activity', 'سجل التعديلات'], ['report', 'تقرير']);
+    if (r === 'admin') items.push(['admin', 'الإدارة']);
+  }
+  return items;
+}
+
+function shell(content) {
+  var u = S.boot.user;
+  var cur = S.view === 'project' ? (S.params.from || '') : S.view;
+  return '<header class="top"><div class="wrap">' +
+    '<div class="brand"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>منصة متابعة المشاريع</div>' +
+    '<nav class="nav">' + navItems().map(function (n) { return '<button data-act="nav" data-arg="' + n[0] + '" class="' + (cur === n[0] ? 'on' : '') + '">' + n[1] + '</button>'; }).join('') + '</nav>' +
+    '<div class="who"><span>' + esc(u.name || '') + ' · ' + esc(u.title || u.roleLabel) + '</span><span class="em ltr">' + esc(u.email) + '</span><button data-act="logout">خروج</button></div>' +
+    '</div></header><main class="wrap">' + content + '</main>';
+}
+
+function render() {
+  if (!S.token) return renderLogin();
+  if (!S.boot) { $app.innerHTML = loading(); return; }
+  var v = S.view || homeView();
+  var html;
+  if (v === 'dash') html = viewDash();
+  else if (v === 'mine' || v === 'list') html = viewList(v);
+  else if (v === 'project') html = viewProject();
+  else if (v === 'upload') html = viewUploadPage();
+  else if (v === 'report') html = viewReport();
+  else if (v === 'admin') html = viewAdmin();
+  else if (v === 'activity') html = viewActivity();
+  else html = viewDash();
+  $app.innerHTML = shell(html);
+  afterRender(v);
+}
+
+function afterRender(v) {
+  if (v === 'mine' || v === 'list') bindFilters();
+  if (v === 'project' && (!S.detail || S.detail.project.id !== S.params.id)) loadDetail(S.params.id);
+  if (v === 'admin' && !S.admin) loadAdmin();
+  if (v === 'activity') { if (!S.activity) loadActivity(); else bindActivity(); }
+}
+
+async function refreshBoot() {
+  S.boot = await call('bootstrap');
+}
+
+// ---------- Login ----------
+var loginStage = 'email';
+function renderLogin(err, info) {
+  var email = lsGet('pm_email') || '';
+  $app.innerHTML = '<div class="login"><div class="card">' +
+    '<div style="text-align:center;margin-bottom:6px"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#0f5c55" stroke-width="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg></div>' +
+    '<h1>منصة متابعة المشاريع</h1>' +
+    (err ? '<div class="err">' + esc(err) + '</div>' : '') + (info ? '<div class="okbox">' + esc(info) + '</div>' : '') +
+    (loginStage === 'email' ?
+      '<form id="f-email"><div class="field"><label for="l-email">البريد الإلكتروني المسجل</label>' +
+      '<input id="l-email" type="email" class="ltr" autocomplete="email" required value="' + esc(email) + '" placeholder="name@gmail.com"></div>' +
+      '<button class="btn pri" style="width:100%;justify-content:center" type="submit">إرسال رمز الدخول</button>' +
+      '<p class="muted small" style="margin-top:12px">سيصلك رمز من 6 أرقام على بريدك. إذا لم يصل خلال دقيقتين تحقق من مجلد الرسائل غير المرغوب فيها (Spam).</p></form>'
+      :
+      '<form id="f-code"><p class="small">أُرسل رمز الدخول إلى <b class="ltr">' + esc(email) + '</b></p>' +
+      '<div class="field"><label for="l-code">رمز الدخول</label>' +
+      '<input id="l-code" class="codein" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required></div>' +
+      '<button class="btn pri" style="width:100%;justify-content:center" type="submit">دخول</button>' +
+      '<div class="row" style="justify-content:space-between;margin-top:10px"><button type="button" class="back" data-act="login-back">تغيير البريد</button>' +
+      '<button type="button" class="back" data-act="login-resend">إعادة إرسال الرمز</button></div></form>') +
+    '</div></div>';
+  var f = $('#f-email') || $('#f-code');
+  var inp = $('#l-email') || $('#l-code');
+  if (inp) inp.focus();
+  f.addEventListener('submit', function (e) { e.preventDefault(); loginStage === 'email' ? sendCode() : verify(); });
+}
+async function sendCode(resend) {
+  var email = resend ? lsGet('pm_email') : val('l-email');
+  var btn = $('#app button[type=submit]');
+  if (btn) { btn.disabled = true; btn.textContent = 'جارٍ الإرسال...'; }
+  try {
+    await call('auth.requestCode', { email: email });
+    lsSet('pm_email', String(email).toLowerCase());
+    loginStage = 'code';
+    renderLogin(null, resend ? 'تم إرسال رمز جديد.' : null);
+  } catch (e) { renderLogin(e.message); }
+}
+async function verify() {
+  var btn = $('#app button[type=submit]');
+  btn.disabled = true; btn.textContent = 'جارٍ التحقق...';
+  try {
+    var r = await call('auth.verify', { email: lsGet('pm_email'), code: val('l-code') });
+    S.token = r.token; lsSet('pm_token', r.token);
+    loginStage = 'email';
+    await start();
+  } catch (e) { renderLogin(e.message); }
+}
+function endSession() { S.token = null; S.boot = null; lsSet('pm_token', null); loginStage = 'email'; closeModal(true); }
+
+async function start() {
+  $app.innerHTML = loading();
+  try {
+    await refreshBoot();
+    go(homeView(), {}, false);
+  } catch (e) {
+    if (!S.token) renderLogin(e.message);
+    else $app.innerHTML = '<div class="login"><div class="card"><div class="err">' + esc(e.message) + '</div><button class="btn pri" data-act="reload">إعادة المحاولة</button></div></div>';
+  }
+}
+
+// ---------- Dashboard ----------
+function viewDash() {
+  var b = S.boot, ps = b.projects;
+  var active = ps.filter(function (p) { return p.ind.active; });
+  var cnt = function (k) { return ps.filter(function (p) { return p.ind[k]; }).length; };
+  var kpi = function (k, n, label, cls) { return '<button class="kpi ' + cls + '" data-act="kpi" data-arg="' + k + '"><div class="n">' + n + '</div><div class="l">' + label + '</div></button>'; };
+  var html = '<h1>' + (deptRole() ? 'لوحة متابعة مشاريع قسمي' : 'لوحة المتابعة') + '</h1>' +
+    '<p class="muted small" style="margin-top:-8px">بتاريخ ' + fmtDate(b.today) + '. تنبيهات آلية محسوبة من التواريخ المسجلة.</p>' +
+    '<div class="kpis">' +
+    kpi('overdue', cnt('overdue'), IND.overdue.label, 'red') +
+    kpi('approaching', cnt('approaching'), IND.approaching.label + ' (' + b.settings.approachingDays + ' يوماً)', 'amber') +
+    kpi('stopped', cnt('stopped'), IND.stopped.label, 'dark') +
+    kpi('needsDecision', cnt('needsDecision'), IND.needsDecision.label, 'purple') +
+    kpi('stale', cnt('stale'), IND.stale.label + ' (' + b.settings.staleDays + ' يوماً أو أكثر)', 'grey') +
+    kpi('missingDocs', cnt('missingDocs'), 'مشاريع بمستندات مطلوبة ناقصة', 'amber') +
+    kpi('active', active.length, 'المشاريع النشطة', 'pri') +
+    '</div>';
+
+  if (!ps.length) {
+    return html + '<div class="card" style="text-align:center;padding:30px"><h2>لا توجد مشاريع بعد</h2><p class="muted">ابدأ بإضافة أول مشروع، ثم يقوم رؤساء الأقسام بتحديثه.</p>' +
+      (role() === 'admin' || deptRole() ? '<button class="btn pri" data-act="new-project">+ إضافة مشروع جديد</button>' : '') + '</div>';
+  }
+
+  // Department x status
+  var statuses = b.statuses.filter(function (s) { return ps.some(function (p) { return (p.status || 'غير محدد') === s; }); });
+  var depts = b.departments.filter(function (d) { return ps.some(function (p) { return p.deptId === d.id; }); });
+  html += '<div class="card"><h2>ملخص حسب القسم وحالة المشروع</h2><div class="tscroll"><table class="t"><tr><th>القسم</th>' +
+    statuses.map(function (s) { return '<th class="num">' + esc(s) + '</th>'; }).join('') + '<th class="num">المجموع</th></tr>' +
+    depts.map(function (d) {
+      var dp = ps.filter(function (p) { return p.deptId === d.id; });
+      return '<tr><td>' + esc(d.name) + (d.parent ? '<div class="muted small">' + esc(d.parent) + '</div>' : '') + '</td>' +
+        statuses.map(function (s) {
+          var n = dp.filter(function (p) { return (p.status || 'غير محدد') === s; }).length;
+          return n ? '<td class="num click" data-act="cell" data-arg="' + esc(d.id + '|' + s) + '">' + n + '</td>' : '<td class="num muted">0</td>';
+        }).join('') + '<td class="num click" data-act="cell" data-arg="' + esc(d.id + '|all') + '">' + dp.length + '</td></tr>';
+    }).join('') + '</table></div></div>';
+
+  var attention = sortProjects(active.filter(function (p) { return attentionScore(p) <= 3; })).slice(0, 10);
+  html += '<div class="card"><h2>أهم ما يحتاج متابعة</h2>' +
+    (attention.length ? '<div class="plist">' + attention.map(projectItem).join('') + '</div>' : '<p class="muted">لا توجد مشاريع تحتاج متابعة عاجلة.</p>') + '</div>';
+  return html;
+}
+
+// ---------- Lists ----------
+function projectItem(p) {
+  var end = p.ind.applicableEnd;
+  return '<div class="pitem" data-act="open" data-arg="' + esc(p.id) + '">' +
+    '<div><div class="nm">' + esc(p.name) + '</div><div class="meta">' + esc(deptName(p.deptId)) + (p.contractor ? ' · ' + esc(p.contractor) : '') +
+    (p.tenderNo ? ' · <span class="ltr">' + esc(p.tenderNo) + '</span>' : '') + '</div>' + indBadges(p, isMgmt()) + '</div>' +
+    '<div>' + statusBadge(p.status) + '<div class="small muted" style="margin-top:4px">الإنجاز: ' + progressText(p) + '</div>' + progressBar(p) + '</div>' +
+    '<div class="small"><div class="muted">تاريخ الإنجاز المعتمد</div><b>' + fmtDate(end) + '</b>' + (p.revisedEndDate ? ' <span class="badge b-blue">بعد تمديد</span>' : '') +
+    '<div class="muted">آخر تحديث: ' + (p.lastUpdateAt ? fmtDate(p.lastUpdateAt) : 'لا يوجد') + '</div></div></div>';
+}
+
+function filterProjects(f) {
+  var q = (f.q || '').toLowerCase();
+  return S.boot.projects.filter(function (p) {
+    if (f.dept && p.deptId !== f.dept) return false;
+    if (f.status === 'active' && !p.ind.active) return false;
+    if (f.status && f.status !== 'active' && f.status !== 'all' && (p.status || 'غير محدد') !== f.status) return false;
+    if (f.ind && f.ind !== 'active' && !p.ind[f.ind]) return false;
+    if (f.funder && p.funder !== f.funder) return false;
+    if (q) {
+      var hay = [p.name, p.tenderNo, p.decisionNo, p.contractor, p.supervisor, p.funder, p.id, deptName(p.deptId)].join(' ').toLowerCase();
+      if (hay.indexOf(q) < 0) return false;
+    }
+    return true;
+  });
+}
+
+function viewList(v) {
+  if (!S.f.__set) S.f = { status: 'active', __set: 1 };
+  var f = S.f, b = S.boot;
+  var funders = {}; b.projects.forEach(function (p) { if (p.funder) funders[p.funder] = 1; });
+  var opt = function (value, label, cur) { return '<option value="' + esc(value) + '"' + (String(cur || '') === String(value) ? ' selected' : '') + '>' + esc(label) + '</option>'; };
+  var list = sortProjects(filterProjects(f));
+  var head = v === 'mine' ? 'مشاريعي' : 'جميع المشاريع';
+  var canAdd = role() === 'admin' || deptRole();
+  return '<div class="row" style="justify-content:space-between"><h1>' + head + '</h1>' + (canAdd ? '<button class="btn" data-act="new-project">+ مشروع جديد</button>' : '') + '</div>' +
+    '<div class="filters">' +
+    '<input class="s" id="f-q" type="search" placeholder="بحث: اسم المشروع، رقم العطاء، المقاول، المهندس..." value="' + esc(f.q || '') + '">' +
+    '<select id="f-status">' + opt('active', 'المشاريع النشطة', f.status) + opt('all', 'كل المشاريع', f.status) + b.statuses.map(function (s) { return opt(s, s, f.status); }).join('') + '</select>' +
+    '<select id="f-ind">' + opt('', 'كل التنبيهات', f.ind) + Object.keys(IND).map(function (k) { return opt(k, IND[k].label, f.ind); }).join('') + '</select>' +
+    (b.departments.length > 1 ? '<select id="f-dept">' + opt('', 'كل الأقسام', f.dept) + b.departments.map(function (d) { return opt(d.id, d.name, f.dept); }).join('') + '</select>' : '<input type="hidden" id="f-dept" value="">') +
+    '<select id="f-funder">' + opt('', 'كل الجهات الممولة', f.funder) + Object.keys(funders).sort().map(function (x) { return opt(x, x, f.funder); }).join('') + '</select>' +
+    '</div>' +
+    '<p class="count" id="f-count">' + list.length + ' مشروع</p>' +
+    '<div class="plist" id="f-list">' + (list.length ? list.map(projectItem).join('') : '<div class="card muted">لا توجد مشاريع مطابقة. جرّب تغيير البحث أو الفلاتر.</div>') + '</div>';
+}
+
+function bindFilters() {
+  var upd = function () {
+    S.f.q = val('f-q'); S.f.status = val('f-status'); S.f.ind = val('f-ind'); S.f.dept = val('f-dept'); S.f.funder = val('f-funder');
+    var list = sortProjects(filterProjects(S.f));
+    $('#f-count').textContent = list.length + ' مشروع';
+    $('#f-list').innerHTML = list.length ? list.map(projectItem).join('') : '<div class="card muted">لا توجد مشاريع مطابقة. جرّب تغيير البحث أو الفلاتر.</div>';
+  };
+  ['f-q'].forEach(function (id) { var el = document.getElementById(id); el && el.addEventListener('input', upd); });
+  ['f-status', 'f-ind', 'f-dept', 'f-funder'].forEach(function (id) { var el = document.getElementById(id); el && el.addEventListener('change', upd); });
+}
+
+// ---------- Project detail ----------
+async function loadDetail(id) {
+  S.detail = null;
+  try {
+    S.detail = await call('project.get', { id: id });
+    if (S.view === 'project' && S.params.id === id) render();
+  } catch (e) {
+    var box = document.getElementById('detail-box');
+    if (box) box.innerHTML = '<div class="err">' + esc(e.message) + '</div>';
+  }
+}
+
+function viewProject() {
+  var back = '<button class="back no-print" data-act="back">→ رجوع</button>';
+  if (!S.detail || S.detail.project.id !== S.params.id) return back + '<div id="detail-box">' + loading('جارٍ تحميل المشروع...') + '</div>';
+  var d = S.detail, p = d.project, i = p.ind;
+  var canEdit = d.canEdit;
+  var h = back + '<div class="print-only"><b>منصة متابعة المشاريع</b> · تقرير مشروع · ' + fmtDate(S.boot.today) + '</div>' +
+    '<div class="dhead"><div><h1 style="margin-bottom:4px">' + esc(p.name) + '</h1><div class="muted small">' + esc(deptName(p.deptId)) + ' · رمز المشروع ' + esc(p.id) + '</div>' +
+    (p.lastEditAt ? '<div class="small" style="margin-top:2px">آخر تعديل: ' + fmtStamp(p.lastEditAt) + ' · بواسطة ' + who(p.lastEditBy, true) + '</div>' : '') +
+    '<div class="row" style="margin-top:8px">' + statusBadge(p.status) + indBadges(p, true) + '</div></div>' +
+    '<div class="row no-print">' + (canEdit ? '<button class="btn pri" data-act="update">تحديث المشروع</button><button class="btn" data-act="upload-here">رفع مستند</button>' : '') +
+    '<button class="btn" data-act="print">طباعة</button>' + (role() === 'admin' ? '<button class="btn danger" data-act="del-project">حذف المشروع</button>' : '') + '</div></div>';
+
+  if (i.overdue || i.approaching) {
+    // Show which date the alert is based on: the original contract date or the latest approved extension.
+    var lastExt = d.extensions.length ? d.extensions[d.extensions.length - 1] : null;
+    var basis = p.revisedEndDate
+      ? 'محسوب على تاريخ الإنجاز المعدّل بعد التمديد المعتمد' + (lastExt ? ' (قرار ' + esc(lastExt.approvalRef) + ' بتاريخ ' + fmtDate(lastExt.approvalDate) + ')' : '') + '.'
+      : 'محسوب على تاريخ الإنجاز حسب العقد الأصلي؛ لا توجد تمديدات معتمدة مسجلة.';
+    h += '<div class="warnbox" style="margin-top:12px">' + (i.overdue ? 'تجاوز المشروع تاريخ الإنجاز المعتمد (' + fmtDate(i.applicableEnd) + ') بـ ' + (-i.daysLeft) + ' يوماً.' :
+      'متبقٍ ' + i.daysLeft + ' يوماً على تاريخ الإنجاز المعتمد (' + fmtDate(i.applicableEnd) + ').') +
+      '<div class="small" style="margin-top:4px">' + basis + '</div></div>';
+  }
+
+  h += '<div class="grid2" style="margin-top:12px"><div class="card"><h2>الوضع الحالي</h2>' +
+    '<div class="big-progress"><b>' + progressText(p) + '</b>' + progressBar(p) + '</div>' +
+    (p.progressSource ? '<p class="muted small" style="margin-top:-8px">مصدر النسبة: ' + esc(p.progressSource) + '</p>' : '') +
+    '<dl class="kv"><dt>الحالة</dt><dd>' + esc(p.status) + '</dd>' +
+    '<dt>العائق</dt><dd>' + (p.obstacle ? '<div class="note">' + esc(p.obstacle) + '</div>' : '—') + '</dd>' +
+    '<dt>الإجراء المطلوب</dt><dd>' + (p.requiredAction ? '<div class="note">' + esc(p.requiredAction) + '</div>' : '—') + '</dd>' +
+    '<dt>يحتاج قراراً إدارياً</dt><dd>' + (p.needsDecision === 'نعم' ? '<span class="badge b-purple">نعم</span>' : 'لا') + '</dd>' +
+    '<dt>موعد الإجراء القادم</dt><dd>' + fmtDate(p.nextActionDate) + '</dd>' +
+    '<dt>آخر تحديث للوضع</dt><dd>' + (p.lastUpdateAt ? fmtStamp(p.lastUpdateAt) + ' · ' + who(p.lastUpdateBy) : 'لم يُحدَّث منذ إدخاله') + '</dd></dl></div>';
+
+  h += '<div class="card"><h2>التواريخ</h2><dl class="kv">' +
+    '<dt>تاريخ أمر المباشرة</dt><dd>' + fmtDate(p.ntpDate) + '</dd>' +
+    '<dt>مدة المشروع</dt><dd>' + (p.durationDays !== '' ? fmtNum(p.durationDays) + ' يوم' : '—') + '</dd>' +
+    '<dt>تاريخ الإنجاز حسب العقد</dt><dd>' + fmtDate(p.contractEndDate) + ' <span class="muted small">(الأصلي)</span></dd>' +
+    '<dt>التمديدات المعتمدة</dt><dd>' + (d.extensions.length ? d.extensions.map(function (x) {
+      return '<div class="small">+' + fmtNum(x.days) + ' يوم ← ' + fmtDate(x.newEndDate) + ' · قرار ' + esc(x.approvalRef) + ' بتاريخ ' + fmtDate(x.approvalDate) + (x.reason ? ' · ' + esc(x.reason) : '') + '</div>';
+    }).join('') : 'لا يوجد') + '</dd>' +
+    '<dt>تاريخ الإنجاز المعدّل</dt><dd>' + fmtDate(p.revisedEndDate) + '</dd>' +
+    '<dt>التاريخ المعتمد للمتابعة</dt><dd><b>' + fmtDate(i.applicableEnd) + '</b></dd>' +
+    '<dt>تاريخ التسليم الفعلي</dt><dd>' + fmtDate(p.actualCompletionDate) + '</dd></dl>' +
+    (canEdit ? '<div class="actions no-print"><button class="btn sm" data-act="extension">+ إضافة تمديد معتمد</button></div>' : '') + '</div></div>';
+
+  h += '<div class="card"><div class="row" style="justify-content:space-between"><h2>بيانات العقد</h2>' + (canEdit ? '<button class="btn sm no-print" data-act="contract">تعديل بيانات العقد</button>' : '') + '</div><dl class="kv">' +
+    '<dt>رقم العطاء</dt><dd class="ltr" style="text-align:right">' + esc(p.tenderNo || '—') + '</dd>' +
+    '<dt>رقم القرار</dt><dd>' + esc(p.decisionNo || '—') + '</dd>' +
+    '<dt>الجهة الممولة</dt><dd>' + esc(p.funder || '—') + '</dd>' +
+    '<dt>الأولوية</dt><dd>' + esc(p.priority || '—') + '</dd>' +
+    '<dt>قيمة المشروع</dt><dd>' + fmtNum(p.contractValue) + ' ' + esc(p.currency || '') + (p.currency ? '' : ' <span class="muted small">(العملة غير محددة)</span>') + '</dd>' +
+    '<dt>المقاول</dt><dd>' + esc(p.contractor || '—') + '</dd>' +
+    '<dt>المهندس المشرف</dt><dd>' + esc(p.supervisor || '—') + '</dd>' +
+    '<dt>ملاحظات</dt><dd>' + esc(p.notes || '—') + '</dd></dl></div>';
+
+  // Required documents checklist
+  var have = {};
+  d.attachments.forEach(function (a) { have[a.docType] = (have[a.docType] || 0) + 1; });
+  var req = S.boot.requiredDocs || [];
+  if (req.length) {
+    var done = req.filter(function (t) { return have[t]; }).length;
+    h += '<div class="card"><div class="row" style="justify-content:space-between"><h2>المستندات المطلوبة</h2><span class="badge ' + (done === req.length ? 'b-green' : 'b-amber') + '">' + done + ' من ' + req.length + '</span></div>' +
+      req.map(function (t) {
+        return '<div class="att"><div><span style="font-size:18px;font-weight:700;color:' + (have[t] ? 'var(--green)' : 'var(--red)') + '">' + (have[t] ? '✓' : '✗') + '</span> ' + esc(t) +
+          ' <span class="muted small">' + (have[t] ? '(مرفوع: ' + have[t] + ' ملف)' : '(غير مرفوع)') + '</span></div>' +
+          (!have[t] && canEdit ? '<button class="btn sm pri no-print" data-act="upload-type" data-arg="' + esc(t) + '">رفع</button>' : '') + '</div>';
+      }).join('') + '</div>';
+  }
+
+  // Attachments grouped by type
+  var groups = {};
+  d.attachments.forEach(function (a) { (groups[a.docType] = groups[a.docType] || []).push(a); });
+  h += '<div class="card"><div class="row" style="justify-content:space-between"><h2>المستندات</h2>' + (canEdit ? '<button class="btn sm no-print" data-act="upload-here">+ رفع مستند</button>' : '') + '</div>' +
+    (d.attachments.length ? S.boot.docTypes.filter(function (t) { return groups[t]; }).map(function (t) {
+      return '<div style="margin-bottom:8px"><div class="muted small" style="font-weight:600">' + esc(t) + ' (' + groups[t].length + ')</div>' + groups[t].map(function (a) {
+        return '<div class="att"><div><div>' + esc(a.fileName) + '</div><div class="muted small">' + fmtSize(a.size) + ' · ' + fmtStamp(a.uploadedAt) + ' · رفعه ' + who(a.uploadedBy) + '</div></div>' +
+          '<div class="row no-print"><a class="btn sm pri" target="_blank" rel="noopener" href="' + esc(a.viewUrl) + '">عرض</a><a class="btn sm" target="_blank" rel="noopener" href="' + esc(a.downloadUrl) + '">تنزيل</a>' +
+          (canEdit ? '<button class="btn sm" data-act="edit-att" data-arg="' + esc(a.id) + '">تعديل</button>' : '') + '</div></div>';
+      }).join('') + '</div>';
+    }).join('') + '<p class="muted small no-print">يفتح زر «عرض» الملف في Google Drive. يجب أن تكون مسجلاً في Google بنفس البريد المسجل في المنصة.</p>'
+      : '<p class="muted">لا توجد مستندات مرفوعة بعد.</p>') + '</div>';
+
+  // History
+  h += '<div class="card"><h2>سجل التعديلات على المشروع</h2><p class="muted small no-print" style="margin-top:-6px">كل تعديل مسجل باسم من قام به ووقته، مع القيمة السابقة ← القيمة الجديدة.</p>' +
+    (d.updates.length ? '<ul class="timeline">' + d.updates.map(function (u) { return historyItem(u, false); }).join('') + '</ul>' : '<p class="muted">لا توجد تعديلات مسجلة بعد.</p>') + '</div>';
+
+  return h;
+}
+
+// One history entry: what kind of change, when, who, and old ← new values.
+function historyItem(u, showProject) {
+  var parts = [];
+  if (u.changes) parts.push('<span style="white-space:pre-wrap">' + esc(u.changes) + '</span>');
+  else if (u.kind === 'تحديث دوري') { // entries saved before change tracking existed
+    parts.push('الحالة: ' + esc(u.status) + (u.progress !== '' ? ' · الإنجاز: ' + fmtNum(u.progress) + '%' : ''));
+    if (u.obstacle) parts.push('العائق: ' + esc(u.obstacle));
+    if (u.requiredAction) parts.push('الإجراء المطلوب: ' + esc(u.requiredAction));
+  }
+  if (u.note) parts.push('ملاحظة: ' + esc(u.note));
+  return '<li><div><b>' + esc(u.kind) + '</b>' + (showProject ? ' · <a href="#" data-act="open" data-arg="' + esc(u.projectId) + '">' + esc(u.projectName) + '</a>' : '') +
+    ' <span class="muted small">' + fmtStamp(u.at) + '</span> · ' + who(u.by, true) + '</div><div class="small">' + parts.join('<br>') + '</div></li>';
+}
+
+// ---------- Activity log (admin + management) ----------
+async function loadActivity() {
+  try { S.activity = await call('activity.list'); if (S.view === 'activity') render(); }
+  catch (e) { var b = document.getElementById('act'); if (b) b.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}
+function activityFiltered() {
+  var f = S.af || {}, q = (f.q || '').toLowerCase();
+  return S.activity.items.filter(function (u) {
+    if (f.by && u.by !== f.by) return false;
+    if (f.kind && u.kind !== f.kind) return false;
+    if (f.from && String(u.at).slice(0, 10) < f.from) return false;
+    if (q && (u.projectName + ' ' + u.changes + ' ' + u.note).toLowerCase().indexOf(q) < 0) return false;
+    return true;
+  });
+}
+function viewActivity() {
+  if (!S.activity) return '<h1>سجل التعديلات</h1><div id="act">' + loading() + '</div>';
+  var f = S.af || {}, items = S.activity.items;
+  var people = {}, kinds = {};
+  items.forEach(function (u) { people[u.by] = 1; kinds[u.kind] = 1; });
+  var nameOf = function (e) { var p = S.boot.people[e]; return p && p.name ? p.name : e; };
+  var opt = function (v, l, cur) { return '<option value="' + esc(v) + '"' + (cur === v ? ' selected' : '') + '>' + esc(l) + '</option>'; };
+  var list = activityFiltered();
+  return '<h1>سجل التعديلات</h1><p class="muted small" style="margin-top:-8px">كل تعديل على أي مشروع: من قام به ومتى وما الذي تغيّر (القيمة السابقة ← الجديدة). لا يمكن لأي مستخدم حذف هذا السجل من المنصة.</p>' +
+    '<div class="filters"><input class="s" id="a-q" type="search" placeholder="بحث باسم المشروع أو محتوى التعديل..." value="' + esc(f.q || '') + '">' +
+    '<select id="a-by">' + opt('', 'كل المستخدمين', f.by || '') + Object.keys(people).sort().map(function (e) { return opt(e, nameOf(e), f.by || ''); }).join('') + '</select>' +
+    '<select id="a-kind">' + opt('', 'كل أنواع التعديل', f.kind || '') + Object.keys(kinds).map(function (k) { return opt(k, k, f.kind || ''); }).join('') + '</select>' +
+    '<input id="a-from" type="date" title="من تاريخ" value="' + esc(f.from || '') + '"><span></span></div>' +
+    '<p class="count" id="a-count">' + list.length + ' تعديل' + (S.activity.total > items.length ? ' (آخر ' + items.length + ' من ' + S.activity.total + ')' : '') + '</p>' +
+    '<div class="card"><ul class="timeline" id="a-list">' + (list.length ? list.slice(0, 300).map(function (u) { return historyItem(u, true); }).join('') : '<p class="muted">لا توجد تعديلات مطابقة.</p>') + '</ul></div>';
+}
+function bindActivity() {
+  var upd = function () {
+    S.af = { q: val('a-q'), by: val('a-by'), kind: val('a-kind'), from: val('a-from') };
+    var list = activityFiltered();
+    $('#a-count').textContent = list.length + ' تعديل';
+    $('#a-list').innerHTML = list.length ? list.slice(0, 300).map(function (u) { return historyItem(u, true); }).join('') : '<p class="muted">لا توجد تعديلات مطابقة.</p>';
+  };
+  $('#a-q').addEventListener('input', upd);
+  ['a-by', 'a-kind', 'a-from'].forEach(function (id) { document.getElementById(id).addEventListener('change', upd); });
+}
+
+// ---------- Modals ----------
+var modalBusy = false;
+function openModal(title, body, onMount) {
+  $modal.innerHTML = '<div class="modal-bg"><div class="modal" role="dialog" aria-modal="true"><h2><span>' + esc(title) + '</span><button class="x" data-act="close-modal" aria-label="إغلاق">×</button></h2>' + body + '</div></div>';
+  if (onMount) onMount($modal);
+}
+function closeModal(force) {
+  if (modalBusy && !force) { toast('العملية قيد التنفيذ، يرجى الانتظار', 'bad'); return; }
+  $modal.innerHTML = '';
+}
+function fieldHtml(id, label, input, hint) {
+  return '<div class="field"><label for="' + id + '">' + label + '</label>' + input + (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>';
+}
+function setBusy(btn, busy, text) {
+  modalBusy = busy;
+  if (!btn) return;
+  if (busy) { btn.dataset.t = btn.textContent; btn.disabled = true; btn.textContent = text || 'جارٍ الحفظ...'; }
+  else { btn.disabled = false; btn.textContent = btn.dataset.t || btn.textContent; }
+}
+function showErr(msg) {
+  var e = $modal.querySelector('.err');
+  if (!e) { e = document.createElement('div'); e.className = 'err'; $modal.querySelector('form').prepend(e); }
+  e.textContent = msg;
+  e.scrollIntoView({ block: 'nearest' });
+}
+
+function openUpdate() {
+  var p = S.detail.project;
+  var reqId = rid();
+  var opts = S.boot.statuses.filter(function (s) { return s !== 'غير محدد' || p.status === 'غير محدد'; })
+    .map(function (s) { return '<option' + (s === p.status ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('');
+  openModal('تحديث المشروع', '<p class="muted small" style="margin-top:-6px">' + esc(p.name) + '</p><form id="mf">' +
+    fieldHtml('u-progress', 'نسبة الإنجاز الفعلية (%)', '<div class="range"><input type="range" id="u-range" min="0" max="100" step="1" value="' + (p.progress === '' ? 0 : p.progress) + '"><input type="number" id="u-progress" min="0" max="100" step="0.5" inputmode="decimal" value="' + esc(p.progress) + '"></div>',
+      'الإنجاز الفعلي للأعمال في الموقع، وليس الزمن المنقضي من مدة العقد.') +
+    fieldHtml('u-status', 'الحالة الحالية', '<select id="u-status">' + opts + '</select>') +
+    fieldHtml('u-obstacle', 'العائق (إن وجد)', '<textarea id="u-obstacle" placeholder="مثال: تأخر توريد المواد">' + esc(p.obstacle) + '</textarea>') +
+    fieldHtml('u-action', 'الإجراء المطلوب (إن وجد)', '<textarea id="u-action" placeholder="ما المطلوب ومن الجهة المسؤولة؟">' + esc(p.requiredAction) + '</textarea>') +
+    '<div class="field"><label class="check"><input type="checkbox" id="u-decision"' + (p.needsDecision === 'نعم' ? ' checked' : '') + '> يحتاج قراراً إدارياً</label></div>' +
+    fieldHtml('u-next', 'موعد الإجراء القادم (اختياري)', '<input type="date" id="u-next" value="' + esc(p.nextActionDate) + '">') +
+    fieldHtml('u-note', 'ملاحظة (اختياري)', '<textarea id="u-note" style="min-height:60px"></textarea>') +
+    '<div class="actions"><button class="btn pri" type="submit" id="u-save">حفظ التحديث</button><button class="btn" type="button" data-act="close-modal">إلغاء</button></div></form>',
+    function () {
+      var r = $('#u-range'), n = $('#u-progress');
+      r.addEventListener('input', function () { n.value = r.value; });
+      n.addEventListener('input', function () { r.value = n.value || 0; });
+      $('#mf').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        if (modalBusy) return;
+        var btn = $('#u-save');
+        setBusy(btn, true);
+        try {
+          await call('project.update', { id: p.id, version: p.version, data: {
+            progress: val('u-progress'), status: val('u-status'), obstacle: val('u-obstacle'), requiredAction: val('u-action'),
+            needsDecision: val('u-decision'), nextActionDate: val('u-next'), note: val('u-note') } }, { requestId: reqId });
+          setBusy(btn, false); closeModal(true);
+          toast('✓ تم حفظ التحديث بنجاح', 'ok');
+          await afterWrite(p.id);
+        } catch (err) { setBusy(btn, false); showErr(err.message); }
+      });
+    });
+}
+
+async function afterWrite(projectId) {
+  try { await refreshBoot(); } catch (e) { }
+  if (projectId && S.view === 'project') { await loadDetail(projectId); } else render();
+}
+
+var CONTRACT_FORM = [
+  ['name', 'اسم المشروع', 'text'], ['tenderNo', 'رقم العطاء', 'text'], ['decisionNo', 'رقم القرار', 'text'],
+  ['funder', 'الجهة الممولة', 'text'], ['priority', 'الأولوية', 'select:عالية,متوسطة,منخفضة'], ['contractValue', 'قيمة المشروع', 'number'],
+  ['currency', 'العملة (مطلوبة عند إدخال القيمة)', 'select:,شيكل,دولار أمريكي,دينار أردني,يورو'], ['durationDays', 'مدة المشروع (يوم)', 'number'],
+  ['ntpDate', 'تاريخ أمر المباشرة', 'date'], ['contractEndDate', 'تاريخ الإنجاز حسب العقد (الأصلي)', 'date'],
+  ['actualCompletionDate', 'تاريخ التسليم الفعلي', 'date'], ['contractor', 'المقاول', 'text'], ['supervisor', 'المهندس المشرف', 'text'],
+  ['notes', 'ملاحظات', 'textarea']
+];
+function openContract(isNew) {
+  var p = isNew ? {} : S.detail.project;
+  var reqId = rid();
+  var depts = role() === 'admin' ? S.boot.departments : S.boot.departments.filter(function (d) { return S.boot.user.deptIds.indexOf(d.id) >= 0; });
+  var inputs = CONTRACT_FORM.map(function (f) {
+    var id = 'c-' + f[0], v = p[f[0]] === undefined ? '' : p[f[0]], type = f[2], inp;
+    if (type.indexOf('select:') === 0) inp = '<select id="' + id + '">' + type.slice(7).split(',').map(function (o) { return '<option value="' + esc(o) + '"' + (o === v ? ' selected' : '') + '>' + esc(o || '— غير محدد —') + '</option>'; }).join('') + (v && type.slice(7).split(',').indexOf(v) < 0 ? '<option selected>' + esc(v) + '</option>' : '') + '</select>';
+    else if (type === 'textarea') inp = '<textarea id="' + id + '">' + esc(v) + '</textarea>';
+    else inp = '<input id="' + id + '" type="' + type + '" value="' + esc(v) + '"' + (type === 'number' ? ' step="any" min="0" inputmode="decimal"' : '') + '>';
+    var hint = f[0] === 'contractEndDate' ? 'يُحسب تلقائياً = تاريخ أمر المباشرة + مدة المشروع. يُدخل يدوياً فقط إذا كانت المدة غير معروفة. التمديدات المعتمدة تُسجل من زر «إضافة تمديد معتمد» ولا تغيّر هذا التاريخ.' : '';
+    return fieldHtml(id, f[1] + (f[0] === 'name' ? ' *' : ''), inp, hint);
+  }).join('');
+  var deptSel = (isNew || role() === 'admin') ? fieldHtml('c-deptId', 'القسم *', '<select id="c-deptId">' + depts.map(function (d) { return '<option value="' + esc(d.id) + '"' + (d.id === p.deptId ? ' selected' : '') + '>' + esc(d.name) + '</option>'; }).join('') + '</select>') : '';
+  openModal(isNew ? 'إضافة مشروع جديد' : 'تعديل بيانات العقد', '<form id="mf">' + deptSel + inputs +
+    '<div class="actions"><button class="btn pri" type="submit" id="c-save">حفظ</button><button class="btn" type="button" data-act="close-modal">إلغاء</button></div></form>',
+    function () {
+      var ntp = $('#c-ntpDate'), dur = $('#c-durationDays'), end = $('#c-contractEndDate');
+      var calc = function () {
+        var auto = ntp.value && dur.value !== '' && Number(dur.value) >= 0;
+        end.readOnly = !!auto;
+        end.style.background = auto ? '#f1f5f4' : '';
+        if (auto) end.value = addDays(ntp.value, Number(dur.value));
+      };
+      ntp.addEventListener('input', calc); dur.addEventListener('input', calc); calc();
+      $('#mf').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        if (modalBusy) return;
+        var data = {};
+        CONTRACT_FORM.forEach(function (f) { data[f[0]] = val('c-' + f[0]); });
+        if ($('#c-deptId')) data.deptId = val('c-deptId');
+        var btn = $('#c-save'); setBusy(btn, true);
+        try {
+          var r = await call('project.saveContract', { id: isNew ? '' : p.id, version: p.version, data: data }, { requestId: reqId });
+          setBusy(btn, false); closeModal(true);
+          toast(isNew ? '✓ تمت إضافة المشروع' : (r.unchanged ? 'لم يتغير شيء' : '✓ تم حفظ بيانات العقد'), 'ok');
+          if (isNew) { await refreshBoot(); go('project', { id: r.id, from: S.view }); }
+          else await afterWrite(p.id);
+        } catch (err) { setBusy(btn, false); showErr(err.message); }
+      });
+    });
+}
+
+function openExtension() {
+  var p = S.detail.project;
+  var reqId = rid();
+  openModal('إضافة تمديد معتمد', '<form id="mf"><p class="small">التاريخ المعتمد الحالي: <b>' + fmtDate(p.ind.applicableEnd) + '</b></p>' +
+    fieldHtml('x-ref', 'رقم/مرجع قرار الموافقة *', '<input id="x-ref">') +
+    fieldHtml('x-date', 'تاريخ الموافقة *', '<input id="x-date" type="date">') +
+    fieldHtml('x-days', 'عدد أيام التمديد', '<input id="x-days" type="number" min="1" inputmode="numeric">', 'أدخل عدد الأيام أو تاريخ الإنجاز الجديد مباشرة.') +
+    fieldHtml('x-end', 'تاريخ الإنجاز الجديد', '<input id="x-end" type="date">') +
+    fieldHtml('x-reason', 'السبب', '<textarea id="x-reason" style="min-height:60px"></textarea>') +
+    '<div class="actions"><button class="btn pri" type="submit" id="x-save">حفظ التمديد</button><button class="btn" type="button" data-act="close-modal">إلغاء</button></div></form>',
+    function () {
+      $('#mf').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        if (modalBusy) return;
+        var btn = $('#x-save'); setBusy(btn, true);
+        try {
+          await call('project.addExtension', { id: p.id, version: p.version, data: { approvalRef: val('x-ref'), approvalDate: val('x-date'), days: val('x-days'), newEndDate: val('x-end'), reason: val('x-reason') } }, { requestId: reqId });
+          setBusy(btn, false); closeModal(true); toast('✓ تم تسجيل التمديد وتحديث التاريخ المعتمد', 'ok');
+          await afterWrite(p.id);
+        } catch (err) { setBusy(btn, false); showErr(err.message); }
+      });
+    });
+}
+
+// ---------- Upload ----------
+var EXT_MIME = { pdf: 'application/pdf', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', heic: 'image/heic', heif: 'image/heif' };
+function mimeOf(file) {
+  if (file.type) return file.type;
+  var m = /\.([a-z0-9]+)$/i.exec(file.name);
+  return m ? EXT_MIME[m[1].toLowerCase()] || '' : '';
+}
+function readB64(blob) {
+  return new Promise(function (res, rej) {
+    var r = new FileReader();
+    r.onload = function () { res(String(r.result).split(',')[1] || ''); };
+    r.onerror = function () { rej(new Error('تعذرت قراءة الملف من جهازك')); };
+    r.readAsDataURL(blob);
+  });
+}
+var uploadCancel = false;
+async function sendFile(file, projectId, docType, onProgress, replaceId) {
+  var st = await call('upload.start', { projectId: projectId, docType: docType, fileName: file.name, mimeType: mimeOf(file), size: file.size, replaceId: replaceId || '' });
+  var offset = 0;
+  try {
+    while (offset < file.size) {
+      if (uploadCancel) throw new Error('تم إلغاء الرفع');
+      var b64 = await readB64(file.slice(offset, Math.min(offset + st.chunkSize, file.size)));
+      var r, tries = 0;
+      for (;;) {
+        try { r = await call('upload.chunk', { uploadId: st.uploadId, offset: offset, data: b64 }); break; }
+        catch (e) {
+          tries++;
+          if (tries >= 4 || /انتهت|خلل|الجزء|صلاحية/.test(e.message)) throw e;
+          onProgress(offset / file.size, 'انقطاع مؤقت، إعادة المحاولة (' + tries + ')...');
+          await sleep([2000, 5000, 10000][tries - 1]);
+        }
+      }
+      if (r.done) { onProgress(1); return r.attachment; }
+      offset = r.received;
+      onProgress(offset / file.size);
+    }
+    throw new Error('لم يكتمل الرفع');
+  } catch (e) {
+    call('upload.abort', { uploadId: st.uploadId }).catch(function () { });
+    throw e;
+  }
+}
+
+function uploadFormHtml(projectId, presetType) {
+  var list = editableProjects().filter(function (p) { return p.status !== 'منجز' || true; });
+  var projSel = projectId ? '<input type="hidden" id="up-proj" value="' + esc(projectId) + '"><p class="small">المشروع: <b>' + esc(proj(projectId) ? proj(projectId).name : '') + '</b></p>'
+    : fieldHtml('up-proj', '1. اختر المشروع', '<select id="up-proj"><option value="">— اختر المشروع —</option>' + sortProjects(list).map(function (p) { return '<option value="' + esc(p.id) + '">' + esc(p.name) + '</option>'; }).join('') + '</select>');
+  return '<form id="upf">' + projSel +
+    fieldHtml('up-type', (projectId ? '1' : '2') + '. نوع المستند', '<select id="up-type"><option value="">— اختر النوع —</option>' + S.boot.docTypes.map(function (t) { return '<option' + (t === presetType ? ' selected' : '') + '>' + esc(t) + '</option>'; }).join('') + '</select>') +
+    fieldHtml('up-file', (projectId ? '2' : '3') + '. اختر الملف', '<input id="up-file" type="file" accept="application/pdf,image/*">', 'PDF أو صورة، بحد أقصى ' + esc(S.boot.settings.maxUploadMB) + ' ميغابايت.') +
+    '<div id="up-status" class="hidden"><div class="prog"><i id="up-bar"></i></div><div class="small muted" id="up-text"></div></div>' +
+    '<div id="up-done"></div>' +
+    '<div class="actions" id="up-actions"><button class="btn pri" type="submit" id="up-save">' + (projectId ? '3' : '4') + '. حفظ ورفع الملف</button><button class="btn hidden" type="button" id="up-cancel">إلغاء الرفع</button></div></form>';
+}
+function bindUploadForm(onDone) {
+  var form = $('#upf');
+  $('#up-cancel').addEventListener('click', function () { uploadCancel = true; });
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (modalBusy) return;
+    var err = form.querySelector('.err'); if (err) err.remove();
+    var fail = function (m) { var x = document.createElement('div'); x.className = 'err'; x.textContent = m; form.prepend(x); };
+    var pid = val('up-proj'), type = val('up-type'), file = $('#up-file').files[0];
+    if (!pid) return fail('يرجى اختيار المشروع');
+    if (!type) return fail('يرجى اختيار نوع المستند');
+    if (!file) return fail('يرجى اختيار الملف');
+    var max = Number(S.boot.settings.maxUploadMB) * 1048576;
+    if (file.size > max) return fail('حجم الملف (' + fmtSize(file.size) + ') أكبر من الحد المسموح (' + S.boot.settings.maxUploadMB + ' ميغابايت)');
+    if (!mimeOf(file) || !/^(application\/pdf|image\/)/.test(mimeOf(file))) return fail('يُسمح فقط بملفات PDF والصور');
+    var btn = $('#up-save');
+    setBusy(btn, true, 'جارٍ الرفع...');
+    uploadCancel = false;
+    $('#up-cancel').classList.remove('hidden');
+    $('#up-status').classList.remove('hidden');
+    $('#up-done').innerHTML = '';
+    var t0 = Date.now();
+    var prog = function (f, msg) {
+      $('#up-bar').style.width = Math.round(f * 100) + '%';
+      $('#up-text').textContent = msg || ('تم رفع ' + Math.round(f * 100) + '% من ' + fmtSize(file.size) + ' — لا تغلق الصفحة حتى يكتمل الرفع');
+    };
+    prog(0, 'جارٍ التحضير...');
+    try {
+      var a = await sendFile(file, pid, type, prog);
+      setBusy(btn, false);
+      $('#up-cancel').classList.add('hidden');
+      $('#up-status').classList.add('hidden');
+      $('#up-file').value = '';
+      $('#up-done').innerHTML = '<div class="okbox">✓ تم رفع الملف بنجاح<div style="margin:6px 0"><b>' + esc(a.fileName) + '</b> (' + fmtSize(a.size) + ')</div>' +
+        '<a class="btn sm pri" target="_blank" rel="noopener" href="' + esc(a.viewUrl) + '">عرض</a></div>';
+      console.log('[PM] upload ok', a.fileName, a.size, (Date.now() - t0) + 'ms');
+      toast('✓ تم رفع الملف بنجاح', 'ok');
+      if (onDone) onDone(pid);
+    } catch (ex) {
+      setBusy(btn, false);
+      $('#up-cancel').classList.add('hidden');
+      $('#up-status').classList.add('hidden');
+      fail((ex.message || 'تعذر رفع الملف') + ' — لم يُحفظ الملف. يمكنك المحاولة مرة أخرى.');
+      console.log('[PM] upload failed', ex.message);
+    }
+  });
+}
+function openUploadModal(projectId, presetType) {
+  openModal('رفع مستند', uploadFormHtml(projectId, presetType), function () {
+    bindUploadForm(function (pid) {
+      refreshBoot().catch(function () { });
+      if (S.view === 'project' && S.params.id === pid) {
+        call('project.get', { id: pid }).then(function (d) { S.detail = d; }).catch(function () { });
+      }
+    });
+  });
+}
+function checkFile(file) {
+  if (!file) return 'يرجى اختيار الملف';
+  if (file.size > Number(S.boot.settings.maxUploadMB) * 1048576) return 'حجم الملف (' + fmtSize(file.size) + ') أكبر من الحد المسموح (' + S.boot.settings.maxUploadMB + ' ميغابايت)';
+  if (!mimeOf(file) || !/^(application\/pdf|image\/)/.test(mimeOf(file))) return 'يُسمح فقط بملفات PDF والصور';
+  return '';
+}
+
+// Edit an uploaded document: change its type, replace the file, or remove it.
+function openAttachmentEdit(id) {
+  var a = S.detail.attachments.filter(function (x) { return x.id === id; })[0];
+  var pid = S.detail.project.id;
+  if (!a) return;
+  var done = async function (msg) { modalBusy = false; closeModal(true); toast(msg, 'ok'); await loadDetail(pid); };
+  openModal('تعديل مستند', '<form id="mf"><p class="small">الملف الحالي: <b>' + esc(a.fileName) + '</b> (' + fmtSize(a.size) + ')</p>' +
+    fieldHtml('ae-type', 'نوع المستند', '<select id="ae-type">' + S.boot.docTypes.map(function (t) { return '<option' + (t === a.docType ? ' selected' : '') + '>' + esc(t) + '</option>'; }).join('') + '</select>') +
+    '<div class="actions"><button class="btn" type="button" id="ae-save-type">حفظ النوع</button></div>' +
+    '<hr style="border:0;border-top:1px solid var(--line);margin:16px 0">' +
+    fieldHtml('ae-file', 'استبدال الملف بملف آخر', '<input id="ae-file" type="file" accept="application/pdf,image/*">', 'يُستبدل الملف الحالي بالملف الجديد بنفس نوع المستند المختار أعلاه.') +
+    '<div id="ae-status" class="hidden"><div class="prog"><i id="ae-bar"></i></div><div class="small muted" id="ae-text"></div></div>' +
+    '<div class="actions"><button class="btn pri" type="button" id="ae-replace">استبدال الملف</button></div>' +
+    '<hr style="border:0;border-top:1px solid var(--line);margin:16px 0">' +
+    '<div class="actions"><button class="btn danger" type="button" id="ae-remove">إزالة المستند من المشروع</button><button class="btn" type="button" data-act="close-modal">إغلاق</button></div>' +
+    '<p class="muted small">لا يُحذف أي ملف نهائياً: الملف المستبدل أو المُزال يُنقل إلى مجلد غير مشترك، ويُسجَّل التغيير في سجل التحديثات.</p></form>',
+    function () {
+      $('#ae-save-type').addEventListener('click', async function () {
+        if (modalBusy) return;
+        var btn = this; setBusy(btn, true);
+        try { var r = await call('attachment.edit', { id: a.id, docType: val('ae-type') }, { requestId: rid() }); setBusy(btn, false); await done(r.unchanged ? 'لم يتغير النوع' : '✓ تم تغيير نوع المستند'); }
+        catch (e) { setBusy(btn, false); showErr(e.message); }
+      });
+      $('#ae-replace').addEventListener('click', async function () {
+        if (modalBusy) return;
+        var file = $('#ae-file').files[0], err = checkFile(file);
+        if (err) return showErr(err);
+        var btn = this; setBusy(btn, true, 'جارٍ الرفع...');
+        uploadCancel = false;
+        $('#ae-status').classList.remove('hidden');
+        var prog = function (f, msg) { $('#ae-bar').style.width = Math.round(f * 100) + '%'; $('#ae-text').textContent = msg || ('تم رفع ' + Math.round(f * 100) + '% — لا تغلق الصفحة'); };
+        prog(0, 'جارٍ التحضير...');
+        try { await sendFile(file, pid, val('ae-type'), prog, a.id); setBusy(btn, false); await done('✓ تم استبدال الملف'); }
+        catch (e) { setBusy(btn, false); $('#ae-status').classList.add('hidden'); showErr((e.message || 'تعذر رفع الملف') + ' — بقي الملف القديم كما هو.'); }
+      });
+      $('#ae-remove').addEventListener('click', async function () {
+        if (modalBusy) return;
+        var btn = this;
+        if (!btn.dataset.confirm) { btn.dataset.confirm = '1'; btn.textContent = 'اضغط مرة أخرى لتأكيد الإزالة'; return; }
+        setBusy(btn, true, 'جارٍ الإزالة...');
+        try { await call('attachment.delete', { id: a.id }, { requestId: rid() }); setBusy(btn, false); await done('تمت إزالة المستند'); }
+        catch (e) { setBusy(btn, false); showErr(e.message); }
+      });
+    });
+}
+
+function openProjectDelete() {
+  var p = S.detail.project;
+  var reqId = rid();
+  openModal('حذف المشروع', '<form id="mf"><p>سيُحذف المشروع <b>' + esc(p.name) + '</b> من جميع الشاشات والتقارير والتذكيرات، وتُنقل مستنداته إلى مجلد غير مشترك.</p>' +
+    '<p class="muted small">يبقى سجل المشروع محفوظاً في قاعدة البيانات والنسخ الاحتياطية لإمكانية استرجاعه عند الخطأ.</p>' +
+    fieldHtml('dp-reason', 'سبب الحذف (اختياري)', '<input id="dp-reason">') +
+    fieldHtml('dp-confirm', 'للتأكيد اكتب كلمة: حذف', '<input id="dp-confirm" autocomplete="off">') +
+    '<div class="actions"><button class="btn danger" type="submit" id="dp-go">حذف المشروع</button><button class="btn" type="button" data-act="close-modal">إلغاء</button></div></form>',
+    function () {
+      $('#mf').addEventListener('submit', async function (e) {
+        e.preventDefault(); if (modalBusy) return;
+        if (val('dp-confirm') !== 'حذف') return showErr('للتأكيد اكتب كلمة «حذف» في الخانة');
+        var btn = $('#dp-go'); setBusy(btn, true, 'جارٍ الحذف...');
+        try {
+          await call('project.delete', { id: p.id, reason: val('dp-reason') }, { requestId: reqId });
+          setBusy(btn, false); closeModal(true); toast('تم حذف المشروع', 'ok');
+          S.detail = null; await refreshBoot(); go(S.params.from || homeView());
+        } catch (err) { setBusy(btn, false); showErr(err.message); }
+      });
+    });
+}
+
+function viewUploadPage() {
+  setTimeout(function () { bindUploadForm(function () { refreshBoot().catch(function () { }); }); }, 0);
+  return '<h1>رفع مستند</h1><div class="card" style="max-width:640px">' + uploadFormHtml(null) + '</div>';
+}
+
+// ---------- Report ----------
+function viewReport() {
+  var b = S.boot, ps = b.projects;
+  var section = function (key, title) {
+    var list = sortProjects(ps.filter(function (p) { return p.ind[key]; }));
+    return '<div class="card"><h2>' + title + ' (' + list.length + ')</h2>' + (list.length ? '<div class="tscroll"><table class="t"><tr><th>المشروع</th><th>القسم</th><th>الحالة</th><th class="num">الإنجاز</th><th>التاريخ المعتمد</th><th>العائق / الإجراء المطلوب</th><th>آخر تحديث</th></tr>' +
+      list.map(function (p) {
+        return '<tr><td>' + esc(p.name) + '</td><td>' + esc(deptName(p.deptId)) + '</td><td>' + esc(p.status) + '</td><td class="num">' + progressText(p) + '</td><td>' + fmtDate(p.ind.applicableEnd) +
+          (p.ind.daysLeft !== null ? '<div class="small muted">' + (p.ind.daysLeft < 0 ? 'متجاوز ' + (-p.ind.daysLeft) + ' يوم' : 'متبقٍ ' + p.ind.daysLeft + ' يوم') + '</div>' : '') + '</td>' +
+          '<td class="small">' + esc((key === 'missingDocs' ? 'ناقص: ' + p.missingDocs.join('، ') : [p.obstacle, p.requiredAction].filter(String).join(' / ')) || '—') + '</td><td class="small">' + (p.lastUpdateAt ? fmtDate(p.lastUpdateAt) : 'لا يوجد') + '</td></tr>';
+      }).join('') + '</table></div>' : '<p class="muted">لا يوجد.</p>') + '</div>';
+  };
+  var st = {}; ps.forEach(function (p) { if (p.ind.active) st[p.status || 'غير محدد'] = (st[p.status || 'غير محدد'] || 0) + 1; });
+  return '<div class="row no-print" style="justify-content:space-between"><h1>تقرير متابعة المشاريع</h1><button class="btn pri" data-act="print">طباعة / حفظ PDF</button></div>' +
+    '<div class="print-only"><h1>تقرير متابعة المشاريع</h1></div>' +
+    '<p class="muted small">تاريخ التقرير: ' + fmtDate(b.today) + ' · أُعدّ بواسطة: ' + esc(b.user.name || b.user.email) + ' · النطاق: ' + (isMgmt() ? 'جميع الأقسام' : 'أقسامي') +
+    '<br>تنبيهات آلية محسوبة من التواريخ المسجلة.</p>' +
+    '<div class="card"><h2>المشاريع النشطة حسب الحالة</h2><div class="row">' + Object.keys(st).map(function (k) { return statusBadge(k) + ' <b>' + st[k] + '</b>'; }).join(' &nbsp; ') + '</div></div>' +
+    section('overdue', IND.overdue.label) + section('approaching', IND.approaching.label) + section('stopped', IND.stopped.label) +
+    section('needsDecision', IND.needsDecision.label) + section('stale', IND.stale.label) + section('missingDocs', IND.missingDocs.label);
+}
+
+// ---------- Admin ----------
+async function loadAdmin() {
+  try { S.admin = await call('admin.data'); render(); }
+  catch (e) { var b = document.getElementById('adm'); if (b) b.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}
+function viewAdmin() {
+  if (!S.admin) return '<h1>الإدارة</h1><div id="adm">' + loading() + '</div>';
+  var A = S.admin, t = S.adminTab;
+  var tabs = [['users', 'المستخدمون'], ['depts', 'الأقسام'], ['settings', 'الإعدادات'], ['reminders', 'التذكيرات'], ['system', 'النظام والنسخ الاحتياطي']];
+  var h = '<h1>الإدارة</h1><div class="tabs">' + tabs.map(function (x) { return '<button data-act="adm-tab" data-arg="' + x[0] + '" class="' + (t === x[0] ? 'on' : '') + '">' + x[1] + '</button>'; }).join('') + '</div>';
+  var dn = function (ids) { return String(ids || '').split(',').filter(String).map(function (id) { var d = A.departments.filter(function (x) { return x.id === id; })[0]; return d ? d.name : id; }).join('، '); };
+  if (t === 'users') {
+    h += '<div class="card"><div class="row" style="justify-content:space-between"><h2>المستخدمون</h2><button class="btn pri sm" data-act="user-edit" data-arg="">+ إضافة مستخدم</button></div><div class="tscroll"><table class="t"><tr><th>الاسم</th><th>المسمى الوظيفي</th><th>البريد</th><th>الدور</th><th>الأقسام</th><th>مفعّل</th><th>يستلم التذكيرات</th><th>آخر دخول</th><th></th></tr>' +
+      A.users.map(function (u) {
+        return '<tr><td>' + esc(u.name) + '</td><td>' + esc(u.title || '—') + '</td><td class="ltr" style="text-align:right">' + esc(u.email) + '</td><td>' + esc(A.roles[u.role] || u.role) + '</td><td>' + esc(dn(u.deptIds)) + '</td><td>' + (u.active === 'نعم' ? '✓' : '✗') + '</td><td>' + (u.notify === 'نعم' ? '✓' : '—') + '</td><td class="small">' + fmtStamp(u.lastLogin) + '</td><td><button class="btn sm" data-act="user-edit" data-arg="' + esc(u.email) + '">تعديل</button></td></tr>';
+      }).join('') + '</table></div><p class="muted small">رئيس القسم يرى ويحدّث مشاريع أقسامه فقط. الإدارة ترى كل المشاريع دون تعديل. مدير النظام يدير كل شيء. عند الحفظ تُحدَّث صلاحيات قراءة مجلدات المرفقات في Google Drive تلقائياً.</p></div>';
+  } else if (t === 'depts') {
+    h += '<div class="card"><div class="row" style="justify-content:space-between"><h2>الأقسام</h2><button class="btn pri sm" data-act="dept-edit" data-arg="">+ إضافة قسم</button></div><table class="t"><tr><th>الرمز</th><th>القسم</th><th>الدائرة</th><th>مفعّل</th><th></th></tr>' +
+      A.departments.map(function (d) { return '<tr><td>' + esc(d.id) + '</td><td>' + esc(d.name) + '</td><td>' + esc(d.parent) + '</td><td>' + (d.active === 'نعم' ? '✓' : '✗') + '</td><td><button class="btn sm" data-act="dept-edit" data-arg="' + esc(d.id) + '">تعديل</button></td></tr>'; }).join('') + '</table></div>';
+  } else if (t === 'settings') {
+    h += '<div class="card" style="max-width:720px"><h2>الإعدادات</h2><form id="setf">' + A.settings.map(function (s) {
+      if (s.key === 'requiredDocs') {
+        var chosen = String(s.value).split(/[,،]/).map(function (x) { return x.trim(); });
+        return '<div class="field"><label>' + esc(s.description) + '</label>' + S.boot.docTypes.map(function (t) {
+          return '<label class="check" style="font-weight:400"><input type="checkbox" class="s-reqdoc" value="' + esc(t) + '"' + (chosen.indexOf(t) >= 0 ? ' checked' : '') + '> ' + esc(t) + '</label>';
+        }).join('') + '</div>';
+      }
+      var isYes = /^(نعم|لا)$/.test(s.value) || ['overdueReminders', 'remindersEnabled', 'updateReminders'].indexOf(s.key) >= 0;
+      var inp = isYes ? '<select id="s-' + esc(s.key) + '"><option' + (s.value === 'نعم' ? ' selected' : '') + '>نعم</option><option' + (s.value !== 'نعم' ? ' selected' : '') + '>لا</option></select>'
+        : '<input id="s-' + esc(s.key) + '" value="' + esc(s.value) + '"' + (s.key === 'extraRecipients' ? ' class="ltr"' : '') + '>';
+      return fieldHtml('s-' + esc(s.key), esc(s.description), inp);
+    }).join('') + '<div class="actions"><button class="btn pri" type="submit" id="s-save">حفظ الإعدادات</button></div></form></div>';
+    setTimeout(bindSettings, 0);
+  } else if (t === 'reminders') {
+    h += '<div class="card"><h2>التذكيرات بالبريد</h2><p class="small">يفحص النظام المشاريع يومياً الساعة 7 صباحاً تقريباً، ولا يرسل إلا عند استحقاق أحد تذكيرين:</p><ul class="small">' +
+      '<li><b>تنبيه واحد قبل ' + esc(S.boot.settings.reminderDays) + ' يوماً</b> من تاريخ الإنجاز المعتمد، لرئيس القسم والإدارة (يُعاد فقط إذا تغيّر التاريخ بتمديد معتمد).</li>' +
+      '<li><b>تذكير بالتحديث</b> لرئيس القسم إذا لم يُحدَّث المشروع لمدة 30 يوماً، ويتكرر كل 30 يوماً حتى يُحدَّث.</li></ul>' +
+      '<p class="small muted">لا تُرسل تذكيرات للمشاريع المنجزة أو المحذوفة. يستلم كل شخص رسالة واحدة تجمع مشاريعه. يمكن تعديل المدد من «الإعدادات».</p>' +
+      '<div class="actions"><button class="btn" data-act="rem-preview">معاينة ما سيُرسل الآن</button><button class="btn pri" data-act="rem-run">إرسال التذكيرات المستحقة الآن</button></div><div id="rem-out"></div></div>' +
+      '<div class="card tscroll"><h2>آخر الإشعارات</h2><table class="t"><tr><th>الوقت</th><th>المشروع</th><th>النوع</th><th>التاريخ المعتمد</th><th>المستلمون</th><th>الحالة</th></tr>' +
+      A.notifications.map(function (n) { var p = proj(n.projectId); return '<tr><td class="small">' + fmtStamp(n.at) + '</td><td>' + esc(p ? p.name : n.projectId) + '</td><td>' + esc(n.type) + '</td><td>' + fmtDate(n.endDate) + '</td><td class="small ltr" style="text-align:right">' + esc(n.recipients) + '</td><td>' + esc(n.status) + (n.error ? '<div class="small" style="color:var(--red)">' + esc(n.error) + '</div>' : '') + '</td></tr>'; }).join('') + '</table></div>';
+  } else if (t === 'system') {
+    var sy = A.system;
+    var gb = function (x) { return (Number(x) / 1073741824).toFixed(2) + ' GB'; };
+    h += '<div class="card"><h2>حالة النظام</h2><dl class="kv">' +
+      '<dt>رصيد البريد اليومي المتبقي</dt><dd>' + (sy.mailQuota === null ? '—' : sy.mailQuota + ' مستلم') + '</dd>' +
+      '<dt>مساحة Google Drive</dt><dd>' + (sy.storageLimit ? gb(sy.storageUsed) + ' مستخدمة من ' + gb(sy.storageLimit) + ' (' + Math.round(sy.storageUsed / sy.storageLimit * 100) + '%)' : '—') + '<div class="muted small">المساحة مشتركة مع Gmail وصور Google في حسابك.</div></dd>' +
+      '<dt>آخر تشغيل للمهمة اليومية</dt><dd class="small">' + esc(sy.lastJob || 'لم تعمل بعد') + '</dd>' +
+      '<dt>آخر نسخة احتياطية</dt><dd>' + esc(sy.lastBackup || 'لا يوجد') + '</dd>' +
+      '<dt>قاعدة البيانات</dt><dd><a target="_blank" rel="noopener" href="' + esc(sy.ssUrl) + '">فتح جدول البيانات (للمالك فقط)</a></dd>' +
+      '<dt>مجلد المنصة</dt><dd><a target="_blank" rel="noopener" href="' + esc(sy.folderUrl) + '">فتح المجلد في Drive</a></dd></dl>' +
+      '<div class="actions"><button class="btn" data-act="backup">إنشاء نسخة احتياطية الآن</button><button class="btn" data-act="sync">تحديث صلاحيات مجلدات المرفقات</button></div><div id="sys-out"></div></div>';
+  }
+  return h;
+}
+function bindSettings() {
+  var f = $('#setf'); if (!f) return;
+  f.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var data = {}; S.admin.settings.forEach(function (s) { data[s.key] = val('s-' + s.key); });
+    data.requiredDocs = Array.prototype.map.call(document.querySelectorAll('.s-reqdoc:checked'), function (c) { return c.value; }).join('،');
+    var btn = $('#s-save'); setBusy(btn, true);
+    try { await call('admin.saveSettings', { data: data }, { requestId: rid() }); toast('✓ تم حفظ الإعدادات', 'ok'); S.admin = null; await refreshBoot(); setBusy(btn, false); render(); }
+    catch (err) { setBusy(btn, false); toast(err.message, 'bad'); }
+  });
+}
+function openUserEdit(email) {
+  var A = S.admin;
+  var u = A.users.filter(function (x) { return x.email === email; })[0] || { active: 'نعم', notify: 'نعم', role: 'dept_head', deptIds: '' };
+  var ids = String(u.deptIds || '').split(',');
+  var reqId = rid();
+  openModal(email ? 'تعديل مستخدم' : 'إضافة مستخدم', '<form id="mf">' +
+    fieldHtml('ue-email', 'البريد الإلكتروني (Gmail) *', '<input id="ue-email" type="email" class="ltr" value="' + esc(u.email || '') + '"' + (email ? ' readonly' : '') + '>') +
+    fieldHtml('ue-name', 'الاسم', '<input id="ue-name" value="' + esc(u.name || '') + '" placeholder="مثال: م. أحمد خالد">') +
+    fieldHtml('ue-title', 'المسمى الوظيفي', '<input id="ue-title" value="' + esc(u.title || '') + '" placeholder="مثال: رئيس قسم المشاريع، مهندس البلدية، مدير الدائرة الهندسية">') +
+    fieldHtml('ue-role', 'الدور (الصلاحية) *', '<select id="ue-role">' + Object.keys(A.roles).map(function (r) { return '<option value="' + r + '"' + (u.role === r ? ' selected' : '') + '>' + esc(A.roles[r]) + '</option>'; }).join('') + '</select>',
+      'رئيس قسم / مهندس: يرى ويحدّث مشاريع الأقسام المختارة فقط · الإدارة: ترى كل المشاريع دون تعديل · مدير النظام: صلاحيات كاملة (مثل مدير الدائرة الهندسية)') +
+    '<div class="field"><label>الأقسام (لرئيس القسم)</label>' + A.departments.map(function (d) { return '<label class="check" style="font-weight:400"><input type="checkbox" class="ue-dept" value="' + esc(d.id) + '"' + (ids.indexOf(d.id) >= 0 ? ' checked' : '') + '> ' + esc(d.name) + '</label>'; }).join('') + '</div>' +
+    '<div class="field"><label class="check"><input type="checkbox" id="ue-active"' + (u.active === 'نعم' ? ' checked' : '') + '> الحساب مفعّل</label></div>' +
+    '<div class="field"><label class="check"><input type="checkbox" id="ue-notify"' + (u.notify === 'نعم' ? ' checked' : '') + '> يستلم تذكيرات البريد</label></div>' +
+    '<div class="actions"><button class="btn pri" type="submit" id="ue-save">حفظ</button><button class="btn" type="button" data-act="close-modal">إلغاء</button></div></form>',
+    function () {
+      $('#mf').addEventListener('submit', async function (e) {
+        e.preventDefault(); if (modalBusy) return;
+        var btn = $('#ue-save'); setBusy(btn, true, 'جارٍ الحفظ وتحديث الصلاحيات...');
+        try {
+          var r = await call('admin.saveUser', { data: { email: val('ue-email'), name: val('ue-name'), title: val('ue-title'), role: val('ue-role'), active: val('ue-active'), notify: val('ue-notify'),
+            deptIds: Array.prototype.map.call($modal.querySelectorAll('.ue-dept:checked'), function (c) { return c.value; }) } }, { requestId: reqId });
+          setBusy(btn, false); closeModal(true); toast(r.warning || '✓ تم حفظ المستخدم', r.warning ? 'bad' : 'ok');
+          S.admin = null; render();
+        } catch (err) { setBusy(btn, false); showErr(err.message); }
+      });
+    });
+}
+function openDeptEdit(id) {
+  var d = S.admin.departments.filter(function (x) { return x.id === id; })[0] || { active: 'نعم', parent: 'الدائرة الهندسية' };
+  var reqId = rid();
+  openModal(id ? 'تعديل قسم' : 'إضافة قسم', '<form id="mf">' +
+    fieldHtml('de-name', 'اسم القسم *', '<input id="de-name" value="' + esc(d.name || '') + '">') +
+    fieldHtml('de-parent', 'الدائرة', '<input id="de-parent" value="' + esc(d.parent || '') + '">') +
+    (id ? '<div class="field"><label class="check"><input type="checkbox" id="de-active"' + (d.active === 'نعم' ? ' checked' : '') + '> مفعّل</label></div>' : '') +
+    '<div class="actions"><button class="btn pri" type="submit" id="de-save">حفظ</button><button class="btn" type="button" data-act="close-modal">إلغاء</button></div></form>',
+    function () {
+      $('#mf').addEventListener('submit', async function (e) {
+        e.preventDefault(); if (modalBusy) return;
+        var btn = $('#de-save'); setBusy(btn, true);
+        try {
+          await call('admin.saveDepartment', { data: { id: id, name: val('de-name'), parent: val('de-parent'), active: id ? val('de-active') : true } }, { requestId: reqId });
+          setBusy(btn, false); closeModal(true); toast('✓ تم حفظ القسم', 'ok'); S.admin = null; await refreshBoot(); render();
+        } catch (err) { setBusy(btn, false); showErr(err.message); }
+      });
+    });
+}
+
+async function adminAction(action, outId, fmt) {
+  var out = document.getElementById(outId);
+  out.innerHTML = loading('جارٍ التنفيذ...');
+  try { var r = await call(action, {}); out.innerHTML = fmt(r); }
+  catch (e) { out.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}
+
+// ---------- Event delegation ----------
+var ACT = {
+  nav: function (v) { if (v === 'list' || v === 'mine') S.f = {}; if (v === 'admin') S.admin = null; if (v === 'activity') S.activity = null; go(v); },
+  logout: function () { call('auth.logout', {}).catch(function () { }); endSession(); renderLogin(); },
+  'login-back': function () { loginStage = 'email'; renderLogin(); },
+  'login-resend': function () { sendCode(true); },
+  reload: function () { start(); },
+  kpi: function (k) {
+    S.f = { __set: 1, status: 'active', ind: k === 'active' ? '' : k };
+    go(deptRole() ? 'mine' : 'list');
+  },
+  cell: function (arg) {
+    var p = arg.split('|');
+    S.f = { __set: 1, dept: p[0], status: p[1] === 'all' ? 'all' : p[1] };
+    go(deptRole() ? 'mine' : 'list');
+  },
+  open: function (id) { go('project', { id: id, from: S.view === 'project' ? S.params.from : S.view }); },
+  back: function () { go(S.params.from || homeView()); }, // in-app: back to the page the project was opened from, filters kept
+  update: openUpdate,
+  contract: function () { openContract(false); },
+  'new-project': function () { openContract(true); },
+  extension: openExtension,
+  'upload-here': function () { openUploadModal(S.detail.project.id); },
+  'upload-type': function (t) { openUploadModal(S.detail.project.id, t); },
+  print: function () { window.print(); },
+  'close-modal': function () { closeModal(false); if (S.view === 'project' && S.detail) render(); },
+  'edit-att': openAttachmentEdit,
+  'del-project': openProjectDelete,
+  'adm-tab': function (t) { S.adminTab = t; render(); },
+  'user-edit': openUserEdit,
+  'dept-edit': openDeptEdit,
+  'rem-preview': function () {
+    adminAction('admin.reminderPreview', 'rem-out', function (r) {
+      return '<p class="small">التذكيرات ' + (r.enabled ? 'مفعّلة' : '<b>معطّلة من الإعدادات</b>') + ' · رصيد البريد اليوم: ' + r.quota + '</p>' +
+        (r.items.length ? '<table class="t"><tr><th>المشروع</th><th>النوع</th><th>التاريخ المعتمد</th><th>الأيام</th></tr>' + r.items.map(function (i) { return '<tr><td>' + esc(i.name) + '</td><td>' + esc(i.type) + '</td><td>' + fmtDate(i.end) + '</td><td>' + (i.daysLeft === null ? '—' : i.daysLeft) + '</td></tr>'; }).join('') + '</table>' +
+          '<p class="small">المستلمون: ' + r.recipients.map(function (x) { return '<span class="ltr">' + esc(x.email) + '</span> (' + x.count + ')'; }).join('، ') + (r.recipients.length ? '' : '<b>لا يوجد مستلمون مفعّلون</b>') + '</p>'
+          : '<p class="muted">لا توجد تذكيرات مستحقة الآن.</p>');
+    });
+  },
+  'rem-run': function () {
+    adminAction('admin.runReminders', 'rem-out', function (r) {
+      S.admin = null; setTimeout(loadAdmin, 1500);
+      return r.skipped ? '<div class="err">التذكيرات معطّلة من الإعدادات</div>' :
+        '<div class="okbox">تمت المعالجة: ' + r.items + ' تذكير مستحق، أُرسلت ' + r.emails + ' رسالة.' + (r.failures.length ? '<br>أخطاء: ' + esc(r.failures.join('، ')) : '') + '</div>';
+    });
+  },
+  backup: function () { adminAction('admin.backupNow', 'sys-out', function (r) { return '<div class="okbox">✓ تم إنشاء النسخة: ' + esc(r.name) + '</div>'; }); },
+  sync: function () { adminAction('admin.syncSharing', 'sys-out', function (r) { return '<div class="okbox">✓ تم تحديث الصلاحيات.</div>'; }); }
+};
+document.addEventListener('click', function (e) {
+  var t = e.target.closest('[data-act]');
+  if (!t) {
+    if (e.target.classList && e.target.classList.contains('modal-bg')) ACT['close-modal']();
+    return;
+  }
+  var fn = ACT[t.dataset.act];
+  if (!fn) return;
+  e.preventDefault();
+  fn(t.dataset.arg === undefined ? undefined : t.dataset.arg);
+});
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $modal.innerHTML) ACT['close-modal'](); });
+window.addEventListener('beforeunload', function (e) { if (modalBusy) { e.preventDefault(); e.returnValue = ''; } });
+
+// ---------- Boot ----------
+S.token = lsGet('pm_token');
+if (S.token) start(); else renderLogin();
+window.__PM = S; // for diagnostics
+})();
+</script>
+
+</body>
+</html>
