@@ -785,7 +785,7 @@ var CONTRACT_FORM = [
   ['currency', 'العملة (مطلوبة عند إدخال القيمة)', 'select:,شيكل,دولار أمريكي,دينار أردني,يورو'], ['durationDays', 'مدة المشروع (يوم)', 'number'],
   ['ntpDate', 'تاريخ أمر المباشرة', 'date'], ['contractEndDate', 'تاريخ الإنجاز حسب العقد (الأصلي)', 'date'],
   ['actualCompletionDate', 'تاريخ التسليم الفعلي', 'date'], ['contractor', 'المقاول', 'text'],
-  ['supervisorEmail', 'المهندس المشرف (من مستخدمي القسم)', 'engineer'], ['supervisor', 'اسم المهندس المشرف', 'text'],
+  ['supervisorEmail', 'المهندس المشرف (من مستخدمي القسم)', 'engineer'], ['supervisor', 'اسم المهندس المشرف (غير مسجل في المنصة)', 'text'],
   ['notes', 'ملاحظات', 'textarea']
 ];
 
@@ -830,10 +830,16 @@ function openContract(isNew) {
       // Supervising engineer: options follow the chosen department; picking one fills the name field.
       var eng = $('#c-supervisorEmail'), engName = $('#c-supervisor'), deptBox = $('#c-deptId');
       if (deptBox) deptBox.addEventListener('change', function () { eng.innerHTML = deptEngineerOptions(deptBox.value, ''); });
+      // The typed name is only needed when no account is linked (unregistered or external supervisor).
+      var nameField = engName.closest('.field');
+      var syncName = function () { nameField.classList.toggle('hidden', !!eng.value); };
       eng.addEventListener('change', function () {
         var u = (S.boot.people || {})[eng.value];
         if (u && u.name) engName.value = u.name;
+        syncName();
       });
+      if (deptBox) deptBox.addEventListener('change', syncName);
+      syncName();
       $('#mf').addEventListener('submit', async function (e) {
         e.preventDefault();
         if (modalBusy) return;
