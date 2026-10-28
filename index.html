@@ -619,7 +619,7 @@ function viewProject() {
     '<dt>الأولوية</dt><dd>' + esc(p.priority || '—') + '</dd>' +
     '<dt>قيمة المشروع</dt><dd>' + fmtNum(p.contractValue) + ' ' + esc(p.currency || '') + (p.currency ? '' : ' <span class="muted small">(العملة غير محددة)</span>') + '</dd>' +
     '<dt>المقاول</dt><dd>' + esc(p.contractor || '—') + '</dd>' +
-    '<dt>المهندس المشرف</dt><dd>' + esc(p.supervisor || '—') + '</dd>' +
+    '<dt>المهندس المشرف</dt><dd>' + (p.supervisorEmail ? who(p.supervisorEmail, true) + ' <span class="badge b-pri">يستلم تذكيرات المشروع</span>' : esc(p.supervisor || '—') + (p.supervisor ? ' <span class="muted small">(غير مرتبط بحساب: التذكيرات لكل القسم)</span>' : '')) + '</dd>' +
     '<dt>ملاحظات</dt><dd>' + esc(p.notes || '—') + '</dd></dl></div>';
 
   // Required documents checklist
@@ -784,9 +784,23 @@ var CONTRACT_FORM = [
   ['funder', 'الجهة الممولة', 'text'], ['priority', 'الأولوية', 'select:عالية,متوسطة,منخفضة'], ['contractValue', 'قيمة المشروع', 'number'],
   ['currency', 'العملة (مطلوبة عند إدخال القيمة)', 'select:,شيكل,دولار أمريكي,دينار أردني,يورو'], ['durationDays', 'مدة المشروع (يوم)', 'number'],
   ['ntpDate', 'تاريخ أمر المباشرة', 'date'], ['contractEndDate', 'تاريخ الإنجاز حسب العقد (الأصلي)', 'date'],
-  ['actualCompletionDate', 'تاريخ التسليم الفعلي', 'date'], ['contractor', 'المقاول', 'text'], ['supervisor', 'المهندس المشرف', 'text'],
+  ['actualCompletionDate', 'تاريخ التسليم الفعلي', 'date'], ['contractor', 'المقاول', 'text'],
+  ['supervisorEmail', 'المهندس المشرف (من مستخدمي القسم)', 'engineer'], ['supervisor', 'اسم المهندس المشرف', 'text'],
   ['notes', 'ملاحظات', 'textarea']
 ];
+
+// Registered, active department heads/engineers of a department, for the supervising-engineer choice.
+function deptEngineerOptions(deptId, current) {
+  var people = S.boot.people || {};
+  var list = Object.keys(people).filter(function (e) {
+    var u = people[e];
+    return u.active && (u.role === 'engineer' || u.role === 'dept_head') && (u.deptIds || []).indexOf(deptId) >= 0;
+  });
+  return '<option value="">— غير مرتبط بحساب (تذهب التذكيرات لكل القسم) —</option>' + list.map(function (e) {
+    var u = people[e];
+    return '<option value="' + esc(e) + '"' + (e === current ? ' selected' : '') + '>' + esc(u.name || e) + (u.title ? ' — ' + esc(u.title) : '') + '</option>';
+  }).join('') + (current && list.indexOf(current) < 0 ? '<option value="' + esc(current) + '" selected>' + esc(current) + ' (غير مفعّل في هذا القسم)</option>' : '');
+}
 function openContract(isNew) {
   var p = isNew ? {} : S.detail.project;
   var reqId = rid();
@@ -794,9 +808,11 @@ function openContract(isNew) {
   var inputs = CONTRACT_FORM.map(function (f) {
     var id = 'c-' + f[0], v = p[f[0]] === undefined ? '' : p[f[0]], type = f[2], inp;
     if (type.indexOf('select:') === 0) inp = '<select id="' + id + '">' + type.slice(7).split(',').map(function (o) { return '<option value="' + esc(o) + '"' + (o === v ? ' selected' : '') + '>' + esc(o || '— غير محدد —') + '</option>'; }).join('') + (v && type.slice(7).split(',').indexOf(v) < 0 ? '<option selected>' + esc(v) + '</option>' : '') + '</select>';
+    else if (type === 'engineer') inp = '<select id="' + id + '">' + deptEngineerOptions(p.deptId || (depts[0] && depts[0].id), v) + '</select>';
     else if (type === 'textarea') inp = '<textarea id="' + id + '">' + esc(v) + '</textarea>';
     else inp = '<input id="' + id + '" type="' + type + '" value="' + esc(v) + '"' + (type === 'number' ? ' step="any" min="0" inputmode="decimal"' : '') + '>';
-    var hint = f[0] === 'contractEndDate' ? 'يُحسب تلقائياً = تاريخ أمر المباشرة + مدة المشروع. يُدخل يدوياً فقط إذا كانت المدة غير معروفة. التمديدات المعتمدة تُسجل من زر «إضافة تمديد معتمد» ولا تغيّر هذا التاريخ.' : '';
+    var hint = f[0] === 'contractEndDate' ? 'يُحسب تلقائياً = تاريخ أمر المباشرة + مدة المشروع. يُدخل يدوياً فقط إذا كانت المدة غير معروفة. التمديدات المعتمدة تُسجل من زر «إضافة تمديد معتمد» ولا تغيّر هذا التاريخ.'
+      : f[0] === 'supervisorEmail' ? 'تذكيرات هذا المشروع تُرسل للمهندس المختار ولرئيس القسم فقط. إذا لم يُختر مهندس تُرسل لكل القسم.' : '';
     return fieldHtml(id, f[1] + (f[0] === 'name' ? ' *' : ''), inp, hint);
   }).join('');
   var deptSel = (isNew || role() === 'admin') ? fieldHtml('c-deptId', 'القسم *', '<select id="c-deptId">' + depts.map(function (d) { return '<option value="' + esc(d.id) + '"' + (d.id === p.deptId ? ' selected' : '') + '>' + esc(d.name) + '</option>'; }).join('') + '</select>') : '';
@@ -811,6 +827,13 @@ function openContract(isNew) {
         if (auto) end.value = addDays(ntp.value, Number(dur.value));
       };
       ntp.addEventListener('input', calc); dur.addEventListener('input', calc); calc();
+      // Supervising engineer: options follow the chosen department; picking one fills the name field.
+      var eng = $('#c-supervisorEmail'), engName = $('#c-supervisor'), deptBox = $('#c-deptId');
+      if (deptBox) deptBox.addEventListener('change', function () { eng.innerHTML = deptEngineerOptions(deptBox.value, ''); });
+      eng.addEventListener('change', function () {
+        var u = (S.boot.people || {})[eng.value];
+        if (u && u.name) engName.value = u.name;
+      });
       $('#mf').addEventListener('submit', async function (e) {
         e.preventDefault();
         if (modalBusy) return;
@@ -1102,8 +1125,8 @@ function viewAdmin() {
     setTimeout(bindSettings, 0);
   } else if (t === 'reminders') {
     h += '<div class="card"><h2>التذكيرات بالبريد</h2><p class="small">يفحص النظام المشاريع يومياً الساعة 7 صباحاً تقريباً، ولا يرسل إلا عند استحقاق أحد تذكيرين:</p><ul class="small">' +
-      '<li><b>تنبيه واحد قبل ' + esc(S.boot.settings.reminderDays) + ' يوماً</b> من تاريخ الإنجاز المعتمد، لرئيس القسم والإدارة (يُعاد فقط إذا تغيّر التاريخ بتمديد معتمد).</li>' +
-      '<li><b>تذكير بالتحديث</b> لرئيس القسم إذا لم يُحدَّث المشروع لمدة 30 يوماً، ويتكرر كل 30 يوماً حتى يُحدَّث.</li></ul>' +
+      '<li><b>تنبيه واحد قبل ' + esc(S.boot.settings.reminderDays) + ' يوماً</b> من تاريخ الإنجاز المعتمد، للمهندس المشرف ورئيس القسم ومدراء النظام والإدارة (يُعاد فقط إذا تغيّر التاريخ بتمديد معتمد).</li>' +
+      '<li><b>تذكير بالتحديث</b> للمهندس المشرف ورئيس القسم إذا لم يُحدَّث المشروع لمدة 30 يوماً، ويتكرر كل 30 يوماً حتى يُحدَّث.</li></ul><p class="small">المهندس المشرف يُختار في «تعديل بيانات العقد». المشروع بلا مهندس مرتبط بحساب تُرسل تذكيراته لكل رئيس قسم ومهندس في قسمه.</p>' +
       '<p class="small muted">لا تُرسل تذكيرات للمشاريع المنجزة أو المحذوفة. يستلم كل شخص رسالة واحدة تجمع مشاريعه. يمكن تعديل المدد من «الإعدادات».</p>' +
       '<div class="actions"><button class="btn" data-act="rem-preview">معاينة ما سيُرسل الآن</button><button class="btn pri" data-act="rem-run">إرسال التذكيرات المستحقة الآن</button></div><div id="rem-out"></div></div>' +
       '<div class="card tscroll"><h2>آخر الإشعارات</h2><table class="t"><tr><th>الوقت</th><th>المشروع</th><th>النوع</th><th>التاريخ المعتمد</th><th>المستلمون</th><th>الحالة</th></tr>' +
