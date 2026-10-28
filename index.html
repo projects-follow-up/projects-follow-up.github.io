@@ -76,7 +76,7 @@ h2{font-size:17px;margin:0 0 10px}
 .badges{display:flex;gap:5px;flex-wrap:wrap}
 
 /* Filters + list */
-.filters{display:grid;grid-template-columns:2fr repeat(4,1fr);gap:8px;margin-bottom:12px}
+.filters{display:grid;grid-template-columns:2fr repeat(5,1fr);gap:8px;margin-bottom:12px}
 .filters input,.filters select,.field input,.field select,.field textarea{width:100%;border:1px solid #cdd7d4;border-radius:10px;padding:9px 11px;background:#fff;min-height:42px}
 .field textarea{min-height:80px;resize:vertical}
 input:focus,select:focus,textarea:focus{outline:2px solid #9fd0c8;border-color:var(--pri)}
@@ -502,7 +502,10 @@ function projectItem(p) {
   var end = p.ind.applicableEnd;
   return '<div class="pitem" data-act="open" data-arg="' + esc(p.id) + '">' +
     '<div><div class="nm">' + esc(p.name) + '</div><div class="meta">' + esc(deptName(p.deptId)) + (p.contractor ? ' · ' + esc(p.contractor) : '') +
-    (p.tenderNo ? ' · <span class="ltr">' + esc(p.tenderNo) + '</span>' : '') + '</div>' + indBadges(p, isMgmt()) + '</div>' +
+    (p.tenderNo ? ' · <span class="ltr">' + esc(p.tenderNo) + '</span>' : '') + '</div>' +
+    (p.fw ? '<div class="meta"><span class="badge b-pri">اتفاقية إطار</span> ' + p.fw.orders + ' أمر عمل · ' + (p.fw.usedPct === null ? '—' : p.fw.usedPct + '%') + ' من الموازنة' +
+      (p.fw.lateOrders ? ' <span class="badge b-red">' + p.fw.lateOrders + ' أمر عمل متأخر</span>' : '') + '</div>' : '') +
+    indBadges(p, isMgmt()) + '</div>' +
     '<div>' + statusBadge(p.status) + '<div class="small muted" style="margin-top:4px">الإنجاز: ' + progressText(p) + '</div>' + progressBar(p) + '</div>' +
     '<div class="small"><div class="muted">تاريخ الإنجاز المعتمد</div><b>' + fmtDate(end) + '</b>' + (p.revisedEndDate ? ' <span class="badge b-blue">بعد تمديد</span>' : '') +
     '<div class="muted">آخر تحديث: ' + (p.lastUpdateAt ? fmtDate(p.lastUpdateAt) : 'لا يوجد') + '</div></div></div>';
@@ -516,8 +519,9 @@ function filterProjects(f) {
     if (f.status && f.status !== 'active' && f.status !== 'all' && (p.status || 'غير محدد') !== f.status) return false;
     if (f.ind && f.ind !== 'active' && !p.ind[f.ind]) return false;
     if (f.funder && p.funder !== f.funder) return false;
+    if (f.method && (f.method === 'none' ? p.contractMethod : p.contractMethod !== f.method)) return false;
     if (q) {
-      var hay = [p.name, p.tenderNo, p.decisionNo, p.contractor, p.supervisor, p.funder, p.id, deptName(p.deptId)].join(' ').toLowerCase();
+      var hay = [p.name, p.tenderNo, p.decisionNo, p.contractor, p.supervisor, p.funder, p.id, deptName(p.deptId), p.contractMethod].join(' ').toLowerCase();
       if (hay.indexOf(q) < 0) return false;
     }
     return true;
@@ -539,6 +543,7 @@ function viewList(v) {
     '<select id="f-ind">' + opt('', 'كل التنبيهات', f.ind) + Object.keys(IND).map(function (k) { return opt(k, IND[k].label, f.ind); }).join('') + '</select>' +
     (b.departments.length > 1 ? '<select id="f-dept">' + opt('', 'كل الأقسام', f.dept) + b.departments.map(function (d) { return opt(d.id, d.name, f.dept); }).join('') + '</select>' : '<input type="hidden" id="f-dept" value="">') +
     '<select id="f-funder">' + opt('', 'كل الجهات الممولة', f.funder) + Object.keys(funders).sort().map(function (x) { return opt(x, x, f.funder); }).join('') + '</select>' +
+    '<select id="f-method">' + opt('', 'كل طرق التعاقد', f.method) + b.contractMethods.map(function (m) { return opt(m, m, f.method); }).join('') + opt('none', 'طريقة التعاقد غير محددة', f.method) + '</select>' +
     '</div>' +
     '<p class="count" id="f-count">' + list.length + ' مشروع</p>' +
     '<div class="plist" id="f-list">' + (list.length ? list.map(projectItem).join('') : '<div class="card muted">لا توجد مشاريع مطابقة. جرّب تغيير البحث أو الفلاتر.</div>') + '</div>';
@@ -546,13 +551,13 @@ function viewList(v) {
 
 function bindFilters() {
   var upd = function () {
-    S.f.q = val('f-q'); S.f.status = val('f-status'); S.f.ind = val('f-ind'); S.f.dept = val('f-dept'); S.f.funder = val('f-funder');
+    S.f.q = val('f-q'); S.f.status = val('f-status'); S.f.ind = val('f-ind'); S.f.dept = val('f-dept'); S.f.funder = val('f-funder'); S.f.method = val('f-method');
     var list = sortProjects(filterProjects(S.f));
     $('#f-count').textContent = list.length + ' مشروع';
     $('#f-list').innerHTML = list.length ? list.map(projectItem).join('') : '<div class="card muted">لا توجد مشاريع مطابقة. جرّب تغيير البحث أو الفلاتر.</div>';
   };
   ['f-q'].forEach(function (id) { var el = document.getElementById(id); el && el.addEventListener('input', upd); });
-  ['f-status', 'f-ind', 'f-dept', 'f-funder'].forEach(function (id) { var el = document.getElementById(id); el && el.addEventListener('change', upd); });
+  ['f-status', 'f-ind', 'f-dept', 'f-funder', 'f-method'].forEach(function (id) { var el = document.getElementById(id); el && el.addEventListener('change', upd); });
 }
 
 // ---------- Project detail ----------
@@ -571,6 +576,7 @@ function viewProject() {
   var back = '<button class="back no-print" data-act="back">→ رجوع</button>';
   if (!S.detail || S.detail.project.id !== S.params.id) return back + '<div id="detail-box">' + loading('جارٍ تحميل المشروع...') + '</div>';
   var d = S.detail, p = d.project, i = p.ind;
+  var isFw = p.contractMethod === S.boot.framework;
   var canEdit = d.canEdit;
   var h = back + '<div class="print-only"><b>منصة متابعة المشاريع</b> · تقرير مشروع · ' + fmtDate(S.boot.today) + '</div>' +
     '<div class="dhead"><div><h1 style="margin-bottom:4px">' + esc(p.name) + '</h1><div class="muted small">' + esc(deptName(p.deptId)) + ' · رمز المشروع ' + esc(p.id) + '</div>' +
@@ -613,14 +619,17 @@ function viewProject() {
     (canEdit ? '<div class="actions no-print"><button class="btn sm" data-act="extension">+ إضافة تمديد معتمد</button></div>' : '') + '</div></div>';
 
   h += '<div class="card"><div class="row" style="justify-content:space-between"><h2>بيانات العقد</h2>' + (canEdit ? '<button class="btn sm no-print" data-act="contract">تعديل بيانات العقد</button>' : '') + '</div><dl class="kv">' +
-    '<dt>رقم العطاء</dt><dd class="ltr" style="text-align:right">' + esc(p.tenderNo || '—') + '</dd>' +
-    '<dt>رقم القرار</dt><dd>' + esc(p.decisionNo || '—') + '</dd>' +
+    '<dt>طريقة التعاقد</dt><dd>' + (p.contractMethod ? esc(p.contractMethod) : '<span class="badge b-amber">غير محددة</span>') + '</dd>' +
+    '<dt>رقم العطاء / الاستدراج / أمر الشراء</dt><dd class="ltr" style="text-align:right">' + esc(p.tenderNo || '—') + '</dd>' +
+    '<dt>' + (isFw ? 'قرار المجلس (الموازنة السنوية)' : 'رقم القرار') + '</dt><dd>' + esc(p.decisionNo || '—') + (p.decisionDate ? ' · بتاريخ ' + fmtDate(p.decisionDate) : '') + '</dd>' +
     '<dt>الجهة الممولة</dt><dd>' + esc(p.funder || '—') + '</dd>' +
     '<dt>الأولوية</dt><dd>' + esc(p.priority || '—') + '</dd>' +
-    '<dt>قيمة المشروع</dt><dd>' + fmtNum(p.contractValue) + ' ' + esc(p.currency || '') + (p.currency ? '' : ' <span class="muted small">(العملة غير محددة)</span>') + '</dd>' +
+    '<dt>' + (isFw ? 'الموازنة الإجمالية المعتمدة' : 'قيمة المشروع') + '</dt><dd>' + fmtNum(p.contractValue) + ' ' + esc(p.currency || '') + (p.currency ? '' : ' <span class="muted small">(العملة غير محددة)</span>') + '</dd>' +
     '<dt>المقاول</dt><dd>' + esc(p.contractor || '—') + '</dd>' +
-    '<dt>المهندس المشرف</dt><dd>' + (p.supervisorEmail ? who(p.supervisorEmail, true) + ' <span class="badge b-pri">يستلم تذكيرات المشروع</span>' : esc(p.supervisor || '—') + (p.supervisor ? ' <span class="muted small">(غير مرتبط بحساب: التذكيرات لكل القسم)</span>' : '')) + '</dd>' +
+    (isFw ? '' : '<dt>المهندس المشرف</dt><dd>' + (p.supervisorEmail ? who(p.supervisorEmail, true) + ' <span class="badge b-pri">يستلم تذكيرات المشروع</span>' : esc(p.supervisor || '—') + (p.supervisor ? ' <span class="muted small">(غير مرتبط بحساب: التذكيرات لكل القسم)</span>' : '')) + '</dd>') +
     '<dt>ملاحظات</dt><dd>' + esc(p.notes || '—') + '</dd></dl></div>';
+
+  if (isFw) h += frameworkSection(d, canEdit);
 
   // Required documents checklist
   var have = {};
@@ -642,7 +651,7 @@ function viewProject() {
   h += '<div class="card"><div class="row" style="justify-content:space-between"><h2>المستندات</h2>' + (canEdit ? '<button class="btn sm no-print" data-act="upload-here">+ رفع مستند</button>' : '') + '</div>' +
     (d.attachments.length ? S.boot.docTypes.filter(function (t) { return groups[t]; }).map(function (t) {
       return '<div style="margin-bottom:8px"><div class="muted small" style="font-weight:600">' + esc(t) + ' (' + groups[t].length + ')</div>' + groups[t].map(function (a) {
-        return '<div class="att"><div><div>' + esc(a.fileName) + '</div><div class="muted small">' + fmtSize(a.size) + ' · ' + fmtStamp(a.uploadedAt) + ' · رفعه ' + who(a.uploadedBy) + '</div></div>' +
+        return '<div class="att"><div><div>' + esc(a.fileName) + '</div><div class="muted small">' + fmtSize(a.size) + ' · ' + fmtStamp(a.uploadedAt) + ' · رفعه ' + who(a.uploadedBy) + (a.workOrderId ? ' · <span class="badge b-blue">' + esc(orderLabel(a.workOrderId)) + '</span>' : '') + '</div></div>' +
           '<div class="row no-print"><a class="btn sm pri" target="_blank" rel="noopener" href="' + esc(a.viewUrl) + '">عرض</a><a class="btn sm" target="_blank" rel="noopener" href="' + esc(a.downloadUrl) + '">تنزيل</a>' +
           (canEdit ? '<button class="btn sm" data-act="edit-att" data-arg="' + esc(a.id) + '">تعديل</button>' : '') + '</div></div>';
       }).join('') + '</div>';
@@ -654,6 +663,131 @@ function viewProject() {
     (d.updates.length ? '<ul class="timeline">' + d.updates.map(function (u) { return historyItem(u, false); }).join('') + '</ul>' : '<p class="muted">لا توجد تعديلات مسجلة بعد.</p>') + '</div>';
 
   return h;
+}
+
+// ---------- Framework agreements (annual tenders) ----------
+function orderLabel(id) {
+  var w = ((S.detail && S.detail.workOrders) || []).filter(function (x) { return x.id === id; })[0];
+  return w ? 'أمر العمل ' + (w.orderNo ? w.orderNo + ' · ' : '') + w.site : 'أمر عمل محذوف';
+}
+
+function frameworkSection(d, canEdit) {
+  var p = d.project, fw = p.fw || { ceiling: 0, committed: 0, remaining: 0, usedPct: null, orders: 0 };
+  var cur = esc(p.currency || '');
+  var pct = fw.usedPct === null ? 0 : fw.usedPct;
+  var barColor = pct > 100 ? 'var(--red)' : pct >= 90 ? '#d98a10' : 'var(--pri)';
+  var orders = d.workOrders || [], incs = d.budgetIncreases || [];
+  var h = '<div class="card"><div class="row" style="justify-content:space-between"><h2>اتفاقية الإطار: الموازنة وأوامر العمل</h2>' +
+    (canEdit ? '<div class="row no-print"><button class="btn sm pri" data-act="wo-new">+ إضافة أمر عمل</button><button class="btn sm" data-act="budget-inc">زيادة الموازنة (أمر تغييري)</button></div>' : '') + '</div>' +
+    '<div class="kpis" style="margin:6px 0 10px">' +
+    '<div class="kpi pri" style="cursor:default"><div class="n" style="font-size:22px">' + fmtNum(fw.ceiling) + '</div><div class="l">سقف الموازنة ' + cur + (fw.increases ? '<br><span class="small">(' + fmtNum(fw.baseBudget) + ' + أوامر تغييرية ' + fmtNum(fw.increases) + ')</span>' : '') + '</div></div>' +
+    '<div class="kpi amber" style="cursor:default"><div class="n" style="font-size:22px">' + fmtNum(fw.committed) + '</div><div class="l">المُلتزم به في ' + fw.orders + ' أمر عمل</div></div>' +
+    '<div class="kpi ' + (fw.remaining < 0 ? 'red' : 'grey') + '" style="cursor:default"><div class="n" style="font-size:22px">' + fmtNum(fw.remaining) + '</div><div class="l">المتبقي من الموازنة</div></div>' +
+    '</div><div class="bar" style="height:12px" title="نسبة المُلتزم به من السقف"><i style="width:' + Math.min(100, pct) + '%;background:' + barColor + '"></i></div>' +
+    '<p class="small muted" style="margin:4px 0 10px">مستخدم ' + (fw.usedPct === null ? '—' : fw.usedPct + '%') + ' من الموازنة' +
+    (pct >= 90 && pct <= 100 ? ' · <b style="color:var(--amber)">اقتربت الموازنة من السقف</b>' : '') + '</p>';
+
+  if (incs.length) {
+    h += '<div class="small" style="margin-bottom:10px"><b>زيادات الموازنة بأوامر تغييرية:</b>' + incs.map(function (x) {
+      return '<div>+' + fmtNum(x.amount) + ' · أمر تغييري ' + esc(x.voNo) + ' بتاريخ ' + fmtDate(x.voDate) + (x.note ? ' · ' + esc(x.note) : '') + '</div>';
+    }).join('') + '</div>';
+  }
+
+  if (!orders.length) return h + '<p class="muted">لا توجد أوامر عمل بعد.' + (canEdit ? ' أضف أول أمر عمل عند صدور قرار المجلس.' : '') + '</p></div>';
+  var docsOf = {};
+  d.attachments.forEach(function (a) { if (a.workOrderId) docsOf[a.workOrderId] = (docsOf[a.workOrderId] || 0) + 1; });
+  h += '<div class="plist">' + orders.map(function (w) {
+    var wi = w.ind || {};
+    var badges = [];
+    if (wi.overdue) badges.push('<span class="badge b-red">متجاوز بـ ' + (-wi.daysLeft) + ' يوم</span>');
+    if (wi.approaching) badges.push('<span class="badge b-amber">متبقٍ ' + wi.daysLeft + ' يوم</span>');
+    var prog = w.progress === '' ? (w.status === 'منجز' ? 100 : 0) : Number(w.progress);
+    return '<div class="pitem" style="cursor:default"><div><div class="nm">' + (w.orderNo ? 'أمر ' + esc(w.orderNo) + ' · ' : '') + esc(w.site) + '</div>' +
+      '<div class="meta">قرار ' + esc(w.decisionNo) + (w.decisionDate ? ' بتاريخ ' + fmtDate(w.decisionDate) : '') + (w.description ? ' · ' + esc(w.description) : '') + '</div>' +
+      '<div class="meta">المهندس المشرف: ' + (w.supervisorEmail ? who(w.supervisorEmail, true) : esc(w.supervisor || '—')) + ' · مستندات: ' + (docsOf[w.id] || 0) + '</div>' +
+      '<div class="badges">' + badges.join('') + '</div></div>' +
+      '<div>' + statusBadge(w.status) + '<div class="small muted" style="margin-top:4px">الإنجاز: ' + (w.progress === '' ? (w.status === 'منجز' ? 'منجز' : 'غير مُدخلة') : fmtNum(w.progress) + '%') + '</div>' +
+      '<div class="bar"><i style="width:' + Math.min(100, prog) + '%"></i></div><div class="small" style="margin-top:4px"><b>' + fmtNum(w.budget) + '</b> ' + cur + '</div></div>' +
+      '<div class="small"><div class="muted">البدء ← الإنجاز</div><b>' + fmtDate(w.startDate) + ' ← ' + fmtDate(w.endDate) + '</b>' +
+      (w.actualCompletionDate ? '<div class="muted">التسليم الفعلي: ' + fmtDate(w.actualCompletionDate) + '</div>' : '') +
+      (canEdit ? '<div class="row no-print" style="margin-top:6px"><button class="btn sm" data-act="wo-edit" data-arg="' + esc(w.id) + '">تعديل</button>' +
+        '<button class="btn sm" data-act="wo-upload" data-arg="' + esc(w.id) + '">رفع مستند</button></div>' : '') + '</div></div>';
+  }).join('') + '</div></div>';
+  return h;
+}
+
+function openWorkOrder(id) {
+  var d = S.detail, p = d.project, fw = p.fw || {};
+  var w = id ? (d.workOrders || []).filter(function (x) { return x.id === id; })[0] : { status: 'لم يبدأ' };
+  if (!w) return;
+  var reqId = rid();
+  var room = (fw.remaining || 0) + (id ? Number(w.budget) || 0 : 0);
+  var f = function (k, label, type, hint) {
+    var v = w[k] === undefined ? '' : w[k];
+    var inp = type === 'textarea' ? '<textarea id="w-' + k + '" style="min-height:60px">' + esc(v) + '</textarea>'
+      : '<input id="w-' + k + '" type="' + type + '" value="' + esc(v) + '"' + (type === 'number' ? ' step="any" min="0" inputmode="decimal"' : '') + '>';
+    return fieldHtml('w-' + k, label, inp, hint);
+  };
+  openModal(id ? 'تعديل أمر عمل' : 'إضافة أمر عمل', '<form id="mf"><p class="small muted" style="margin-top:-6px">' + esc(p.name) + '</p>' +
+    f('decisionNo', 'رقم قرار المجلس *', 'text') + f('decisionDate', 'تاريخ القرار', 'date') + f('orderNo', 'رقم أمر العمل', 'text') +
+    f('site', 'الموقع *', 'text') + f('description', 'وصف الأعمال', 'textarea') +
+    f('budget', 'موازنة أمر العمل * (' + esc(p.currency || 'العملة غير محددة') + ')', 'number', 'المتاح حالياً من موازنة الاتفاقية: ' + fmtNum(room)) +
+    f('startDate', 'تاريخ البدء', 'date') + f('durationDays', 'المدة (يوم)', 'number') +
+    f('endDate', 'تاريخ الإنجاز', 'date', 'يُحسب تلقائياً = تاريخ البدء + المدة.') +
+    fieldHtml('w-supervisorEmail', 'المهندس المشرف على هذا الموقع', '<select id="w-supervisorEmail">' + deptEngineerOptions(p.deptId, w.supervisorEmail || '').replace('(تذهب التذكيرات لكل القسم)', '') + '</select>') +
+    f('supervisor', 'اسم المهندس المشرف (غير مسجل في المنصة)', 'text') +
+    fieldHtml('w-status', 'الحالة', '<select id="w-status">' + S.boot.statuses.filter(function (s) { return s !== 'غير محدد'; }).map(function (s) { return '<option' + (s === w.status ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') + '</select>') +
+    f('progress', 'نسبة الإنجاز (%)', 'number') + f('actualCompletionDate', 'تاريخ التسليم الفعلي', 'date') + f('notes', 'ملاحظات', 'textarea') +
+    '<div class="actions"><button class="btn pri" type="submit" id="w-save">حفظ أمر العمل</button><button class="btn" type="button" data-act="close-modal">إلغاء</button>' +
+    (id ? '<button class="btn danger" type="button" id="w-del">حذف أمر العمل</button>' : '') + '</div></form>',
+    function () {
+      var start = $('#w-startDate'), dur = $('#w-durationDays'), end = $('#w-endDate'), eng = $('#w-supervisorEmail'), nm = $('#w-supervisor');
+      var calc = function () {
+        var auto = start.value && dur.value !== '' && Number(dur.value) >= 0;
+        end.readOnly = !!auto; end.style.background = auto ? '#f1f5f4' : '';
+        if (auto) end.value = addDays(start.value, Number(dur.value));
+      };
+      var syncName = function () { nm.closest('.field').classList.toggle('hidden', !!eng.value); };
+      start.addEventListener('input', calc); dur.addEventListener('input', calc); eng.addEventListener('change', syncName); calc(); syncName();
+      if (id) $('#w-del').addEventListener('click', async function () {
+        if (modalBusy) return;
+        var btn = this;
+        if (!btn.dataset.confirm) { btn.dataset.confirm = '1'; btn.textContent = 'اضغط مرة أخرى لتأكيد حذف أمر العمل'; return; }
+        setBusy(btn, true, 'جارٍ الحذف...');
+        try { await call('workorder.delete', { projectId: p.id, id: id }, { requestId: rid() }); setBusy(btn, false); closeModal(true); toast('تم حذف أمر العمل', 'ok'); await afterWrite(p.id); }
+        catch (e) { setBusy(btn, false); showErr(e.message); }
+      });
+      $('#mf').addEventListener('submit', async function (e) {
+        e.preventDefault(); if (modalBusy) return;
+        var data = {};
+        ['decisionNo', 'decisionDate', 'orderNo', 'site', 'description', 'budget', 'startDate', 'durationDays', 'endDate', 'supervisorEmail', 'supervisor', 'status', 'progress', 'actualCompletionDate', 'notes']
+          .forEach(function (k) { data[k] = val('w-' + k); });
+        var btn = $('#w-save'); setBusy(btn, true);
+        try {
+          var r = await call('workorder.save', { projectId: p.id, id: id || '', version: w.version, data: data }, { requestId: reqId });
+          setBusy(btn, false); closeModal(true); toast(r.unchanged ? 'لم يتغير شيء' : '✓ تم حفظ أمر العمل', 'ok'); await afterWrite(p.id);
+        } catch (err) { setBusy(btn, false); showErr(err.message); }
+      });
+    });
+}
+
+function openBudgetIncrease() {
+  var p = S.detail.project, reqId = rid();
+  openModal('زيادة الموازنة بأمر تغييري', '<form id="mf"><p class="small">سقف الموازنة الحالي: <b>' + fmtNum((p.fw || {}).ceiling) + '</b> ' + esc(p.currency || '') + '</p>' +
+    fieldHtml('b-voNo', 'رقم الأمر التغييري *', '<input id="b-voNo">') + fieldHtml('b-voDate', 'تاريخ الأمر التغييري *', '<input id="b-voDate" type="date">') +
+    fieldHtml('b-amount', 'قيمة الزيادة *', '<input id="b-amount" type="number" step="any" min="0" inputmode="decimal">') +
+    fieldHtml('b-note', 'ملاحظة', '<textarea id="b-note" style="min-height:60px"></textarea>') +
+    '<div class="actions"><button class="btn pri" type="submit" id="b-save">حفظ الزيادة</button><button class="btn" type="button" data-act="close-modal">إلغاء</button></div></form>',
+    function () {
+      $('#mf').addEventListener('submit', async function (e) {
+        e.preventDefault(); if (modalBusy) return;
+        var btn = $('#b-save'); setBusy(btn, true);
+        try {
+          await call('project.addBudgetIncrease', { id: p.id, data: { voNo: val('b-voNo'), voDate: val('b-voDate'), amount: val('b-amount'), note: val('b-note') } }, { requestId: reqId });
+          setBusy(btn, false); closeModal(true); toast('✓ تمت زيادة سقف الموازنة', 'ok'); await afterWrite(p.id);
+        } catch (err) { setBusy(btn, false); showErr(err.message); }
+      });
+    });
 }
 
 // One history entry: what kind of change, when, who, and old ← new values.
@@ -743,9 +877,11 @@ function openUpdate() {
   var reqId = rid();
   var opts = S.boot.statuses.filter(function (s) { return s !== 'غير محدد' || p.status === 'غير محدد'; })
     .map(function (s) { return '<option' + (s === p.status ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('');
+  var fwUpd = p.contractMethod === S.boot.framework;
   openModal('تحديث المشروع', '<p class="muted small" style="margin-top:-6px">' + esc(p.name) + '</p><form id="mf">' +
-    fieldHtml('u-progress', 'نسبة الإنجاز الفعلية (%)', '<div class="range"><input type="range" id="u-range" min="0" max="100" step="1" value="' + (p.progress === '' ? 0 : p.progress) + '"><input type="number" id="u-progress" min="0" max="100" step="0.5" inputmode="decimal" value="' + esc(p.progress) + '"></div>',
-      'الإنجاز الفعلي للأعمال في الموقع، وليس الزمن المنقضي من مدة العقد.') +
+    (fwUpd ? '<input type="hidden" id="u-progress" value=""><p class="small okbox" style="color:var(--ink)">نسبة إنجاز الاتفاقية تُحسب تلقائياً من أوامر العمل (حسب موازنة كل أمر). حدّث نسبة كل أمر عمل من زر «تعديل» الخاص به.</p>'
+      : fieldHtml('u-progress', 'نسبة الإنجاز الفعلية (%)', '<div class="range"><input type="range" id="u-range" min="0" max="100" step="1" value="' + (p.progress === '' ? 0 : p.progress) + '"><input type="number" id="u-progress" min="0" max="100" step="0.5" inputmode="decimal" value="' + esc(p.progress) + '"></div>',
+      'الإنجاز الفعلي للأعمال في الموقع، وليس الزمن المنقضي من مدة العقد.')) +
     fieldHtml('u-status', 'الحالة الحالية', '<select id="u-status">' + opts + '</select>') +
     fieldHtml('u-obstacle', 'العائق (إن وجد)', '<textarea id="u-obstacle" placeholder="مثال: تأخر توريد المواد">' + esc(p.obstacle) + '</textarea>') +
     fieldHtml('u-action', 'الإجراء المطلوب (إن وجد)', '<textarea id="u-action" placeholder="ما المطلوب ومن الجهة المسؤولة؟">' + esc(p.requiredAction) + '</textarea>') +
@@ -755,8 +891,10 @@ function openUpdate() {
     '<div class="actions"><button class="btn pri" type="submit" id="u-save">حفظ التحديث</button><button class="btn" type="button" data-act="close-modal">إلغاء</button></div></form>',
     function () {
       var r = $('#u-range'), n = $('#u-progress');
-      r.addEventListener('input', function () { n.value = r.value; });
-      n.addEventListener('input', function () { r.value = n.value || 0; });
+      if (r) {
+        r.addEventListener('input', function () { n.value = r.value; });
+        n.addEventListener('input', function () { r.value = n.value || 0; });
+      }
       $('#mf').addEventListener('submit', async function (e) {
         e.preventDefault();
         if (modalBusy) return;
@@ -780,7 +918,8 @@ async function afterWrite(projectId) {
 }
 
 var CONTRACT_FORM = [
-  ['name', 'اسم المشروع', 'text'], ['tenderNo', 'رقم العطاء', 'text'], ['decisionNo', 'رقم القرار', 'text'],
+  ['name', 'اسم المشروع', 'text'], ['contractMethod', 'طريقة التعاقد', 'method'],
+  ['tenderNo', 'رقم العطاء / الاستدراج / أمر الشراء', 'text'], ['decisionNo', 'رقم القرار', 'text'], ['decisionDate', 'تاريخ القرار', 'date'],
   ['funder', 'الجهة الممولة', 'text'], ['priority', 'الأولوية', 'select:عالية,متوسطة,منخفضة'], ['contractValue', 'قيمة المشروع', 'number'],
   ['currency', 'العملة (مطلوبة عند إدخال القيمة)', 'select:,شيكل,دولار أمريكي,دينار أردني,يورو'], ['durationDays', 'مدة المشروع (يوم)', 'number'],
   ['ntpDate', 'تاريخ أمر المباشرة', 'date'], ['contractEndDate', 'تاريخ الإنجاز حسب العقد (الأصلي)', 'date'],
@@ -809,11 +948,13 @@ function openContract(isNew) {
     var id = 'c-' + f[0], v = p[f[0]] === undefined ? '' : p[f[0]], type = f[2], inp;
     if (type.indexOf('select:') === 0) inp = '<select id="' + id + '">' + type.slice(7).split(',').map(function (o) { return '<option value="' + esc(o) + '"' + (o === v ? ' selected' : '') + '>' + esc(o || '— غير محدد —') + '</option>'; }).join('') + (v && type.slice(7).split(',').indexOf(v) < 0 ? '<option selected>' + esc(v) + '</option>' : '') + '</select>';
     else if (type === 'engineer') inp = '<select id="' + id + '">' + deptEngineerOptions(p.deptId || (depts[0] && depts[0].id), v) + '</select>';
+    else if (type === 'method') inp = '<select id="' + id + '"><option value="">— اختر طريقة التعاقد —</option>' + S.boot.contractMethods.map(function (m) {
+      return '<option' + (m === v ? ' selected' : '') + '>' + esc(m) + '</option>'; }).join('') + '</select>';
     else if (type === 'textarea') inp = '<textarea id="' + id + '">' + esc(v) + '</textarea>';
     else inp = '<input id="' + id + '" type="' + type + '" value="' + esc(v) + '"' + (type === 'number' ? ' step="any" min="0" inputmode="decimal"' : '') + '>';
     var hint = f[0] === 'contractEndDate' ? 'يُحسب تلقائياً = تاريخ أمر المباشرة + مدة المشروع. يُدخل يدوياً فقط إذا كانت المدة غير معروفة. التمديدات المعتمدة تُسجل من زر «إضافة تمديد معتمد» ولا تغيّر هذا التاريخ.'
       : f[0] === 'supervisorEmail' ? 'تذكيرات هذا المشروع تُرسل للمهندس المختار ولرئيس القسم فقط. إذا لم يُختر مهندس تُرسل لكل القسم.' : '';
-    return fieldHtml(id, f[1] + (f[0] === 'name' ? ' *' : ''), inp, hint);
+    return fieldHtml(id, f[1] + (f[0] === 'name' || (f[0] === 'contractMethod' && isNew) ? ' *' : ''), inp, hint);
   }).join('');
   var deptSel = (isNew || role() === 'admin') ? fieldHtml('c-deptId', 'القسم *', '<select id="c-deptId">' + depts.map(function (d) { return '<option value="' + esc(d.id) + '"' + (d.id === p.deptId ? ' selected' : '') + '>' + esc(d.name) + '</option>'; }).join('') + '</select>') : '';
   openModal(isNew ? 'إضافة مشروع جديد' : 'تعديل بيانات العقد', '<form id="mf">' + deptSel + inputs +
@@ -831,8 +972,17 @@ function openContract(isNew) {
       var eng = $('#c-supervisorEmail'), engName = $('#c-supervisor'), deptBox = $('#c-deptId');
       if (deptBox) deptBox.addEventListener('change', function () { eng.innerHTML = deptEngineerOptions(deptBox.value, ''); });
       // The typed name is only needed when no account is linked (unregistered or external supervisor).
-      var nameField = engName.closest('.field');
-      var syncName = function () { nameField.classList.toggle('hidden', !!eng.value); };
+      var nameField = engName.closest('.field'), engField = eng.closest('.field'), method = $('#c-contractMethod');
+      var setLabel = function (id, text) { var l = $modal.querySelector('label[for="' + id + '"]'); if (l) l.textContent = text; };
+      // Framework agreement: the decision carries the annual budget (= ceiling); engineers are set per work order.
+      var syncName = function () {
+        var fw = method.value === S.boot.framework;
+        setLabel('c-decisionNo', fw ? 'قرار المجلس (الموازنة السنوية)' : 'رقم القرار');
+        setLabel('c-contractValue', fw ? 'الموازنة الإجمالية المعتمدة (السقف)' : 'قيمة المشروع');
+        engField.classList.toggle('hidden', fw);
+        nameField.classList.toggle('hidden', fw || !!eng.value);
+      };
+      method.addEventListener('change', syncName);
       eng.addEventListener('change', function () {
         var u = (S.boot.people || {})[eng.value];
         if (u && u.name) engName.value = u.name;
@@ -898,8 +1048,8 @@ function readB64(blob) {
   });
 }
 var uploadCancel = false;
-async function sendFile(file, projectId, docType, onProgress, replaceId) {
-  var st = await call('upload.start', { projectId: projectId, docType: docType, fileName: file.name, mimeType: mimeOf(file), size: file.size, replaceId: replaceId || '' });
+async function sendFile(file, projectId, docType, onProgress, replaceId, workOrderId) {
+  var st = await call('upload.start', { projectId: projectId, docType: docType, fileName: file.name, mimeType: mimeOf(file), size: file.size, replaceId: replaceId || '', workOrderId: workOrderId || '' });
   var offset = 0;
   try {
     while (offset < file.size) {
@@ -926,11 +1076,15 @@ async function sendFile(file, projectId, docType, onProgress, replaceId) {
   }
 }
 
-function uploadFormHtml(projectId, presetType) {
+function uploadFormHtml(projectId, presetType, workOrderId) {
   var list = editableProjects().filter(function (p) { return p.status !== 'منجز' || true; });
   var projSel = projectId ? '<input type="hidden" id="up-proj" value="' + esc(projectId) + '"><p class="small">المشروع: <b>' + esc(proj(projectId) ? proj(projectId).name : '') + '</b></p>'
     : fieldHtml('up-proj', '1. اختر المشروع', '<select id="up-proj"><option value="">— اختر المشروع —</option>' + sortProjects(list).map(function (p) { return '<option value="' + esc(p.id) + '">' + esc(p.name) + '</option>'; }).join('') + '</select>');
-  return '<form id="upf">' + projSel +
+  // Inside a framework agreement the file can belong to one of its work orders.
+  var orders = projectId && S.detail && S.detail.project.id === projectId ? (S.detail.workOrders || []) : [];
+  var woSel = orders.length ? fieldHtml('up-wo', 'أمر العمل (اختياري)', '<select id="up-wo"><option value="">— مستند عام للاتفاقية —</option>' + orders.map(function (w) {
+    return '<option value="' + esc(w.id) + '"' + (w.id === workOrderId ? ' selected' : '') + '>' + esc(orderLabel(w.id)) + '</option>'; }).join('') + '</select>') : '';
+  return '<form id="upf">' + projSel + woSel +
     fieldHtml('up-type', (projectId ? '1' : '2') + '. نوع المستند', '<select id="up-type"><option value="">— اختر النوع —</option>' + S.boot.docTypes.map(function (t) { return '<option' + (t === presetType ? ' selected' : '') + '>' + esc(t) + '</option>'; }).join('') + '</select>') +
     fieldHtml('up-file', (projectId ? '2' : '3') + '. اختر الملف', '<input id="up-file" type="file" accept="application/pdf,image/*">', 'PDF أو صورة، بحد أقصى ' + esc(S.boot.settings.maxUploadMB) + ' ميغابايت.') +
     '<div id="up-status" class="hidden"><div class="prog"><i id="up-bar"></i></div><div class="small muted" id="up-text"></div></div>' +
@@ -965,7 +1119,7 @@ function bindUploadForm(onDone) {
     };
     prog(0, 'جارٍ التحضير...');
     try {
-      var a = await sendFile(file, pid, type, prog);
+      var a = await sendFile(file, pid, type, prog, '', val('up-wo'));
       setBusy(btn, false);
       $('#up-cancel').classList.add('hidden');
       $('#up-status').classList.add('hidden');
@@ -984,8 +1138,8 @@ function bindUploadForm(onDone) {
     }
   });
 }
-function openUploadModal(projectId, presetType) {
-  openModal('رفع مستند', uploadFormHtml(projectId, presetType), function () {
+function openUploadModal(projectId, presetType, workOrderId) {
+  openModal('رفع مستند', uploadFormHtml(projectId, presetType, workOrderId), function () {
     bindUploadForm(function (pid) {
       refreshBoot().catch(function () { });
       if (S.view === 'project' && S.params.id === pid) {
@@ -1241,6 +1395,10 @@ var ACT = {
   extension: openExtension,
   'upload-here': function () { openUploadModal(S.detail.project.id); },
   'upload-type': function (t) { openUploadModal(S.detail.project.id, t); },
+  'wo-new': function () { openWorkOrder(''); },
+  'wo-edit': function (id) { openWorkOrder(id); },
+  'wo-upload': function (id) { openUploadModal(S.detail.project.id, '', id); },
+  'budget-inc': openBudgetIncrease,
   print: function () { window.print(); },
   'close-modal': function () { closeModal(false); if (S.view === 'project' && S.detail) render(); },
   'edit-att': openAttachmentEdit,
