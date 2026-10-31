@@ -77,7 +77,7 @@ h2{font-size:17px;margin:0 0 10px}
 .back{background:none;border:0;color:var(--pri);cursor:pointer;padding:4px 0;margin-bottom:6px;font-size:15px}
 
 /* KPI */
-.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:14px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
 .kpi{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px;cursor:pointer;text-align:start;box-shadow:var(--shadow);border-top:4px solid var(--grey)}
 .kpi:hover{transform:translateY(-1px)}
 .kpi .n{font-size:30px;font-weight:700;line-height:1.1}
@@ -291,7 +291,6 @@ var IND = {
   overdue: { label: 'تجاوزت موعد الإنجاز', cls: 'red' },
   approaching: { label: 'تقترب من موعد الإنجاز', cls: 'amber' },
   stopped: { label: 'مشاريع متوقفة', cls: 'dark' },
-  needsDecision: { label: 'تحتاج قراراً إدارياً', cls: 'purple' },
   stale: { label: 'لم تُحدَّث مؤخراً', cls: 'grey' },
   missingDocs: { label: 'مستندات مطلوبة ناقصة', cls: 'amber' },
   missingPhotos: { label: 'صور الموقع لهذا الشهر ناقصة', cls: 'red' }
@@ -323,7 +322,6 @@ function indBadges(p) {
   if (i.overdue) out.push('<span class="badge b-red">متجاوز بـ ' + (-i.daysLeft) + ' يوم</span>');
   if (i.approaching) out.push('<span class="badge b-amber">متبقٍ ' + i.daysLeft + ' يوم</span>');
   if (i.stopped) out.push('<span class="badge b-dark">متوقف</span>');
-  if (i.needsDecision) out.push('<span class="badge b-purple">يحتاج قراراً إدارياً</span>');
   if (i.awaitingClosure) out.push('<span class="badge b-blue">سُلّم فعلياً - بانتظار الإغلاق</span>');
   if (i.stale) out.push('<span class="badge b-grey">' + (i.daysSinceUpdate === null ? 'لم يُحدَّث بعد' : (i.neverUpdated ? 'لم يُحدَّث منذ إضافته قبل ' : 'آخر تحديث قبل ') + i.daysSinceUpdate + ' يوم') + '</span>');
   if (i.noEndDate) out.push('<span class="badge b-grey">لا يوجد تاريخ إنجاز</span>');
@@ -342,7 +340,7 @@ function progressBar(p) {
 function attentionScore(p) {
   var i = p.ind;
   if (!i.active) return 90;
-  if (i.overdue) return 0; if (i.stopped) return 1; if (i.needsDecision) return 2; if (i.approaching) return 3; if (i.stale) return 5;
+  if (i.overdue) return 0; if (i.stopped) return 1; if (i.approaching) return 3; if (i.missingDocs || i.missingPhotos) return 4; if (i.stale) return 5;
   return 6;
 }
 function sortProjects(list) {
@@ -495,12 +493,8 @@ function viewDash() {
     '<p class="muted small" style="margin-top:-8px">بتاريخ ' + fmtDate(b.today) + '. تنبيهات آلية محسوبة من التواريخ المسجلة.</p>' +
     '<div class="kpis">' +
     kpi('overdue', cnt('overdue'), IND.overdue.label, 'red') +
-    kpi('approaching', cnt('approaching'), IND.approaching.label + ' (' + b.settings.approachingDays + ' يوماً)', 'amber') +
+    kpi('approaching', cnt('approaching'), IND.approaching.label, 'amber') +
     kpi('stopped', cnt('stopped'), IND.stopped.label, 'dark') +
-    kpi('needsDecision', cnt('needsDecision'), IND.needsDecision.label, 'purple') +
-    kpi('stale', cnt('stale'), IND.stale.label + ' (' + b.settings.staleDays + ' يوماً أو أكثر)', 'grey') +
-    kpi('missingDocs', cnt('missingDocs'), 'مشاريع بمستندات مطلوبة ناقصة', 'amber') +
-    kpi('missingPhotos', cnt('missingPhotos'), 'مشاريع ينقصها صور هذا الشهر', 'red') +
     kpi('active', active.length, 'المشاريع النشطة', 'pri') +
     '</div>';
 
@@ -523,7 +517,7 @@ function viewDash() {
         }).join('') + '<td class="num click" data-act="cell" data-arg="' + esc(d.id + '|all') + '">' + dp.length + '</td></tr>';
     }).join('') + '</table></div></div>';
 
-  var attention = sortProjects(active.filter(function (p) { return attentionScore(p) <= 3; })).slice(0, 10);
+  var attention = sortProjects(active.filter(function (p) { return attentionScore(p) <= 5; }));
   html += '<div class="card"><h2>أهم ما يحتاج متابعة</h2>' +
     (attention.length ? '<div class="plist">' + attention.map(projectItem).join('') + '</div>' : '<p class="muted">لا توجد مشاريع تحتاج متابعة عاجلة.</p>') + '</div>';
   return html;
@@ -634,7 +628,6 @@ function viewProject() {
     '<dl class="kv"><dt>الحالة</dt><dd>' + esc(p.status) + '</dd>' +
     '<dt>العائق</dt><dd>' + (p.obstacle ? '<div class="note">' + esc(p.obstacle) + '</div>' : '—') + '</dd>' +
     '<dt>الإجراء المطلوب</dt><dd>' + (p.requiredAction ? '<div class="note">' + esc(p.requiredAction) + '</div>' : '—') + '</dd>' +
-    '<dt>يحتاج قراراً إدارياً</dt><dd>' + (p.needsDecision === 'نعم' ? '<span class="badge b-purple">نعم</span>' : 'لا') + '</dd>' +
     '<dt>موعد الإجراء القادم</dt><dd>' + fmtDate(p.nextActionDate) + '</dd>' +
     '<dt>آخر تحديث للوضع</dt><dd>' + (p.lastUpdateAt ? fmtStamp(p.lastUpdateAt) + ' · ' + who(p.lastUpdateBy) : 'لم يُحدَّث منذ إدخاله') + '</dd></dl></div>';
 
@@ -1146,7 +1139,6 @@ function openUpdate() {
     fieldHtml('u-status', 'الحالة الحالية', '<select id="u-status">' + opts + '</select>') +
     fieldHtml('u-obstacle', 'العائق (إن وجد)', '<textarea id="u-obstacle" placeholder="مثال: تأخر توريد المواد">' + esc(p.obstacle) + '</textarea>') +
     fieldHtml('u-action', 'الإجراء المطلوب (إن وجد)', '<textarea id="u-action" placeholder="ما المطلوب ومن الجهة المسؤولة؟">' + esc(p.requiredAction) + '</textarea>') +
-    '<div class="field"><label class="check"><input type="checkbox" id="u-decision"' + (p.needsDecision === 'نعم' ? ' checked' : '') + '> يحتاج قراراً إدارياً</label></div>' +
     fieldHtml('u-next', 'موعد الإجراء القادم (اختياري)', '<input type="date" id="u-next" value="' + esc(p.nextActionDate) + '">') +
     fieldHtml('u-note', 'ملاحظة (اختياري)', '<textarea id="u-note" style="min-height:60px"></textarea>') +
     '<div class="actions"><button class="btn pri" type="submit" id="u-save">حفظ التحديث</button><button class="btn" type="button" data-act="close-modal">إلغاء</button></div></form>',
@@ -1164,7 +1156,7 @@ function openUpdate() {
         try {
           await call('project.update', { id: p.id, version: p.version, data: {
             progress: val('u-progress'), status: val('u-status'), obstacle: val('u-obstacle'), requiredAction: val('u-action'),
-            needsDecision: val('u-decision'), nextActionDate: val('u-next'), note: val('u-note') } }, { requestId: reqId });
+            nextActionDate: val('u-next'), note: val('u-note') } }, { requestId: reqId });
           setBusy(btn, false); closeModal(true);
           toast('✓ تم حفظ التحديث بنجاح', 'ok');
           await afterWrite(p.id);
