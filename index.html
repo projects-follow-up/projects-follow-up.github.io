@@ -686,10 +686,10 @@ function viewProject() {
     (d.attachments.length ? S.boot.docTypes.filter(function (t) { return groups[t]; }).map(function (t) {
       return '<div style="margin-bottom:8px"><div class="muted small" style="font-weight:600">' + esc(t) + ' (' + groups[t].length + ')</div>' + groups[t].map(function (a) {
         return '<div class="att"><div><div>' + esc(a.fileName) + '</div><div class="muted small">' + fmtSize(a.size) + ' · ' + fmtStamp(a.uploadedAt) + ' · رفعه ' + who(a.uploadedBy) + (a.workOrderId ? ' · <span class="badge b-blue">' + esc(orderLabel(a.workOrderId)) + '</span>' : '') + '</div></div>' +
-          '<div class="row no-print"><a class="btn sm pri" target="_blank" rel="noopener" href="' + esc(a.viewUrl) + '">عرض</a><a class="btn sm" target="_blank" rel="noopener" href="' + esc(a.downloadUrl) + '">تنزيل</a>' +
+          '<div class="row no-print"><button class="btn sm pri" data-act="file-view" data-arg="' + esc(a.id) + '">عرض</button><button class="btn sm" data-act="file-save" data-arg="' + esc(a.id) + '">تنزيل</button>' +
           (canEdit ? '<button class="btn sm" data-act="edit-att" data-arg="' + esc(a.id) + '">تعديل</button>' : '') + '</div></div>';
       }).join('') + '</div>';
-    }).join('') + '<p class="muted small no-print">يفتح زر «عرض» الملف في Google Drive. يجب أن تكون مسجلاً في Google بنفس البريد المسجل في المنصة.</p>'
+    }).join('') + '<p class="muted small no-print">قد تستغرق الملفات الكبيرة وقتاً أطول لتفتح.</p>'
       : '<p class="muted">لا توجد مستندات مرفوعة بعد.</p>') + '</div>';
 
   // History
@@ -697,6 +697,63 @@ function viewProject() {
     (d.updates.length ? '<ul class="timeline">' + d.updates.map(function (u) { return historyItem(u, false); }).join('') + '</ul>' : '<p class="muted">لا توجد تعديلات مسجلة بعد.</p>') + '</div>';
 
   return h;
+}
+
+// ---------- Opening files ----------
+// Reads a file through the platform in pieces (three at a time) and returns it as a Blob.
+async function fetchFile(kind, id, onProgress) {
+  var read = async function (offset) {
+    for (var i = 0; ; i++) {
+      try { return await call('file.read', { kind: kind, id: id, offset: offset }); }
+      catch (e) { if (i >= 2 || !S.token) throw e; await sleep(1500); }
+    }
+  };
+  var toBytes = function (b64) { var s = atob(b64), a = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) a[i] = s.charCodeAt(i); return a; };
+  var first = await read(0);
+  var parts = [toBytes(first.data)], done = parts[0].length, offsets = [];
+  for (var o = first.chunkSize; o < first.size; o += first.chunkSize) offsets.push(o);
+  onProgress(done / first.size);
+  var worker = async function () {
+    while (offsets.length) {
+      var off = offsets.shift();
+      var bytes = toBytes((await read(off)).data);
+      parts[off / first.chunkSize] = bytes;
+      done += bytes.length;
+      onProgress(done / first.size);
+    }
+  };
+  await Promise.all([worker(), worker(), worker()]);
+  return { blob: new Blob(parts, { type: first.mimeType }), name: first.fileName, mime: first.mimeType };
+}
+
+var fileBusy = false;
+async function openFile(kind, id, save) {
+  if (fileBusy) { toast('يتم فتح ملف آخر، يرجى الانتظار', 'bad'); return; }
+  fileBusy = true;
+  // The tab must be opened during the click, or the browser blocks it.
+  var tab = save ? null : window.open('', '_blank');
+  var show = function (msg) {
+    toast(msg); clearTimeout(toastTimer);
+    try { if (tab) tab.document.body.innerHTML = '<p dir="rtl" style="font:18px sans-serif;text-align:center;margin-top:40px">' + esc(msg) + '</p>'; } catch (e) { }
+  };
+  show('جارٍ فتح الملف...');
+  try {
+    var f = await fetchFile(kind, id, function (x) { show('جارٍ فتح الملف... ' + Math.round(x * 100) + '%'); });
+    var url = URL.createObjectURL(f.blob);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 600000);
+    var viewable = f.mime === 'application/pdf' || /^image\/(jpeg|png|webp)$/.test(f.mime);
+    if (save || !viewable) {
+      if (tab) tab.close();
+      var a = document.createElement('a');
+      a.href = url; a.download = f.name;
+      document.body.appendChild(a); a.click(); a.remove();
+    } else if (tab) tab.location.href = url;
+    else openModal(f.name, '<div class="actions"><a class="btn pri" target="_blank" href="' + esc(url) + '">عرض</a></div>');
+    toast('✓ جاهز', 'ok');
+  } catch (e) {
+    if (tab) tab.close();
+    toast(e.message, 'bad');
+  } finally { fileBusy = false; }
 }
 
 // ---------- Site photos ----------
@@ -848,7 +905,7 @@ function photosSection(d, canEdit) {
     h += '<div class="muted small" style="font-weight:600;margin:10px 0 6px">' + esc(mk.slice(5, 7) + '/' + mk.slice(0, 4)) + ' (' + months[mk].length + ')</div><div class="gallery">' +
       months[mk].map(function (x) {
         var when = x.takenAt ? 'التُقطت ' + fmtDate(x.takenAt.slice(0, 10)) + ' ' + x.takenAt.slice(11, 16) : 'رُفعت ' + fmtStamp(x.uploadedAt);
-        return '<div class="ph"><a target="_blank" rel="noopener" href="' + esc(x.viewUrl) + '">' +
+        return '<div class="ph"><a href="#" data-act="photo-view" data-arg="' + esc(x.id) + '">' +
           (x.thumb ? '<img src="' + esc(x.thumb) + '" alt="">' : '<div class="ph-empty">عرض</div>') + '</a>' +
           '<div class="small">' + esc(when) + '</div>' + (x.caption ? '<div class="small muted">' + esc(x.caption) + '</div>' : '') +
           (x.workOrderId ? '<div class="small"><span class="badge b-blue">' + esc(orderLabel(x.workOrderId)) + '</span></div>' : '') +
@@ -1329,7 +1386,7 @@ function bindUploadForm(onDone) {
       $('#up-status').classList.add('hidden');
       $('#up-file').value = '';
       $('#up-done').innerHTML = '<div class="okbox">✓ تم رفع الملف بنجاح<div style="margin:6px 0"><b>' + esc(a.fileName) + '</b> (' + fmtSize(a.size) + ')</div>' +
-        '<a class="btn sm pri" target="_blank" rel="noopener" href="' + esc(a.viewUrl) + '">عرض</a></div>';
+        '<button class="btn sm pri" data-act="file-view" data-arg="' + esc(a.id) + '">عرض</button></div>';
       console.log('[PM] upload ok', a.fileName, a.size, (Date.now() - t0) + 'ms');
       toast('✓ تم رفع الملف بنجاح', 'ok');
       if (onDone) onDone(pid);
@@ -1594,7 +1651,7 @@ function viewAdmin() {
       '<dt>آخر نسخة احتياطية</dt><dd>' + esc(sy.lastBackup || 'لا يوجد') + '</dd>' +
       '<dt>قاعدة البيانات</dt><dd><a target="_blank" rel="noopener" href="' + esc(sy.ssUrl) + '">فتح جدول البيانات (للمالك فقط)</a></dd>' +
       '<dt>مجلد المنصة</dt><dd><a target="_blank" rel="noopener" href="' + esc(sy.folderUrl) + '">فتح المجلد في Drive</a></dd></dl>' +
-      '<div class="actions"><button class="btn" data-act="backup">إنشاء نسخة احتياطية الآن</button><button class="btn" data-act="sync">تحديث صلاحيات مجلدات المرفقات</button></div><div id="sys-out"></div></div>';
+      '<div class="actions"><button class="btn" data-act="backup">إنشاء نسخة احتياطية الآن</button></div><div id="sys-out"></div></div>';
   }
   return h;
 }
@@ -1631,7 +1688,7 @@ function openUserEdit(email) {
         try {
           var r = await call('admin.saveUser', { data: { email: val('ue-email'), name: val('ue-name'), title: val('ue-title'), role: val('ue-role'), active: val('ue-active'), notify: val('ue-notify'),
             deptIds: Array.prototype.map.call($modal.querySelectorAll('.ue-dept:checked'), function (c) { return c.value; }) } }, { requestId: reqId });
-          setBusy(btn, false); closeModal(true); toast(r.warning || '✓ تم حفظ المستخدم', r.warning ? 'bad' : 'ok');
+          setBusy(btn, false); closeModal(true); toast('✓ تم حفظ المستخدم', 'ok');
           S.admin = null; render();
         } catch (err) { setBusy(btn, false); showErr(err.message); }
       });
@@ -1727,7 +1784,9 @@ var ACT = {
     });
   },
   backup: function () { adminAction('admin.backupNow', 'sys-out', function (r) { return '<div class="okbox">✓ تم إنشاء النسخة: ' + esc(r.name) + '</div>'; }); },
-  sync: function () { adminAction('admin.syncSharing', 'sys-out', function (r) { return '<div class="okbox">✓ تم تحديث الصلاحيات.</div>'; }); }
+  'file-view': function (id) { openFile('attachment', id, false); },
+  'file-save': function (id) { openFile('attachment', id, true); },
+  'photo-view': function (id) { openFile('photo', id, false); }
 };
 document.addEventListener('click', function (e) {
   var t = e.target.closest('[data-act]');
