@@ -530,7 +530,7 @@ function projectItem(p) {
     '<div><div class="nm">' + esc(p.name) + '</div><div class="meta">' + esc(deptName(p.deptId)) + (p.contractor ? ' · ' + esc(p.contractor) : '') +
     (p.tenderNo ? ' · <span class="ltr">' + esc(p.tenderNo) + '</span>' : '') + '</div>' +
     (p.fw ? '<div class="meta"><span class="badge b-pri">اتفاقية إطار</span> ' + p.fw.orders + ' قرار فرعي · ' + (p.fw.usedPct === null ? '—' : p.fw.usedPct + '%') + ' من الموازنة' +
-      (p.fw.lateOrders ? ' <span class="badge b-red">' + p.fw.lateOrders + ' قرار فرعي متأخر</span>' : '') + '</div>' : '') +
+      '</div>' : '') +
     indBadges(p, isMgmt()) + '</div>' +
     '<div>' + statusBadge(p.status) + '<div class="small muted" style="margin-top:4px">الإنجاز: ' + progressText(p) + '</div>' + progressBar(p) + '</div>' +
     '<div class="small"><div class="muted">تاريخ الإنجاز المعتمد</div><b>' + fmtDate(end) + '</b>' + (p.revisedEndDate ? ' <span class="badge b-blue">بعد تمديد</span>' : '') +
@@ -927,7 +927,7 @@ async function loadMoreThumbs() {
 // ---------- Framework agreements (annual tenders) ----------
 function orderLabel(id) {
   var w = ((S.detail && S.detail.workOrders) || []).filter(function (x) { return x.id === id; })[0];
-  return w ? 'القرار الفرعي ' + (w.orderNo ? w.orderNo + ' · ' : '') + w.site : 'قرار فرعي محذوف';
+  return w ? 'القرار الفرعي ' + w.decisionNo + (w.site ? ' · ' + w.site : '') : 'قرار فرعي محذوف';
 }
 
 // Actual work cost compared with the budget (an exact match or the difference).
@@ -972,22 +972,16 @@ function frameworkSection(d, canEdit) {
     if (a.workOrderId && a.docType === S.boot.decisionCopy) copyOf[a.workOrderId] = true;
   });
   h += '<div class="plist">' + orders.map(function (w) {
-    var wi = w.ind || {};
     var badges = [];
-    if (wi.overdue) badges.push('<span class="badge b-red">متجاوز بـ ' + (-wi.daysLeft) + ' يوم</span>');
-    if (wi.approaching) badges.push('<span class="badge b-amber">متبقٍ ' + wi.daysLeft + ' يوم</span>');
     if (w.actualCost !== '' && w.actualCost !== undefined) badges.push(costBadge(w.actualCost, w.budget, cur));
     if (!copyOf[w.id]) badges.push('<span class="badge b-red">نسخة القرار غير مرفوعة</span>');
-    var prog = w.progress === '' ? (w.status === 'منجز' ? 100 : 0) : Number(w.progress);
-    return '<div class="pitem" style="cursor:default"><div><div class="nm">' + (w.orderNo ? 'رقم ' + esc(w.orderNo) + ' · ' : '') + esc(w.site) + '</div>' +
-      '<div class="meta">قرار ' + esc(w.decisionNo) + (w.decisionDate ? ' بتاريخ ' + fmtDate(w.decisionDate) : '') + (w.description ? ' · ' + esc(w.description) : '') + '</div>' +
-      '<div class="meta">مستندات: ' + (docsOf[w.id] || 0) + '</div>' +
+    return '<div class="pitem" style="cursor:default"><div><div class="nm">قرار ' + esc(w.decisionNo) + ' بتاريخ ' + fmtDate(w.decisionDate) + '</div>' +
+      '<div class="meta">' + (w.site ? esc(w.site) + ' · ' : '') + 'مستندات: ' + (docsOf[w.id] || 0) + '</div>' +
+      (w.notes ? '<div class="meta">' + esc(w.notes) + '</div>' : '') +
       '<div class="badges">' + badges.join('') + '</div></div>' +
-      '<div>' + statusBadge(w.status) + '<div class="small muted" style="margin-top:4px">الإنجاز: ' + (w.progress === '' ? (w.status === 'منجز' ? 'منجز' : 'غير مُدخلة') : fmtNum(w.progress) + '%') + '</div>' +
-      '<div class="bar"><i style="width:' + Math.min(100, prog) + '%"></i></div><div class="small" style="margin-top:4px"><b>' + fmtNum(w.budget) + '</b> ' + cur + '</div></div>' +
-      '<div class="small"><div class="muted">البدء ← الإنجاز</div><b>' + fmtDate(w.startDate) + ' ← ' + fmtDate(w.endDate) + '</b>' +
-      (w.actualCompletionDate ? '<div class="muted">التسليم الفعلي: ' + fmtDate(w.actualCompletionDate) + '</div>' : '') +
-      (canEdit ? '<div class="row no-print" style="margin-top:6px"><button class="btn sm" data-act="wo-edit" data-arg="' + esc(w.id) + '">تعديل</button>' +
+      '<div class="small"><div class="muted">الموازنة</div><b>' + fmtNum(w.budget) + '</b> ' + cur +
+      (w.actualCost !== '' && w.actualCost !== undefined ? '<div class="muted" style="margin-top:4px">التكلفة الفعلية</div><b>' + fmtNum(w.actualCost) + '</b> ' + cur : '') + '</div>' +
+      '<div class="small">' + (canEdit ? '<div class="row no-print"><button class="btn sm" data-act="wo-edit" data-arg="' + esc(w.id) + '">تعديل</button>' +
         (copyOf[w.id] ? '' : '<button class="btn sm pri" data-act="wo-copy" data-arg="' + esc(w.id) + '">رفع نسخة القرار</button>') +
         '<button class="btn sm" data-act="wo-upload" data-arg="' + esc(w.id) + '">رفع مستند</button></div>' : '') + '</div></div>';
   }).join('') + '</div></div>';
@@ -996,7 +990,7 @@ function frameworkSection(d, canEdit) {
 
 function openWorkOrder(id) {
   var d = S.detail, p = d.project, fw = p.fw || {};
-  var w = id ? (d.workOrders || []).filter(function (x) { return x.id === id; })[0] : { status: 'لم يبدأ' };
+  var w = id ? (d.workOrders || []).filter(function (x) { return x.id === id; })[0] : {};
   if (!w) return;
   var reqId = rid();
   var room = (fw.remaining || 0) + (id ? Number(w.budget) || 0 : 0);
@@ -1010,25 +1004,13 @@ function openWorkOrder(id) {
   openModal(id ? 'تعديل قرار فرعي' : 'إضافة قرار فرعي', '<form id="mf"><p class="small muted" style="margin-top:-6px">' + esc(p.name) + '</p>' +
     f('decisionNo', 'رقم القرار *', 'text') + f('decisionDate', 'تاريخ القرار *', 'date') +
     (hasCopy ? '' : fieldHtml('w-copy', 'نسخة عن قرار المجلس' + (id ? '' : ' *'), '<input id="w-copy" type="file" accept="application/pdf,image/*">', 'PDF أو صورة، بحد أقصى ' + esc(S.boot.settings.maxUploadMB) + ' ميغابايت.')) +
-    f('orderNo', 'الرقم التسلسلي', 'text') +
-    f('site', 'الموقع *', 'text') + f('description', 'وصف الأعمال', 'textarea') +
     f('budget', 'موازنة القرار الفرعي * (' + esc(p.currency || 'العملة غير محددة') + ')', 'number', 'المتاح حالياً من موازنة الاتفاقية: ' + fmtNum(room)) +
-    f('startDate', 'تاريخ البدء', 'date') + f('durationDays', 'المدة (يوم)', 'number') +
-    f('endDate', 'تاريخ الإنجاز', 'date', 'يُحسب تلقائياً = تاريخ البدء + المدة.') +
-    fieldHtml('w-status', 'الحالة', '<select id="w-status">' + S.boot.statuses.filter(function (s) { return s !== 'غير محدد'; }).map(function (s) { return '<option' + (s === w.status ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') + '</select>') +
-    f('progress', 'نسبة الإنجاز (%)', 'number') + f('actualCompletionDate', 'تاريخ التسليم الفعلي', 'date') +
-    f('actualCost', 'التكلفة الفعلية للأعمال (' + esc(p.currency || 'العملة غير محددة') + ')', 'number', 'مطلوبة عند اختيار الحالة «منجز». تُقارن تلقائياً بموازنة القرار الفرعي.') +
+    f('site', 'الموضوع', 'text') +
+    f('actualCost', 'التكلفة الفعلية للأعمال (' + esc(p.currency || 'العملة غير محددة') + ')', 'number', 'تُقارن تلقائياً بموازنة القرار الفرعي.') +
     f('notes', 'ملاحظات', 'textarea') +
     '<div class="actions"><button class="btn pri" type="submit" id="w-save">حفظ القرار الفرعي</button><button class="btn" type="button" data-act="close-modal">إلغاء</button>' +
     (id ? '<button class="btn danger" type="button" id="w-del">حذف القرار الفرعي</button>' : '') + '</div></form>',
     function () {
-      var start = $('#w-startDate'), dur = $('#w-durationDays'), end = $('#w-endDate');
-      var calc = function () {
-        var auto = start.value && dur.value !== '' && Number(dur.value) >= 0;
-        end.readOnly = !!auto; end.style.background = auto ? '#f1f5f4' : '';
-        if (auto) end.value = addDays(start.value, Number(dur.value));
-      };
-      start.addEventListener('input', calc); dur.addEventListener('input', calc); calc();
       if (id) $('#w-del').addEventListener('click', async function () {
         if (modalBusy) return;
         var btn = this;
@@ -1040,7 +1022,7 @@ function openWorkOrder(id) {
       $('#mf').addEventListener('submit', async function (e) {
         e.preventDefault(); if (modalBusy) return;
         var data = {};
-        ['decisionNo', 'decisionDate', 'orderNo', 'site', 'description', 'budget', 'startDate', 'durationDays', 'endDate', 'status', 'progress', 'actualCompletionDate', 'actualCost', 'notes']
+        ['decisionNo', 'decisionDate', 'site', 'budget', 'actualCost', 'notes']
           .forEach(function (k) { data[k] = val('w-' + k); });
         var copy = $('#w-copy') ? $('#w-copy').files[0] : null;
         if (!id && !copy) return showErr('يرجى إرفاق نسخة عن قرار المجلس');
@@ -1167,11 +1149,9 @@ function openUpdate() {
   var reqId = rid();
   var opts = S.boot.statuses.filter(function (s) { return s !== 'غير محدد' || p.status === 'غير محدد'; })
     .map(function (s) { return '<option' + (s === p.status ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('');
-  var fwUpd = p.contractMethod === S.boot.framework;
   openModal('تحديث المشروع', '<p class="muted small" style="margin-top:-6px">' + esc(p.name) + '</p><form id="mf">' +
-    (fwUpd ? '<input type="hidden" id="u-progress" value=""><p class="small okbox" style="color:var(--ink)">نسبة إنجاز الاتفاقية تُحسب تلقائياً من القرارات الفرعية (حسب موازنة كل قرار). حدّث نسبة كل قرار فرعي من زر «تعديل» الخاص به.</p>'
-      : fieldHtml('u-progress', 'نسبة الإنجاز الفعلية (%)', '<div class="range"><input type="range" id="u-range" min="0" max="100" step="1" value="' + (p.progress === '' ? 0 : p.progress) + '"><input type="number" id="u-progress" min="0" max="100" step="0.5" inputmode="decimal" value="' + esc(p.progress) + '"></div>',
-      'الإنجاز الفعلي للأعمال في الموقع، وليس الزمن المنقضي من مدة العقد.')) +
+    fieldHtml('u-progress', 'نسبة الإنجاز الفعلية (%)', '<div class="range"><input type="range" id="u-range" min="0" max="100" step="1" value="' + (p.progress === '' ? 0 : p.progress) + '"><input type="number" id="u-progress" min="0" max="100" step="0.5" inputmode="decimal" value="' + esc(p.progress) + '"></div>',
+      'الإنجاز الفعلي للأعمال في الموقع، وليس الزمن المنقضي من مدة العقد.') +
     fieldHtml('u-status', 'الحالة الحالية', '<select id="u-status">' + opts + '</select>') +
     fieldHtml('u-obstacle', 'العائق (إن وجد)', '<textarea id="u-obstacle" placeholder="مثال: تأخر توريد المواد">' + esc(p.obstacle) + '</textarea>') +
     fieldHtml('u-action', 'الإجراء المطلوب (إن وجد)', '<textarea id="u-action" placeholder="ما المطلوب ومن الجهة المسؤولة؟">' + esc(p.requiredAction) + '</textarea>') +
@@ -1611,11 +1591,8 @@ function viewReport() {
           '<td class="nowrap">' + esc(p.status || 'غير محدد') + '<div class="small">' + progressText(p) + '</div></td></tr>';
         var orders = (S.regOrders || {})[p.id] || [];
         if (orders.length) row += orders.map(function (w) {
-          return '<tr class="wo"><td></td><td colspan="2">↳ ' + (w.orderNo ? 'رقم ' + esc(w.orderNo) + ' · ' : '') + esc(w.site) + '<span class="small muted"> · قرار ' + esc(w.decisionNo) + '</span></td>' +
-            '<td class="nowrap">' + fmtNum(w.budget) + '</td><td class="nowrap">' + fmtDate(w.startDate) + '</td><td class="nowrap">' + fmtDate(w.endDate) + '</td>' +
-            '<td class="nowrap">' + fmtDate(w.actualCompletionDate) + '</td><td class="nowrap">' +
-            delayCell(w.endDate ? (w.actualCompletionDate ? dayDiff(w.endDate, w.actualCompletionDate) : (w.status !== 'منجز' && today > w.endDate ? dayDiff(w.endDate, today) : null)) : null) +
-            '</td><td class="nowrap">' + esc(w.status) + '<div class="small">' + (w.progress === '' ? '—' : fmtNum(w.progress) + '%') + '</div></td></tr>';
+          return '<tr class="wo"><td></td><td colspan="2">↳ قرار ' + esc(w.decisionNo) + ' بتاريخ ' + fmtDate(w.decisionDate) + (w.site ? '<span class="small muted"> · ' + esc(w.site) + '</span>' : '') + '</td>' +
+            '<td class="nowrap">' + fmtNum(w.budget) + '</td><td colspan="5" class="small">' + (w.actualCost !== '' && w.actualCost !== undefined ? 'التكلفة الفعلية: ' + fmtNum(w.actualCost) : '') + '</td></tr>';
         }).join('');
         return row;
       }).join('') + '</table></div>';
