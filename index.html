@@ -981,7 +981,7 @@ function frameworkSection(d, canEdit) {
     var prog = w.progress === '' ? (w.status === 'منجز' ? 100 : 0) : Number(w.progress);
     return '<div class="pitem" style="cursor:default"><div><div class="nm">' + (w.orderNo ? 'رقم ' + esc(w.orderNo) + ' · ' : '') + esc(w.site) + '</div>' +
       '<div class="meta">قرار ' + esc(w.decisionNo) + (w.decisionDate ? ' بتاريخ ' + fmtDate(w.decisionDate) : '') + (w.description ? ' · ' + esc(w.description) : '') + '</div>' +
-      '<div class="meta">المهندس المشرف: ' + (w.supervisorEmail ? who(w.supervisorEmail, true) : w.supervisor ? esc(w.supervisor) : p.supervisorEmail ? who(p.supervisorEmail, true) : esc(p.supervisor || '—')) + ' · مستندات: ' + (docsOf[w.id] || 0) + '</div>' +
+      '<div class="meta">مستندات: ' + (docsOf[w.id] || 0) + '</div>' +
       '<div class="badges">' + badges.join('') + '</div></div>' +
       '<div>' + statusBadge(w.status) + '<div class="small muted" style="margin-top:4px">الإنجاز: ' + (w.progress === '' ? (w.status === 'منجز' ? 'منجز' : 'غير مُدخلة') : fmtNum(w.progress) + '%') + '</div>' +
       '<div class="bar"><i style="width:' + Math.min(100, prog) + '%"></i></div><div class="small" style="margin-top:4px"><b>' + fmtNum(w.budget) + '</b> ' + cur + '</div></div>' +
@@ -1001,9 +1001,6 @@ function openWorkOrder(id) {
   var reqId = rid();
   var room = (fw.remaining || 0) + (id ? Number(w.budget) || 0 : 0);
   var hasCopy = !!id && d.attachments.some(function (a) { return a.workOrderId === id && a.docType === S.boot.decisionCopy; });
-  var mainEngineer = p.supervisorEmail ? ((S.boot.people || {})[p.supervisorEmail] || {}).name || p.supervisorEmail : p.supervisor;
-  var engineerOptions = deptEngineerOptions(p.deptId, w.supervisorEmail || '').replace(/^<option value="">[^<]*<\/option>/,
-    '<option value="">' + esc(mainEngineer ? 'نفس مهندس الاتفاقية: ' + mainEngineer : '— اختر المهندس —') + '</option>');
   var f = function (k, label, type, hint) {
     var v = w[k] === undefined ? '' : w[k];
     var inp = type === 'textarea' ? '<textarea id="w-' + k + '" style="min-height:60px">' + esc(v) + '</textarea>'
@@ -1018,8 +1015,6 @@ function openWorkOrder(id) {
     f('budget', 'موازنة القرار الفرعي * (' + esc(p.currency || 'العملة غير محددة') + ')', 'number', 'المتاح حالياً من موازنة الاتفاقية: ' + fmtNum(room)) +
     f('startDate', 'تاريخ البدء', 'date') + f('durationDays', 'المدة (يوم)', 'number') +
     f('endDate', 'تاريخ الإنجاز', 'date', 'يُحسب تلقائياً = تاريخ البدء + المدة.') +
-    fieldHtml('w-supervisorEmail', 'المهندس المشرف على هذا الموقع', '<select id="w-supervisorEmail">' + engineerOptions + '</select>', 'يتغير فقط إذا كان لهذا القرار مهندس مختلف عن مهندس الاتفاقية.') +
-    f('supervisor', 'اسم المهندس المشرف (غير مسجل في المنصة)', 'text') +
     fieldHtml('w-status', 'الحالة', '<select id="w-status">' + S.boot.statuses.filter(function (s) { return s !== 'غير محدد'; }).map(function (s) { return '<option' + (s === w.status ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') + '</select>') +
     f('progress', 'نسبة الإنجاز (%)', 'number') + f('actualCompletionDate', 'تاريخ التسليم الفعلي', 'date') +
     f('actualCost', 'التكلفة الفعلية للأعمال (' + esc(p.currency || 'العملة غير محددة') + ')', 'number', 'مطلوبة عند اختيار الحالة «منجز». تُقارن تلقائياً بموازنة القرار الفرعي.') +
@@ -1027,14 +1022,13 @@ function openWorkOrder(id) {
     '<div class="actions"><button class="btn pri" type="submit" id="w-save">حفظ القرار الفرعي</button><button class="btn" type="button" data-act="close-modal">إلغاء</button>' +
     (id ? '<button class="btn danger" type="button" id="w-del">حذف القرار الفرعي</button>' : '') + '</div></form>',
     function () {
-      var start = $('#w-startDate'), dur = $('#w-durationDays'), end = $('#w-endDate'), eng = $('#w-supervisorEmail'), nm = $('#w-supervisor');
+      var start = $('#w-startDate'), dur = $('#w-durationDays'), end = $('#w-endDate');
       var calc = function () {
         var auto = start.value && dur.value !== '' && Number(dur.value) >= 0;
         end.readOnly = !!auto; end.style.background = auto ? '#f1f5f4' : '';
         if (auto) end.value = addDays(start.value, Number(dur.value));
       };
-      var syncName = function () { nm.closest('.field').classList.toggle('hidden', !!eng.value); };
-      start.addEventListener('input', calc); dur.addEventListener('input', calc); eng.addEventListener('change', function () { nm.value = ''; syncName(); }); calc(); syncName();
+      start.addEventListener('input', calc); dur.addEventListener('input', calc); calc();
       if (id) $('#w-del').addEventListener('click', async function () {
         if (modalBusy) return;
         var btn = this;
@@ -1046,7 +1040,7 @@ function openWorkOrder(id) {
       $('#mf').addEventListener('submit', async function (e) {
         e.preventDefault(); if (modalBusy) return;
         var data = {};
-        ['decisionNo', 'decisionDate', 'orderNo', 'site', 'description', 'budget', 'startDate', 'durationDays', 'endDate', 'supervisorEmail', 'supervisor', 'status', 'progress', 'actualCompletionDate', 'actualCost', 'notes']
+        ['decisionNo', 'decisionDate', 'orderNo', 'site', 'description', 'budget', 'startDate', 'durationDays', 'endDate', 'status', 'progress', 'actualCompletionDate', 'actualCost', 'notes']
           .forEach(function (k) { data[k] = val('w-' + k); });
         var copy = $('#w-copy') ? $('#w-copy').files[0] : null;
         if (!id && !copy) return showErr('يرجى إرفاق نسخة عن قرار المجلس');
@@ -1269,7 +1263,7 @@ function openContract(isNew) {
       // The typed name is only needed when no account is linked (unregistered or external supervisor).
       var nameField = engName.closest('.field'), engField = eng.closest('.field'), method = $('#c-contractMethod');
       var setLabel = function (id, text) { var l = $modal.querySelector('label[for="' + id + '"]'); if (l) l.textContent = text; };
-      // Framework agreement: the decision carries the annual budget (= ceiling); its engineer covers all sub-decisions unless one names another.
+      // Framework agreement: the decision carries the annual budget (= ceiling); its engineer covers all sub-decisions.
       var syncName = function () {
         var fw = method.value === S.boot.framework;
         setLabel('c-decisionNo', fw ? 'رقم قرار المجلس (الموازنة السنوية) *' : 'رقم القرار');
