@@ -721,7 +721,8 @@ function filterProjects(f) {
     if (f.status && f.status !== 'active' && f.status !== 'all' && (p.status || 'غير محدد') !== f.status) return false;
     if (f.ind && f.ind !== 'active' && !p.ind[f.ind]) return false;
     if (f.funder && p.funder !== f.funder) return false;
-    if (f.eng && (p.supervisor || p.supervisorEmail) !== f.eng) return false;
+    if (f.eng === '__none') { if (p.supervisorEmail) return false; }
+    else if (f.eng && (p.supervisor || p.supervisorEmail) !== f.eng) return false;
     if (f.year && (p.status !== 'منجز' || endYear(p) !== f.year)) return false;
     if (f.method && (f.method === 'none' ? p.contractMethod : p.contractMethod !== f.method)) return false;
     if (q) {
@@ -748,7 +749,7 @@ function viewList(v) {
     (b.departments.length > 1 ? '<select id="f-dept">' + opt('', 'كل الأقسام', f.dept) + b.departments.map(function (d) { return opt(d.id, d.name, f.dept); }).join('') + '</select>' : '<input type="hidden" id="f-dept" value="">') +
     '<select id="f-funder">' + opt('', 'كل الجهات الممولة', f.funder) + Object.keys(funders).sort().map(function (x) { return opt(x, x, f.funder); }).join('') + '</select>' +
     '<select id="f-year">' + opt('', 'كل سنوات الانتهاء', f.year) + Object.keys(yrs).sort().reverse().map(function (y) { return opt(y, 'انتهت في ' + y, f.year); }).join('') + '</select>' +
-    '<select id="f-eng">' + opt('', 'كل المهندسين', f.eng) + Object.keys(engs).sort().map(function (x) { return opt(x, x, f.eng); }).join('') + '</select>' +
+    '<select id="f-eng">' + opt('', 'كل المهندسين', f.eng) + (role() === 'engineer' ? '' : opt('__none', 'بدون مهندس مرتبط من القائمة', f.eng)) + Object.keys(engs).sort().map(function (x) { return opt(x, x, f.eng); }).join('') + '</select>' +
     '<select id="f-method">' + opt('', 'كل طرق التعاقد', f.method) + b.contractMethods.map(function (m) { return opt(m, m, f.method); }).join('') + opt('none', 'طريقة التعاقد غير محددة', f.method) + '</select>' +
     '</div>' +
     '<p class="count" id="f-count">' + list.length + ' مشروع</p>' +
