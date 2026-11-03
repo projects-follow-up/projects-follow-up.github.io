@@ -9,15 +9,16 @@
   <meta name="theme-color" content="#0f5c55">
   <meta name="robots" content="noindex">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
 :root{
-  --bg:#f4f6f5; --card:#fff; --ink:#1d2a2a; --muted:#5d6b6a; --line:#dfe5e3;
-  --pri:#0f5c55; --pri-2:#0b4843; --pri-soft:#e3f0ee;
-  --red:#b42318; --red-soft:#fdecea; --amber:#a15c07; --amber-soft:#fff4e0;
-  --purple:#6b3fa0; --purple-soft:#f2ecfa; --blue:#1f5fa8; --blue-soft:#e8f0fb;
-  --grey:#6b7280; --grey-soft:#eef0f2; --green:#1e7a46; --green-soft:#e6f4ec;
-  --r:12px; --shadow:0 1px 2px rgba(16,40,38,.06),0 2px 8px rgba(16,40,38,.05);
+  --bg:#f3f0ea; --card:#fff; --ink:#241b28; --muted:#62596a; --line:#d9d3c8; --plum:#241a2b; --plum-line:#4a3d52; --bronze:#a87d3e;
+  --pri:#241a2b; --pri-2:#3a2b44; --pri-soft:#eee9f0; --st-ok:#2b6072; --st-late:#a8321e; --st-soon:#9c7216; --st-stop:#6b6570; --st-done:#476b4f;
+  --display:"Noto Kufi Arabic","IBM Plex Sans Arabic",Tahoma,sans-serif;
+  --red:#a8321e; --red-soft:#f8e8e4; --amber:#8a6412; --amber-soft:#f7efdb;
+  --purple:#5b4670; --purple-soft:#eee9f0; --blue:#2b6072; --blue-soft:#e4edf0;
+  --grey:#6b6570; --grey-soft:#ece9ec; --green:#476b4f; --green-soft:#e7eee8;
+  --r:8px; --shadow:none;
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic",Tahoma,Arial,sans-serif;font-size:15px;line-height:1.6}
@@ -94,7 +95,7 @@ h2{font-size:17px;margin:0 0 10px}
 .b-red{background:var(--red-soft);color:var(--red)} .b-amber{background:var(--amber-soft);color:var(--amber)}
 .b-purple{background:var(--purple-soft);color:var(--purple)} .b-grey{background:var(--grey-soft);color:var(--grey)}
 .b-blue{background:var(--blue-soft);color:var(--blue)} .b-green{background:var(--green-soft);color:var(--green)}
-.b-dark{background:#f6e7e7;color:#7a2e2e} .b-pri{background:var(--pri-soft);color:var(--pri)}
+.b-dark{background:#ece9ec;color:#4d4753} .b-pri{background:var(--pri-soft);color:var(--pri)}
 .b-review{background:#fffbe6;color:#7a5d00;border:1px dashed #d9b84a}
 .badges{display:flex;gap:5px;flex-wrap:wrap}
 
@@ -186,6 +187,85 @@ table.t td.click{cursor:pointer;color:var(--pri);font-weight:600}
   h1{font-size:19px}
 }
 
+/* ---------- Approved design ---------- */
+html,body{overflow-x:clip}
+.i{width:20px;height:20px;flex:none;vertical-align:middle}
+h1,h2,.brand{font-family:var(--display);font-weight:600}
+h1{font-size:26px;line-height:1.4}h2{font-size:18px;line-height:1.5}
+.top{position:static;background:var(--plum)}.topline{padding-block:10px!important;gap:10px 18px}
+.brand{font-size:16px}.who{color:#d8d0dc}.who button{display:inline-flex;gap:6px;align-items:center;min-height:36px;background:none;border:1px solid var(--plum-line)}
+.navline{border-top:1px solid var(--plum-line);overflow-x:auto}.nav.wrap{flex-wrap:nowrap;padding-block:0;gap:2px}
+.nav button{display:flex;align-items:center;gap:7px;white-space:nowrap;min-height:46px;border-radius:0;border-bottom:2px solid transparent;color:#d8d0dc;padding:6px 11px}
+.nav button:hover{background:rgba(255,255,255,.06)}.nav button.on{background:none;color:#fff;border-bottom-color:var(--bronze)}
+main.wrap{max-width:1180px}
+.exec{margin-inline:calc(50% - 50vw);margin-top:-16px;padding:22px max(16px,calc(50vw - 574px)) 0;background:linear-gradient(112deg,#241a2b 0 58%,#2c2035 58% 76%,#35273f 76% 100%);color:#fff}
+.exec h1{color:#fff;margin:0;font-size:28px}
+.ehead{display:flex;justify-content:space-between;align-items:baseline;gap:6px 20px;flex-wrap:wrap;color:#cfc6d4;font-size:14px}
+.ekpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:16px;border-top:1px solid var(--plum-line)}
+.ek{background:none;border:0;border-inline-start:1px solid var(--plum-line);padding:15px 18px 19px;text-align:start;color:#fff;cursor:pointer;display:grid;grid-template-columns:auto 1fr;gap:2px 11px;align-items:center}
+.ek:first-child{border-inline-start:0;padding-inline-start:0}.ek:hover{background:rgba(255,255,255,.05)}
+.ek .i{width:32px;height:32px}.ek b{font:600 34px/1.1 var(--display)}.ek span{grid-column:1/-1;font-size:13.5px;color:#d8d0dc}
+.e-overdue .i{color:#ef9a88}.e-approaching .i{color:#e8c67a}.e-stopped .i{color:#c5bdce}.e-active .i{color:#d2b67f}
+.sect{margin-top:28px}.phead{margin-bottom:12px}.phead h1{margin:6px 0 2px}
+.st-ok{--s:var(--st-ok)}.st-late{--s:var(--st-late)}.st-soon{--s:var(--st-soon)}.st-stop{--s:var(--st-stop)}.st-done{--s:var(--st-done)}.st-more{--s:var(--muted)}
+.bm-cur{margin-bottom:18px}.bm-head{display:flex;justify-content:space-between;gap:8px 18px;flex-wrap:wrap;font-size:14px;padding-bottom:6px;border-bottom:1px solid var(--line);margin-bottom:10px}
+.bm-dept{margin-bottom:12px}.bm-dname{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13.5px;font-weight:600;margin-bottom:5px}.bm-dname span{font-weight:400;color:var(--muted)}
+.bm-cells{display:flex;flex-wrap:wrap;gap:6px}
+.bm-cell{min-height:76px;min-width:0;max-width:100%;padding:8px 11px;cursor:pointer;text-align:start;display:flex;flex-direction:column;justify-content:space-between;gap:6px;font-size:13.5px;line-height:1.45;color:var(--ink);border:1px solid var(--line);border-top:3px solid var(--s);border-radius:6px;background:color-mix(in srgb,var(--s) 10%,#fff)}
+.bm-cell:hover{border-color:var(--s)}.bm-cell b{font-weight:600;text-align:right}
+.legend{display:flex;gap:5px 14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}.legend span{display:inline-flex;align-items:center;gap:5px}.legend i{width:11px;height:11px;background:var(--s)}
+.plist{gap:0;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.pitem{width:100%;border:0;border-bottom:1px solid var(--line);border-radius:0;background:none;padding:0;padding-inline-end:16px;grid-template-columns:96px minmax(0,1fr) 190px 165px;gap:16px;text-align:start;font:inherit;color:inherit}
+.pitem:last-child{border-bottom:0}.pitem:hover{background:#faf8f4;border-color:var(--line)}
+.thumb{align-self:stretch;min-height:82px;background:linear-gradient(135deg,#e7e3ea 0 62%,#dcd6e0 62%);display:grid;place-items:center;color:#7d7289}.thumb .i{width:28px;height:28px}
+.pmain{display:flex;flex-direction:column;gap:1px;padding-block:10px;min-width:0}.pmain .nm{font-size:15px}
+.miss{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:12.5px;color:var(--muted);margin-top:4px}.miss span{display:inline-flex;align-items:center;gap:4px}.miss .i{width:16px;height:16px}
+.pprog{display:flex;flex-direction:column;gap:6px}.mrow{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.mrow .meta{font-size:12.5px;color:var(--muted)}
+.seg{height:8px;position:relative;background:#e6e1da}.seg>i{position:absolute;inset-block:0;inset-inline-start:0;background:var(--plum)}.seg::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 2px),#fff calc(10% - 2px) 10%)}.pitem:hover .seg::after{background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 2px),#faf8f4 calc(10% - 2px) 10%)}
+.seg u{position:absolute;z-index:1;top:-3px;bottom:-3px;width:3px;background:var(--bronze)}
+.pstate{display:flex;gap:9px;align-items:center;font-size:14px;color:var(--s)}.pstate>.i{width:36px;height:36px;padding:7px;border-radius:9px;background:color-mix(in srgb,var(--s) 11%,#fff)}.pstate b{display:block;font-weight:600}.pstate small{display:block;color:var(--muted);font-size:12.5px}
+.pband{padding-bottom:20px}.pband .back{color:#fff;display:block;margin-bottom:6px}.psub{color:#d8d0dc;font-size:14px}.pband .btn{background:rgba(255,255,255,.08);border-color:var(--plum-line);color:#fff}.pband .btn.pri{background:var(--bronze);border-color:var(--bronze)}.pband .btn.danger{color:#f3b4a8}.pband .who-t,.pband .muted{color:#d8d0dc}
+.tbar{display:flex;gap:2px;height:8px;margin-top:16px}.t-done{background:#d2b67f}.t-over{background:#ef9a88}.t-left{background:rgba(255,255,255,.22)}
+.tlabels{display:flex;justify-content:space-between;gap:4px 14px;flex-wrap:wrap;font-size:13px;margin-top:6px;color:#e5deea}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:#fff;border:1px solid var(--line);margin-top:14px}
+.fact{padding:12px 16px;border-inline-start:1px solid var(--line);min-width:0}.fact:first-child{border-inline-start:0}.fact small{display:block;color:var(--muted);font-size:12.5px}.fact b{font:600 19px/1.5 var(--display);overflow-wrap:anywhere}
+.pbadges{margin-top:12px}.yn .i{width:22px;height:22px}.yn.y{color:var(--st-done)}.yn.n{color:var(--st-late)}
+@media (min-width:901px){.card>dl.kv{grid-template-columns:170px minmax(0,1fr) 170px minmax(0,1fr)}.grid2 .card>dl.kv{grid-template-columns:150px minmax(0,1fr)}}
+input[type=range],.check input{accent-color:var(--plum)}
+.tl-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-top:14px}
+.tl-top{display:flex;justify-content:space-between;align-items:center;gap:6px 18px;flex-wrap:wrap;margin-bottom:14px}.tl-top h2{margin:0}.tl-top strong{font:600 18px/1.5 var(--display);color:var(--s)}
+.tl-dates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px}.tl-date small{display:block;color:var(--muted);font-size:14px}.tl-date b{display:block;font-size:18px;font-weight:600}.tl-date:nth-child(2){text-align:center}.tl-date:nth-child(3){text-align:end}
+.tl-bar{display:flex;gap:2px;height:18px;background:#e6e1da}.k-used{background:var(--plum)}.k-over{background:var(--st-late)}.k-left{background:#d9d3c8}
+.tl-key{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:11px;font-size:15px}.tl-key span{display:inline-flex;align-items:center;gap:7px}.tl-key i{width:14px;height:14px;display:inline-block}
+@media (max-width:560px){.tl-card{padding:14px}.tl-date b{font-size:15px}.tl-date small{font-size:12.5px}}
+@media print{.tl-card{break-inside:avoid}.tl-bar i{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+.gapfact b{color:var(--s)}.time-facts .fact small+b+small{margin-top:1px}
+.facts.facts3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:900px){.facts.facts3{grid-template-columns:1fr 1fr}.facts3 .fact:last-child{grid-column:1/-1;border-inline-start:0;border-top:1px solid var(--line)}}
+.badge{border-radius:5px;font-weight:500}
+.fw-facts{margin:6px 0 10px}.fw-facts.facts{grid-template-columns:repeat(3,minmax(0,1fr))}.fw-bar{height:8px;border-radius:0}.fw-bar>i{border-radius:0}
+.wo-title{margin:16px 0 8px;font-size:16px}.wo-list{border:1px solid var(--line);border-radius:8px}
+.wo-row{display:grid;grid-template-columns:minmax(0,1fr) 150px 150px auto;gap:10px 16px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}.wo-row:last-child{border-bottom:0}
+.wo-main{display:flex;flex-direction:column;gap:2px;min-width:0}.wo-main .meta{font-size:13px;color:var(--muted)}.wo-main .badges{margin-top:4px}
+.wo-num small{display:block;color:var(--muted);font-size:12.5px}.wo-num b{font-weight:600}.wo-acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:230px}
+.ph-months{display:flex;flex-wrap:wrap;gap:6px 26px}.ph-month{min-width:0;max-width:100%}.gallery{display:flex;flex-wrap:wrap;gap:10px}.ph{width:176px;border-radius:8px;padding:0;overflow:hidden;background:#fff}.ph img,.ph-empty{border-radius:0}.ph>.small,.ph>.back{padding-inline:9px}.ph>.back{margin:2px 0 4px;min-height:36px}.ph>.small:first-of-type{margin-top:6px}
+.filepick{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px dashed #b7aebc;border-radius:8px;padding:8px 10px;cursor:pointer;font-weight:400!important;background:#faf8f4;position:relative;margin:0!important}.filepick:hover{border-color:var(--plum)}.filepick input{position:absolute;width:1px;height:1px;opacity:0;min-height:0;padding:0;border:0}.filepick:focus-within{outline:2px solid var(--bronze)}
+.fp-btn{background:var(--plum);color:#fff;border-radius:6px;padding:6px 14px;font-weight:600;min-height:36px;display:inline-flex;align-items:center}.fp-name{color:var(--muted);font-size:14px;min-width:0;overflow-wrap:anywhere}
+.login{margin-top:6vh}.login .card{border-radius:10px;padding:0 24px 22px}.login-band{margin:0 -24px 18px;padding:24px 16px}
+@media (max-width:900px){.wo-row{grid-template-columns:1fr 1fr}.wo-main,.wo-acts{grid-column:1/-1}.wo-acts{max-width:none;justify-content:flex-start}.fw-facts.facts{grid-template-columns:1fr}.fw-facts .fact{border-inline-start:0;border-top:1px solid var(--line)}.fw-facts .fact:first-child{border-top:0}}
+@media (max-width:560px){.ph-month{width:100%}.ph{width:calc(50% - 5px)}}
+.note-rec{background:#f7efdb;color:#5b430c;border-radius:6px;padding:7px 10px;margin:0 0 10px}.fact small+b+small,.fact b+small{display:block;margin-top:2px}.workers{margin-top:-11px}
+.card{border-radius:10px}.grid2 .card{margin-bottom:0}.grid2{margin-bottom:14px}
+.btn,.filters input,.filters select,.field input,.field select,.field textarea{border-radius:8px}
+.tabs button{border-radius:8px}.tabs button.on{background:var(--plum);border-color:var(--plum)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--bronze);border-color:var(--plum)}
+.filters{grid-template-columns:2fr repeat(5,1fr)}
+#an-year{min-height:42px;border:1px solid #cdd7d4;border-radius:8px;padding:0 10px;background:#fff}
+.login-band{background:linear-gradient(112deg,#241a2b 0 62%,#35273f 62%)}.login h1{font-size:21px;margin:14px 0}
+.rep-head{background:var(--plum);border-radius:8px}.modal{border-radius:10px}
+@media (max-width:900px){.pitem{grid-template-columns:72px minmax(0,1fr);gap:6px 12px;padding-inline-end:12px;padding-bottom:12px}.thumb{min-height:72px;align-self:start}.pprog,.pstate{grid-column:1/-1;padding-inline-start:12px}.ekpi{grid-template-columns:1fr 1fr}.ek:nth-child(odd){border-inline-start:0;padding-inline-start:0}.ek:nth-child(n+3){border-top:1px solid var(--plum-line)}.facts{grid-template-columns:1fr 1fr}.fact:nth-child(odd){border-inline-start:0}.fact:nth-child(n+3){border-top:1px solid var(--line)}.exec{margin-top:-12px}.exec h1{font-size:23px}.dacts{margin-top:8px}}
+@media (max-width:560px){.who span:first-child{font-size:12.5px}.bm-cell{flex-basis:100%!important}.filters{grid-template-columns:1fr 1fr}}
+@media print{.exec{margin:0;padding:8px 0;background:none;color:#000}.exec h1,.psub,.tlabels{color:#000}.facts,.plist{break-inside:avoid}.tbar{display:none}.navline{display:none}}
 @media print{
   @page{size:A4;margin:12mm}
   body{background:#fff;font-size:12px}
@@ -286,10 +366,14 @@ function toast(msg, kind) {
 }
 function loading(msg) { return '<div class="loading"><div class="spin"></div> ' + esc(msg || 'جارٍ التحميل...') + '</div>'; }
 
+// ---------- Icons (Phosphor duotone, MIT licence) ----------
+var ICONS = {"dash":"<path d=\"M112,56v48a8,8,0,0,1-8,8H56a8,8,0,0,1-8-8V56a8,8,0,0,1,8-8h48A8,8,0,0,1,112,56Zm88-8H152a8,8,0,0,0-8,8v48a8,8,0,0,0,8,8h48a8,8,0,0,0,8-8V56A8,8,0,0,0,200,48Zm-96,96H56a8,8,0,0,0-8,8v48a8,8,0,0,0,8,8h48a8,8,0,0,0,8-8V152A8,8,0,0,0,104,144Zm96,0H152a8,8,0,0,0-8,8v48a8,8,0,0,0,8,8h48a8,8,0,0,0,8-8V152A8,8,0,0,0,200,144Z\" opacity=\"0.2\"/><path d=\"M200,136H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,200,136Zm0,64H152V152h48v48ZM104,40H56A16,16,0,0,0,40,56v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,104,40Zm0,64H56V56h48v48Zm96-64H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,200,40Zm0,64H152V56h48v48Zm-96,32H56a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,104,136Zm0,64H56V152h48v48Z\"/>","list":"<path d=\"M104,51.31V160H40V136A88,88,0,0,1,104,51.31Zm48,0V160h64V136A88,88,0,0,0,152,51.31Z\" opacity=\"0.2\"/><path d=\"M224,152V136a96.37,96.37,0,0,0-64-90.51V40a16,16,0,0,0-16-16H112A16,16,0,0,0,96,40v5.49A96.37,96.37,0,0,0,32,136v16a16,16,0,0,0-16,16v24a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V168A16,16,0,0,0,224,152Zm-16-16v16H160V62.67A80.36,80.36,0,0,1,208,136ZM144,40V152H112V40ZM48,136A80.36,80.36,0,0,1,96,62.67V152H48Zm176,56H32V168H224v24Z\"/>","mine":"<path d=\"M104,51.31V160H40V136A88,88,0,0,1,104,51.31Zm48,0V160h64V136A88,88,0,0,0,152,51.31Z\" opacity=\"0.2\"/><path d=\"M224,152V136a96.37,96.37,0,0,0-64-90.51V40a16,16,0,0,0-16-16H112A16,16,0,0,0,96,40v5.49A96.37,96.37,0,0,0,32,136v16a16,16,0,0,0-16,16v24a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V168A16,16,0,0,0,224,152Zm-16-16v16H160V62.67A80.36,80.36,0,0,1,208,136ZM144,40V152H112V40ZM48,136A80.36,80.36,0,0,1,96,62.67V152H48Zm176,56H32V168H224v24Z\"/>","upload":"<path d=\"M208,88H152V32Z\" opacity=\"0.2\"/><path d=\"M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Zm-42.34-77.66a8,8,0,0,1-11.32,11.32L136,139.31V184a8,8,0,0,1-16,0V139.31l-10.34,10.35a8,8,0,0,1-11.32-11.32l24-24a8,8,0,0,1,11.32,0Z\"/>","activity":"<path d=\"M216,128a88,88,0,1,1-88-88A88,88,0,0,1,216,128Z\" opacity=\"0.2\"/><path d=\"M136,80v43.47l36.12,21.67a8,8,0,0,1-8.24,13.72l-40-24A8,8,0,0,1,120,128V80a8,8,0,0,1,16,0Zm-8-48A95.44,95.44,0,0,0,60.08,60.15C52.81,67.51,46.35,74.59,40,82V64a8,8,0,0,0-16,0v40a8,8,0,0,0,8,8H72a8,8,0,0,0,0-16H49c7.15-8.42,14.27-16.35,22.39-24.57a80,80,0,1,1,1.66,114.75,8,8,0,1,0-11,11.64A96,96,0,1,0,128,32Z\"/>","report":"<path d=\"M208,48V216a8,8,0,0,1-8,8H56a8,8,0,0,1-8-8V48a8,8,0,0,1,8-8H96a39.83,39.83,0,0,0-8,24v8h80V64a39.83,39.83,0,0,0-8-24h40A8,8,0,0,1,208,48Z\" opacity=\"0.2\"/><path d=\"M168,152a8,8,0,0,1-8,8H96a8,8,0,0,1,0-16h64A8,8,0,0,1,168,152Zm-8-40H96a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16Zm56-64V216a16,16,0,0,1-16,16H56a16,16,0,0,1-16-16V48A16,16,0,0,1,56,32H92.26a47.92,47.92,0,0,1,71.48,0H200A16,16,0,0,1,216,48ZM96,64h64a32,32,0,0,0-64,0ZM200,48H173.25A47.93,47.93,0,0,1,176,64v8a8,8,0,0,1-8,8H88a8,8,0,0,1-8-8V64a47.93,47.93,0,0,1,2.75-16H56V216H200Z\"/>","archive":"<path d=\"M216,96v96a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V96Z\" opacity=\"0.2\"/><path d=\"M224,48H32A16,16,0,0,0,16,64V88a16,16,0,0,0,16,16v88a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V104a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48ZM208,192H48V104H208ZM224,88H32V64H224V88ZM96,136a8,8,0,0,1,8-8h48a8,8,0,0,1,0,16H104A8,8,0,0,1,96,136Z\"/>","annual":"<path d=\"M224,56V176a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V56a8,8,0,0,1,8-8H216A8,8,0,0,1,224,56Z\" opacity=\"0.2\"/><path d=\"M216,40H136V24a8,8,0,0,0-16,0V40H40A16,16,0,0,0,24,56V176a16,16,0,0,0,16,16H79.36L57.75,219a8,8,0,0,0,12.5,10l29.59-37h56.32l29.59,37a8,8,0,1,0,12.5-10l-21.61-27H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,136H40V56H216V176ZM104,120v24a8,8,0,0,1-16,0V120a8,8,0,0,1,16,0Zm32-16v40a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm32-16v56a8,8,0,0,1-16,0V88a8,8,0,0,1,16,0Z\"/>","admin":"<path d=\"M216,56v56c0,96-88,120-88,120S40,208,40,112V56a8,8,0,0,1,8-8H208A8,8,0,0,1,216,56Z\" opacity=\"0.2\"/><path d=\"M208,40H48A16,16,0,0,0,32,56v56c0,52.72,25.52,84.67,46.93,102.19,23.06,18.86,46,25.26,47,25.53a8,8,0,0,0,4.2,0c1-.27,23.91-6.67,47-25.53C198.48,196.67,224,164.72,224,112V56A16,16,0,0,0,208,40Zm0,72c0,37.07-13.66,67.16-40.6,89.42A129.3,129.3,0,0,1,128,223.62a128.25,128.25,0,0,1-38.92-21.81C61.82,179.51,48,149.3,48,112l0-56,160,0ZM82.34,141.66a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32l-56,56a8,8,0,0,1-11.32,0Z\"/>","logout":"<path d=\"M224,56V200a16,16,0,0,1-16,16H48V40H208A16,16,0,0,1,224,56Z\" opacity=\"0.2\"/><path d=\"M120,216a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H56V208h56A8,8,0,0,1,120,216Zm109.66-93.66-40-40a8,8,0,0,0-11.32,11.32L204.69,120H112a8,8,0,0,0,0,16h92.69l-26.35,26.34a8,8,0,0,0,11.32,11.32l40-40A8,8,0,0,0,229.66,122.34Z\"/>","overdue":"<path d=\"M216,48V88H40V48a8,8,0,0,1,8-8H208A8,8,0,0,1,216,48Z\" opacity=\"0.2\"/><path d=\"M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-50.34-74.34L139.31,152l18.35,18.34a8,8,0,0,1-11.32,11.32L128,163.31l-18.34,18.35a8,8,0,0,1-11.32-11.32L116.69,152,98.34,133.66a8,8,0,0,1,11.32-11.32L128,140.69l18.34-18.35a8,8,0,0,1,11.32,11.32Z\"/>","approaching":"<path d=\"M224,128a96,96,0,1,1-96-96A96,96,0,0,1,224,128Z\" opacity=\"0.2\"/><path d=\"M232,136.66A104.12,104.12,0,1,1,119.34,24,8,8,0,0,1,120.66,40,88.12,88.12,0,1,0,216,135.34,8,8,0,0,1,232,136.66ZM120,72v56a8,8,0,0,0,8,8h56a8,8,0,0,0,0-16H136V72a8,8,0,0,0-16,0Zm40-24a12,12,0,1,0-12-12A12,12,0,0,0,160,48Zm36,24a12,12,0,1,0-12-12A12,12,0,0,0,196,72Zm24,36a12,12,0,1,0-12-12A12,12,0,0,0,220,108Z\"/>","stopped":"<path d=\"M208,116v36a80,80,0,0,1-160,0V76a20,20,0,0,1,40,0V44a20,20,0,0,1,40,0V60a20,20,0,0,1,40,0v56a20,20,0,0,1,40,0Z\" opacity=\"0.2\"/><path d=\"M188,88a27.75,27.75,0,0,0-12,2.71V60a28,28,0,0,0-41.36-24.6A28,28,0,0,0,80,44v6.71A27.75,27.75,0,0,0,68,48,28,28,0,0,0,40,76v76a88,88,0,0,0,176,0V116A28,28,0,0,0,188,88Zm12,64a72,72,0,0,1-144,0V76a12,12,0,0,1,24,0v44a8,8,0,0,0,16,0V44a12,12,0,0,1,24,0v68a8,8,0,0,0,16,0V60a12,12,0,0,1,24,0v68.67A48.08,48.08,0,0,0,120,176a8,8,0,0,0,16,0,32,32,0,0,1,32-32,8,8,0,0,0,8-8V116a12,12,0,0,1,24,0Z\"/>","active":"<path d=\"M104,51.31V160H40V136A88,88,0,0,1,104,51.31Zm48,0V160h64V136A88,88,0,0,0,152,51.31Z\" opacity=\"0.2\"/><path d=\"M224,152V136a96.37,96.37,0,0,0-64-90.51V40a16,16,0,0,0-16-16H112A16,16,0,0,0,96,40v5.49A96.37,96.37,0,0,0,32,136v16a16,16,0,0,0-16,16v24a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V168A16,16,0,0,0,224,152Zm-16-16v16H160V62.67A80.36,80.36,0,0,1,208,136ZM144,40V152H112V40ZM48,136A80.36,80.36,0,0,1,96,62.67V152H48Zm176,56H32V168H224v24Z\"/>","cam":"<path d=\"M208,64H176L160,40H96L80,64H48A16,16,0,0,0,32,80V192a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V80A16,16,0,0,0,208,64ZM128,168a36,36,0,1,1,36-36A36,36,0,0,1,128,168Z\" opacity=\"0.2\"/><path d=\"M208,56H180.28L166.65,35.56A8,8,0,0,0,160,32H96a8,8,0,0,0-6.65,3.56L75.71,56H48A24,24,0,0,0,24,80V192a24,24,0,0,0,24,24H208a24,24,0,0,0,24-24V80A24,24,0,0,0,208,56Zm8,136a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V80a8,8,0,0,1,8-8H80a8,8,0,0,0,6.66-3.56L100.28,48h55.43l13.63,20.44A8,8,0,0,0,176,72h32a8,8,0,0,1,8,8ZM128,88a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,88Zm0,72a28,28,0,1,1,28-28A28,28,0,0,1,128,160Z\"/>","file":"<path d=\"M208,88H152V32Z\" opacity=\"0.2\"/><path d=\"M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Zm-42.34-82.34L139.31,152l18.35,18.34a8,8,0,0,1-11.32,11.32L128,163.31l-18.34,18.35a8,8,0,0,1-11.32-11.32L116.69,152,98.34,133.66a8,8,0,0,1,11.32-11.32L128,140.69l18.34-18.35a8,8,0,0,1,11.32,11.32Z\"/>","stale":"<path d=\"M216,128a88,88,0,1,1-88-88A88,88,0,0,1,216,128Z\" opacity=\"0.2\"/><path d=\"M136,80v43.47l36.12,21.67a8,8,0,0,1-8.24,13.72l-40-24A8,8,0,0,1,120,128V80a8,8,0,0,1,16,0Zm-8-48A95.44,95.44,0,0,0,60.08,60.15C52.81,67.51,46.35,74.59,40,82V64a8,8,0,0,0-16,0v40a8,8,0,0,0,8,8H72a8,8,0,0,0,0-16H49c7.15-8.42,14.27-16.35,22.39-24.57a80,80,0,1,1,1.66,114.75,8,8,0,1,0-11,11.64A96,96,0,1,0,128,32Z\"/>","image":"<path d=\"M208,40H48a8,8,0,0,0-8,8V208a8,8,0,0,0,8,8h8.69L166.34,106.34a8,8,0,0,1,11.32,0L216,144.69V48A8,8,0,0,0,208,40ZM96,112a16,16,0,1,1,16-16A16,16,0,0,1,96,112Z\" opacity=\"0.2\"/><path d=\"M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM48,48H208v77.38l-24.69-24.7a16,16,0,0,0-22.62,0L53.37,208H48ZM208,208H76l96-96,36,36v60ZM96,120A24,24,0,1,0,72,96,24,24,0,0,0,96,120Zm0-32a8,8,0,1,1-8,8A8,8,0,0,1,96,88Z\"/>","yes":"<path d=\"M224,128a96,96,0,1,1-96-96A96,96,0,0,1,224,128Z\" opacity=\"0.2\"/><path d=\"M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z\"/>","no":"<path d=\"M224,128a96,96,0,1,1-96-96A96,96,0,0,1,224,128Z\" opacity=\"0.2\"/><path d=\"M165.66,101.66,139.31,128l26.35,26.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z\"/>"};
+function ic(n) { return '<svg class="i" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">' + (ICONS[n] || '') + '</svg>'; }
+
 // ---------- Domain helpers ----------
 var IND = {
-  overdue: { label: 'تجاوزت موعد الإنجاز', cls: 'red' },
-  approaching: { label: 'تقترب من موعد الإنجاز', cls: 'amber' },
+  overdue: { label: 'تجاوزت تاريخ الإنهاء التعاقدي', cls: 'red' },
+  approaching: { label: 'تقترب من تاريخ الإنهاء التعاقدي', cls: 'amber' },
   stopped: { label: 'مشاريع متوقفة', cls: 'dark' },
   stale: { label: 'لم تُحدَّث مؤخراً', cls: 'grey' },
   missingDocs: { label: 'مستندات مطلوبة ناقصة', cls: 'amber' },
@@ -319,8 +403,6 @@ function statusBadge(s) {
 }
 function indBadges(p) {
   var i = p.ind, out = [];
-  if (i.overdue) out.push('<span class="badge b-red">متجاوز بـ ' + (-i.daysLeft) + ' يوم</span>');
-  if (i.approaching) out.push('<span class="badge b-amber">متبقٍ ' + i.daysLeft + ' يوم</span>');
   if (i.stopped) out.push('<span class="badge b-dark">متوقف</span>');
   if (i.awaitingClosure) out.push('<span class="badge b-blue">سُلّم فعلياً - بانتظار الإغلاق</span>');
   if (i.stale) out.push('<span class="badge b-grey">' + (i.daysSinceUpdate === null ? 'لم يُحدَّث بعد' : (i.neverUpdated ? 'لم يُحدَّث منذ إضافته قبل ' : 'آخر تحديث قبل ') + i.daysSinceUpdate + ' يوم') + '</span>');
@@ -330,13 +412,53 @@ function indBadges(p) {
   return '<div class="badges">' + out.join('') + '</div>';
 }
 function progressText(p) {
+  if (p.fw) return p.fw.usedPct === null ? '—' : fmtNum(p.fw.usedPct) + '%';
   if (p.progress === '' || p.progress === null) return p.status === 'منجز' ? 'منجز' : 'غير مُدخلة';
   return fmtNum(p.progress) + '%';
 }
 function progressBar(p) {
+  if (p.fw) return '<div class="bar" title="الموازنة المستخدمة"><i style="width:' + Math.min(100, p.fw.usedPct || 0) + '%"></i></div>';
   var v = p.progress === '' ? (p.status === 'منجز' ? 100 : 0) : Math.min(100, Number(p.progress));
   return '<div class="bar" title="نسبة الإنجاز الفعلية"><i style="width:' + v + '%"></i></div>';
 }
+function stateOf(p) {
+  var i = p.ind;
+  if (i.overdue) return { key: 'late', icon: 'overdue', text: 'متأخر ' + dayCount(-i.daysLeft) };
+  if (i.stopped) return { key: 'stop', icon: 'stopped', text: 'متوقف' };
+  if (i.approaching) return { key: 'soon', icon: 'approaching', text: 'متبقٍ ' + dayCount(i.daysLeft) };
+  if (p.status === 'منجز') return { key: 'done', icon: 'yes', text: 'منجز' };
+  if (i.awaitingClosure) return { key: 'done', icon: 'yes', text: 'سُلّم، بانتظار الإغلاق' };
+  return { key: 'ok', icon: 'active', text: i.daysLeft === null || i.daysLeft < 0 ? 'لا يوجد موعد إنجاز' : 'متبقٍ ' + dayCount(i.daysLeft) };
+}
+function quoteCount(n) { return n === 1 ? 'استدراج واحد' : n === 2 ? 'استدراجان' : n + (n >= 3 && n <= 10 ? ' استدراجات' : ' استدراجاً'); }
+function dayCount(n) { return n === 1 ? 'يوم واحد' : n === 2 ? 'يومان' : n + (n >= 3 && n <= 10 ? ' أيام' : ' يوماً'); }
+// Progress the dates would expect today: elapsed share of start order to approved completion date.
+function expectedProgress(p) {
+  var end = p.ind.applicableEnd;
+  if (!p.ntpDate || !end || !p.ind.active || p.ind.overdue || p.ind.daysLeft < 0) return null;
+  var total = dayDiff(p.ntpDate, end);
+  if (total <= 0) return null;
+  return Math.max(0, Math.min(100, Math.round(dayDiff(p.ntpDate, S.boot.today) / total * 100)));
+}
+// Time passed in a framework agreement: start order to its end date (numbers and percentage).
+function fwTime(p) {
+  var end = p.ind.applicableEnd;
+  if (!p.ntpDate || !end) return null;
+  var total = dayDiff(p.ntpDate, end), used = Math.max(0, Math.min(total, dayDiff(p.ntpDate, S.boot.today)));
+  return total > 0 ? { days: used, total: total, pct: Math.round(used / total * 100) } : null;
+}
+function segMeter(p) {
+  if (p.fw) { var t = fwTime(p); return '<div class="seg"><i style="width:' + Math.min(100, p.fw.usedPct || 0) + '%"></i>' + (t ? '<u style="inset-inline-start:' + t.pct + '%" title="الوقت المنقضي ' + t.pct + '%"></u>' : '') + '</div>'; }
+  var v = p.progress === '' || p.progress === null ? (p.status === 'منجز' ? 100 : 0) : Math.min(100, Number(p.progress));
+  var x = expectedProgress(p);
+  return '<div class="seg"><i style="width:' + v + '%"></i>' + (x === null ? '' : '<u style="inset-inline-start:' + x + '%" title="المتوقع حسب التاريخ ' + x + '%"></u>') + '</div>';
+}
+function totalsText(ps) {
+  var m = {};
+  ps.forEach(function (p) { if (p.contractValue !== '' && p.contractValue !== null) { var k = p.currency || ''; m[k] = (m[k] || 0) + Number(p.contractValue); } });
+  return Object.keys(m).map(function (k) { return k ? money(m[k], k) : fmtNum(m[k]) + ' (عملة غير محددة)'; }).join('، ');
+}
+function money(v, cur) { return fmtNum(v) + (cur ? ' ' + esc(cur) : ''); }
 function attentionScore(p) {
   var i = p.ind;
   if (!i.active) return 90;
@@ -374,11 +496,11 @@ function homeView() { return deptRole() ? 'mine' : 'dash'; }
 
 function navItems() {
   var r = role(), items = [];
-  if (deptRole()) items.push(['mine', 'مشاريعي'], ['dash', 'لوحة المتابعة'], ['upload', 'رفع مستند'], ['report', 'سجل المشاريع']);
+  if (deptRole()) items.push(['mine', 'مشاريعي'], ['dash', 'لوحة المتابعة'], ['upload', 'رفع مستند'], ['report', 'سجل المشاريع'], ['archive', 'الأرشيف'], ['annual', 'التقرير السنوي']);
   else {
     items.push(['dash', 'لوحة المتابعة'], ['list', 'جميع المشاريع']);
     if (r === 'admin') items.push(['upload', 'رفع مستند']);
-    items.push(['activity', 'سجل التعديلات'], ['report', 'سجل المشاريع']);
+    items.push(['activity', 'سجل التعديلات'], ['report', 'سجل المشاريع'], ['archive', 'الأرشيف'], ['annual', 'التقرير السنوي']);
     if (r === 'admin') items.push(['admin', 'الإدارة']);
   }
   return items;
@@ -387,11 +509,11 @@ function navItems() {
 function shell(content) {
   var u = S.boot.user;
   var cur = S.view === 'project' ? (S.params.from || '') : S.view;
-  return '<header class="top"><div class="wrap">' +
+  return '<header class="top"><div class="wrap topline">' +
     '<div class="brand"><img class="brand-logo" src="' + PM_LOGO + '" alt="بلدية نابلس"><span class="brand-sep"></span>منصة متابعة المشاريع</div>' +
-    '<nav class="nav">' + navItems().map(function (n) { return '<button data-act="nav" data-arg="' + n[0] + '" class="' + (cur === n[0] ? 'on' : '') + '">' + n[1] + '</button>'; }).join('') + '</nav>' +
-    '<div class="who"><span>' + esc(u.name || '') + ' · ' + esc(u.title || u.roleLabel) + '</span><span class="em ltr">' + esc(u.email) + '</span><button data-act="logout">خروج</button></div>' +
-    '</div></header><main class="wrap">' + content + '</main>';
+    '<div class="who"><span>' + esc(u.name || '') + '، ' + esc(u.title || u.roleLabel) + '</span><span class="em ltr">' + esc(u.email) + '</span><button data-act="logout">' + ic('logout') + 'خروج</button></div></div>' +
+    '<div class="navline"><nav class="nav wrap" aria-label="القائمة">' + navItems().map(function (n) { return '<button data-act="nav" data-arg="' + n[0] + '" class="' + (cur === n[0] ? 'on' : '') + '">' + ic(n[0]) + n[1] + '</button>'; }).join('') + '</nav></div>' +
+    '</header><main class="wrap">' + content + '</main>';
 }
 
 function render() {
@@ -404,6 +526,8 @@ function render() {
   else if (v === 'project') html = viewProject();
   else if (v === 'upload') html = viewUploadPage();
   else if (v === 'report') html = viewReport();
+  else if (v === 'archive') html = viewArchive();
+  else if (v === 'annual') html = viewAnnual();
   else if (v === 'admin') html = viewAdmin();
   else if (v === 'activity') html = viewActivity();
   else html = viewDash();
@@ -417,6 +541,7 @@ function afterRender(v) {
   if (v === 'admin' && !S.admin) loadAdmin();
   if (v === 'activity') { if (!S.activity) loadActivity(); else bindActivity(); }
   if (v === 'report') bindRegister();
+  if (v === 'annual') { var ay = document.getElementById('an-year'); if (ay) ay.addEventListener('change', function () { S.anYear = ay.value; render(); }); }
 }
 
 async function refreshBoot() {
@@ -484,57 +609,108 @@ async function start() {
 }
 
 // ---------- Dashboard ----------
+function budgetMap(active) {
+  var groups = {}, noValue = 0;
+  active.forEach(function (p) {
+    if (p.contractValue === '' || p.contractValue === null) { noValue++; return; }
+    var c = p.currency || ''; (groups[c] = groups[c] || []).push(p);
+  });
+  var curs = Object.keys(groups).sort(function (a, b) { return !a ? 1 : !b ? -1 : groups[b].length - groups[a].length; });
+  if (!curs.length) return '';
+  var LIMIT = 12;
+  var html = curs.map(function (c) {
+    var list = groups[c], total = list.reduce(function (s, p) { return s + Number(p.contractValue); }, 0), byDept = {};
+    list.forEach(function (p) { (byDept[p.deptId] = byDept[p.deptId] || []).push(p); });
+    return '<div class="bm-cur"><div class="bm-head"><b>' + (c ? esc(c) : 'مشاريع لم تُحدد عملتها') + '</b><span>الإجمالي ' + money(total, c) + '</span></div>' +
+      Object.keys(byDept).map(function (dk) {
+        var ps = byDept[dk].sort(function (a, b) { return b.contractValue - a.contractValue; });
+        var sum = ps.reduce(function (s, p) { return s + Number(p.contractValue); }, 0);
+        var shown = ps.slice(0, LIMIT), rest = ps.slice(LIMIT), restSum = rest.reduce(function (s, p) { return s + Number(p.contractValue); }, 0);
+        var cell = function (p) {
+          var st = stateOf(p), pct = sum ? p.contractValue / sum * 100 : 0;
+          return '<button type="button" class="bm-cell st-' + st.key + '" style="flex:1 1 max(170px,' + pct.toFixed(1) + '%)" data-act="open" data-arg="' + esc(p.id) + '"><span>' + esc(p.name) + '</span><b class="ltr">' + money(p.contractValue, c) + '</b></button>';
+        };
+        return '<div class="bm-dept"><div class="bm-dname">' + esc(deptName(dk)) + '<span>' + money(sum, c) + '</span></div><div class="bm-cells">' + shown.map(cell).join('') +
+          (rest.length ? '<button type="button" class="bm-cell st-more" style="flex:1 1 170px" data-act="cell" data-arg="' + esc(dk + '|active') + '"><span>' + rest.length + ' مشاريع أخرى</span><b class="ltr">' + money(restSum, c) + '</b></button>' : '') + '</div></div>';
+      }).join('') + '</div>';
+  }).join('');
+  return '<section class="sect"><h2>توزيع الموازنات حسب القسم</h2>' + html +
+    '<div class="legend"><span class="st-ok"><i></i>ضمن الموعد</span><span class="st-late"><i></i>تجاوز الموعد</span><span class="st-soon"><i></i>يقترب</span><span class="st-stop"><i></i>متوقف</span></div>' +
+    (noValue ? '<p class="muted small">' + noValue + ' مشروع نشط بلا قيمة مسجلة لا يظهر هنا.</p>' : '') + '</section>';
+}
+
 function viewDash() {
   var b = S.boot, ps = b.projects;
   var active = ps.filter(function (p) { return p.ind.active; });
   var cnt = function (k) { return ps.filter(function (p) { return p.ind[k]; }).length; };
-  var kpi = function (k, n, label, cls) { return '<button class="kpi ' + cls + '" data-act="kpi" data-arg="' + k + '"><div class="n">' + n + '</div><div class="l">' + label + '</div></button>'; };
-  var html = '<h1>' + (deptRole() ? 'لوحة متابعة مشاريع قسمي' : 'لوحة المتابعة') + '</h1>' +
-    '<p class="muted small" style="margin-top:-8px">بتاريخ ' + fmtDate(b.today) + '. تنبيهات آلية محسوبة من التواريخ المسجلة.</p>' +
-    '<div class="kpis">' +
-    kpi('overdue', cnt('overdue'), IND.overdue.label, 'red') +
-    kpi('approaching', cnt('approaching'), IND.approaching.label, 'amber') +
-    kpi('stopped', cnt('stopped'), IND.stopped.label, 'dark') +
-    kpi('active', active.length, 'المشاريع النشطة', 'pri') +
-    '</div>';
-
+  var kpi = function (k, n, label) { return '<button class="ek e-' + k + '" data-act="kpi" data-arg="' + k + '">' + ic(k) + '<b>' + n + '</b><span>' + label + '</span></button>'; };
+  var html = '<section class="exec"><div class="ehead"><h1>' + (deptRole() ? 'لوحة متابعة مشاريع قسمي' : 'لوحة المتابعة') + '</h1><span>بتاريخ ' + fmtDate(b.today) + (totalsText(active) ? '، إجمالي موازنات المشاريع النشطة: ' + totalsText(active) : '') + '</span></div>' +
+    '<div class="ekpi">' + kpi('overdue', cnt('overdue'), IND.overdue.label) + kpi('approaching', cnt('approaching'), IND.approaching.label) + kpi('stopped', cnt('stopped'), IND.stopped.label) + kpi('active', active.length, 'المشاريع النشطة') + '</div></section>';
   if (!ps.length) {
     return html + '<div class="card" style="text-align:center;padding:30px"><h2>لا توجد مشاريع بعد</h2><p class="muted">ابدأ بإضافة أول مشروع، ثم يقوم رؤساء الأقسام بتحديثه.</p>' +
       (role() === 'admin' || deptRole() ? '<button class="btn pri" data-act="new-project">+ إضافة مشروع جديد</button>' : '') + '</div>';
   }
-
-  // Department x status
-  var statuses = b.statuses.filter(function (s) { return ps.some(function (p) { return (p.status || 'غير محدد') === s; }); });
-  var depts = b.departments.filter(function (d) { return ps.some(function (p) { return p.deptId === d.id; }); });
-  html += '<div class="card"><h2>ملخص حسب القسم وحالة المشروع</h2><div class="tscroll"><table class="t"><tr><th>القسم</th>' +
-    statuses.map(function (s) { return '<th class="num">' + esc(s) + '</th>'; }).join('') + '<th class="num">المجموع</th></tr>' +
-    depts.map(function (d) {
-      var dp = ps.filter(function (p) { return p.deptId === d.id; });
-      return '<tr><td>' + esc(d.name) + (d.parent ? '<div class="muted small">' + esc(d.parent) + '</div>' : '') + '</td>' +
-        statuses.map(function (s) {
-          var n = dp.filter(function (p) { return (p.status || 'غير محدد') === s; }).length;
-          return n ? '<td class="num click" data-act="cell" data-arg="' + esc(d.id + '|' + s) + '">' + n + '</td>' : '<td class="num muted">0</td>';
-        }).join('') + '<td class="num click" data-act="cell" data-arg="' + esc(d.id + '|all') + '">' + dp.length + '</td></tr>';
-    }).join('') + '</table></div></div>';
-
+  html += budgetMap(active);
   var attention = sortProjects(active.filter(function (p) { return attentionScore(p) <= 5; }));
-  html += '<div class="card"><h2>أهم ما يحتاج متابعة</h2>' +
-    (attention.length ? '<div class="plist">' + attention.map(projectItem).join('') + '</div>' : '<p class="muted">لا توجد مشاريع تحتاج متابعة عاجلة.</p>') + '</div>';
+  html += '<section class="sect"><h2>أهم ما يحتاج متابعة</h2>' +
+    (attention.length ? '<div class="plist">' + attention.map(projectItem).join('') + '</div>' : '<div class="card muted">لا توجد مشاريع تحتاج متابعة عاجلة.</div>') + '</section>';
   return html;
+}
+
+// ---------- Archive and annual report ----------
+// A finished project belongs to the year it ended; anything not finished stays alive and is never archived.
+function endYear(p) { return p.actualCompletionDate ? String(p.actualCompletionDate).slice(0, 4) : ''; }
+function finishedProjects() { return S.boot.projects.filter(function (p) { return p.status === 'منجز'; }); }
+function viewArchive() {
+  var done = finishedProjects(), years = {};
+  done.forEach(function (p) { var y = endYear(p) || 'none'; years[y] = (years[y] || 0) + 1; });
+  var keys = Object.keys(years).sort(function (a, b) { return a === 'none' ? 1 : b === 'none' ? -1 : Number(b) - Number(a); });
+  var cur = S.arYear && years[S.arYear] ? S.arYear : keys[0];
+  var head = '<div class="phead"><h1>الأرشيف</h1><p class="muted">المشاريع المنجزة، كل مشروع في سنة انتهائه. المشاريع غير المنجزة تبقى في قائمة المشاريع.</p></div>';
+  if (!keys.length) return head + '<div class="card muted">لا توجد مشاريع منجزة بعد.</div>';
+  var list = done.filter(function (p) { return (endYear(p) || 'none') === cur; });
+  return head + '<div class="tabs">' + keys.map(function (y) { return '<button data-act="ar-year" data-arg="' + y + '" class="' + (y === cur ? 'on' : '') + '">' + (y === 'none' ? 'تاريخ الانتهاء غير مسجل' : y) + ' (' + years[y] + ')</button>'; }).join('') + '</div>' +
+    '<div class="plist">' + list.map(projectItem).join('') + '</div>';
+}
+function viewAnnual() {
+  var b = S.boot, today = b.today, nowY = String(today).slice(0, 4), years = {};
+  years[nowY] = 1;
+  b.projects.forEach(function (p) { if (endYear(p)) years[endYear(p)] = 1; if (p.ntpDate) years[String(p.ntpDate).slice(0, 4)] = 1; });
+  var ks = Object.keys(years).sort().reverse(), y = S.anYear && years[S.anYear] ? S.anYear : nowY;
+  var ended = b.projects.filter(function (p) { return p.status === 'منجز' && endYear(p) === y; });
+  var started = b.projects.filter(function (p) { return String(p.ntpDate).slice(0, 4) === y; });
+  var alive = b.projects.filter(function (p) { return p.status !== 'منجز' && p.ntpDate && String(p.ntpDate).slice(0, 4) <= y; });
+  var late = ended.filter(function (p) { return delayOf(p, today) > 0; });
+  var totals = function (ps) { var m = {}; ps.forEach(function (p) { if (p.contractValue !== '' && p.contractValue !== null) { var c = p.currency || ''; m[c] = (m[c] || 0) + Number(p.contractValue); } }); return Object.keys(m).map(function (c) { return money(m[c], c) + (c ? '' : ' (عملة غير محددة)'); }).join('، ') || '—'; };
+  var fact = function (n, l) { return '<div class="fact"><small>' + l + '</small><b>' + n + '</b></div>'; };
+  var depts = b.departments.filter(function (d) { return ended.concat(started, alive).some(function (p) { return p.deptId === d.id; }); });
+  var inDept = function (ps, id) { return ps.filter(function (p) { return p.deptId === id; }); };
+  return '<style>@page{size:A4 landscape;margin:10mm}</style><div class="phead row" style="justify-content:space-between"><h1>التقرير السنوي ' + esc(y) + '</h1><div class="row no-print"><select id="an-year" aria-label="السنة">' +
+    ks.map(function (k) { return '<option' + (k === y ? ' selected' : '') + '>' + k + '</option>'; }).join('') + '</select><button class="btn pri" data-act="print">طباعة / حفظ PDF</button></div></div>' +
+    '<div class="facts">' + fact(ended.length, 'انتهت في ' + y) + fact(started.length, 'بدأت في ' + y) + fact(alive.length, 'ما زالت قائمة') + fact(late.length, 'انتهت متأخرة عن موعدها') + '</div>' +
+    '<div class="card" style="margin-top:14px"><h2>القيمة</h2><dl class="kv"><dt>قيمة المشاريع المنتهية</dt><dd>' + totals(ended) + '</dd><dt>قيمة المشاريع التي بدأت</dt><dd>' + totals(started) + '</dd><dt>قيمة المشاريع القائمة</dt><dd>' + totals(alive) + '</dd></dl></div>' +
+    '<div class="card"><h2>حسب القسم</h2><div class="tscroll"><table class="t"><tr><th>القسم</th><th class="num">انتهت</th><th class="num">بدأت</th><th class="num">ما زالت قائمة</th><th class="num">انتهت متأخرة</th></tr>' +
+    depts.map(function (d) { return '<tr><td>' + esc(d.name) + '</td><td class="num">' + inDept(ended, d.id).length + '</td><td class="num">' + inDept(started, d.id).length + '</td><td class="num">' + inDept(alive, d.id).length + '</td><td class="num">' + inDept(late, d.id).length + '</td></tr>'; }).join('') + '</table></div></div>' +
+    '<div class="sect"><h2>المشاريع التي انتهت في ' + esc(y) + '</h2>' + (ended.length ? '<div class="plist">' + ended.map(projectItem).join('') + '</div>' : '<div class="card muted">لا توجد مشاريع انتهت في هذه السنة.</div>') + '</div>';
 }
 
 // ---------- Lists ----------
 function projectItem(p) {
-  var end = p.ind.applicableEnd;
-  return '<div class="pitem" data-act="open" data-arg="' + esc(p.id) + '">' +
-    '<div><div class="nm">' + esc(p.name) + '</div><div class="meta">' + esc(deptName(p.deptId)) + (p.contractor ? ' · ' + esc(p.contractor) : '') +
-    (p.tenderNo ? ' · <span class="ltr">' + esc(p.tenderNo) + '</span>' : '') + '</div>' +
-    (p.fw ? '<div class="meta"><span class="badge b-pri">اتفاقية إطار</span> ' + p.fw.orders + ' قرار فرعي · ' + (p.fw.usedPct === null ? '—' : p.fw.usedPct + '%') + ' من الموازنة' +
-      '</div>' : '') +
-    indBadges(p, isMgmt()) + '</div>' +
-    '<div>' + statusBadge(p.status) + '<div class="small muted" style="margin-top:4px">الإنجاز: ' + progressText(p) + '</div>' + progressBar(p) + '</div>' +
-    '<div class="small"><div class="muted">تاريخ الإنجاز المعتمد</div><b>' + fmtDate(end) + '</b>' + (p.revisedEndDate ? ' <span class="badge b-blue">بعد تمديد</span>' : '') +
-    '<div class="muted">آخر تحديث: ' + (p.lastUpdateAt ? fmtDate(p.lastUpdateAt) : 'لا يوجد') + '</div></div></div>';
+  var st = stateOf(p), x = expectedProgress(p), ms = [], i = p.ind, ft = p.fw ? fwTime(p) : null;
+  var live = i.active;
+  if (live && p.rc && p.rc.lateQuotes) ms.push('<span>' + ic('overdue') + (p.rc.lateQuotes === 1 ? 'استدراج متأخر' : p.rc.lateQuotes + ' استدراجات متأخرة') + '</span>');
+  if (live && i.missingPhotos) ms.push('<span>' + ic('cam') + 'صور ' + p.photos.count + ' من ' + p.photos.required + '</span>');
+  if (live && i.missingDocs) ms.push('<span title="' + esc(p.missingDocs.join('، ')) + '">' + ic('file') + (p.missingDocs.length === 1 ? 'مستند ناقص واحد' : p.missingDocs.length + ' مستندات ناقصة') + '</span>');
+  if (live && i.stale) ms.push('<span>' + ic('stale') + (i.daysSinceUpdate === null ? 'لم يُحدَّث بعد' : 'آخر تحديث قبل ' + dayCount(i.daysSinceUpdate)) + '</span>');
+  return '<button type="button" class="pitem" data-act="open" data-arg="' + esc(p.id) + '">' +
+    '<span class="thumb">' + ic('image') + '</span>' +
+    '<span class="pmain"><span class="nm">' + esc(p.name) + '</span><span class="meta">' + esc(deptName(p.deptId)) + (p.contractor ? '، ' + esc(p.contractor) : '') +
+    (p.tenderNo ? '، رقم <span class="ltr">' + esc(p.tenderNo) + '</span>' : '') + '</span>' +
+    (p.fw ? '<span class="meta">اتفاقية إطار: ' + p.fw.orders + ' قرار فرعي، المستخدم ' + money(p.fw.committed, p.currency) + ' من ' + money(p.fw.ceiling, p.currency) + '</span>' : '') +
+    (p.rc ? '<span class="meta">مشروع تعافي: ' + quoteCount(p.rc.quotes) + (p.rc.activeWorkers !== '' ? '، العمال في الموقع ' + p.rc.activeWorkers : '') + '</span>' : '') +
+    (ms.length ? '<span class="miss">' + ms.join('') + '</span>' : '') + '</span>' +
+    '<span class="pprog"><span class="mrow"><b>' + (p.fw ? 'الموازنة المستخدمة ' : '') + progressText(p) + '</b>' + (ft ? '<span class="meta">الوقت المنقضي ' + ft.pct + '%</span>' : x === null ? '' : '<span class="meta">المتوقع ' + x + '%</span>') + '</span>' + segMeter(p) + '</span>' +
+    '<span class="pstate st-' + st.key + '">' + ic(st.icon) + '<span><b>' + st.text + '</b><small>' + fmtDate(i.applicableEnd) + '</small></span></span></button>';
 }
 
 function filterProjects(f) {
@@ -545,6 +721,8 @@ function filterProjects(f) {
     if (f.status && f.status !== 'active' && f.status !== 'all' && (p.status || 'غير محدد') !== f.status) return false;
     if (f.ind && f.ind !== 'active' && !p.ind[f.ind]) return false;
     if (f.funder && p.funder !== f.funder) return false;
+    if (f.eng && (p.supervisor || p.supervisorEmail) !== f.eng) return false;
+    if (f.year && (p.status !== 'منجز' || endYear(p) !== f.year)) return false;
     if (f.method && (f.method === 'none' ? p.contractMethod : p.contractMethod !== f.method)) return false;
     if (q) {
       var hay = [p.name, p.tenderNo, p.decisionNo, p.contractor, p.supervisor, p.funder, p.id, deptName(p.deptId), p.contractMethod].join(' ').toLowerCase();
@@ -557,7 +735,7 @@ function filterProjects(f) {
 function viewList(v) {
   if (!S.f.__set) S.f = { status: 'active', __set: 1 };
   var f = S.f, b = S.boot;
-  var funders = {}; b.projects.forEach(function (p) { if (p.funder) funders[p.funder] = 1; });
+  var funders = {}, engs = {}, yrs = {}; b.projects.forEach(function (p) { if (p.funder) funders[p.funder] = 1; var e = p.supervisor || p.supervisorEmail; if (e) engs[e] = 1; if (p.status === 'منجز' && endYear(p)) yrs[endYear(p)] = 1; });
   var opt = function (value, label, cur) { return '<option value="' + esc(value) + '"' + (String(cur || '') === String(value) ? ' selected' : '') + '>' + esc(label) + '</option>'; };
   var list = sortProjects(filterProjects(f));
   var head = v === 'mine' ? 'مشاريعي' : 'جميع المشاريع';
@@ -569,6 +747,8 @@ function viewList(v) {
     '<select id="f-ind">' + opt('', 'كل التنبيهات', f.ind) + Object.keys(IND).map(function (k) { return opt(k, IND[k].label, f.ind); }).join('') + '</select>' +
     (b.departments.length > 1 ? '<select id="f-dept">' + opt('', 'كل الأقسام', f.dept) + b.departments.map(function (d) { return opt(d.id, d.name, f.dept); }).join('') + '</select>' : '<input type="hidden" id="f-dept" value="">') +
     '<select id="f-funder">' + opt('', 'كل الجهات الممولة', f.funder) + Object.keys(funders).sort().map(function (x) { return opt(x, x, f.funder); }).join('') + '</select>' +
+    '<select id="f-year">' + opt('', 'كل سنوات الانتهاء', f.year) + Object.keys(yrs).sort().reverse().map(function (y) { return opt(y, 'انتهت في ' + y, f.year); }).join('') + '</select>' +
+    '<select id="f-eng">' + opt('', 'كل المهندسين', f.eng) + Object.keys(engs).sort().map(function (x) { return opt(x, x, f.eng); }).join('') + '</select>' +
     '<select id="f-method">' + opt('', 'كل طرق التعاقد', f.method) + b.contractMethods.map(function (m) { return opt(m, m, f.method); }).join('') + opt('none', 'طريقة التعاقد غير محددة', f.method) + '</select>' +
     '</div>' +
     '<p class="count" id="f-count">' + list.length + ' مشروع</p>' +
@@ -577,13 +757,13 @@ function viewList(v) {
 
 function bindFilters() {
   var upd = function () {
-    S.f.q = val('f-q'); S.f.status = val('f-status'); S.f.ind = val('f-ind'); S.f.dept = val('f-dept'); S.f.funder = val('f-funder'); S.f.method = val('f-method');
+    S.f.q = val('f-q'); S.f.status = val('f-status'); S.f.ind = val('f-ind'); S.f.dept = val('f-dept'); S.f.funder = val('f-funder'); S.f.eng = val('f-eng'); S.f.year = val('f-year'); if (S.f.year && S.f.status === 'active') { S.f.status = 'all'; document.getElementById('f-status').value = 'all'; } S.f.method = val('f-method');
     var list = sortProjects(filterProjects(S.f));
     $('#f-count').textContent = list.length + ' مشروع';
     $('#f-list').innerHTML = list.length ? list.map(projectItem).join('') : '<div class="card muted">لا توجد مشاريع مطابقة. جرّب تغيير البحث أو الفلاتر.</div>';
   };
   ['f-q'].forEach(function (id) { var el = document.getElementById(id); el && el.addEventListener('input', upd); });
-  ['f-status', 'f-ind', 'f-dept', 'f-funder', 'f-method'].forEach(function (id) { var el = document.getElementById(id); el && el.addEventListener('change', upd); });
+  ['f-status', 'f-ind', 'f-dept', 'f-funder', 'f-year', 'f-eng', 'f-method'].forEach(function (id) { var el = document.getElementById(id); el && el.addEventListener('change', upd); });
 }
 
 // ---------- Project detail ----------
@@ -604,27 +784,37 @@ function viewProject() {
   var d = S.detail, p = d.project, i = p.ind;
   var isFw = p.contractMethod === S.boot.framework;
   var canEdit = d.canEdit;
-  var h = back + '<div class="print-only"><b>منصة متابعة المشاريع</b> · تقرير مشروع · ' + fmtDate(S.boot.today) + '</div>' +
-    '<div class="dhead"><div><h1 style="margin-bottom:4px">' + esc(p.name) + '</h1><div class="muted small">' + esc(deptName(p.deptId)) + ' · رمز المشروع ' + esc(p.id) + '</div>' +
-    (p.lastEditAt ? '<div class="small" style="margin-top:2px">آخر تعديل: ' + fmtStamp(p.lastEditAt) + ' · بواسطة ' + who(p.lastEditBy, true) + '</div>' : '') +
-    '<div class="row" style="margin-top:8px">' + statusBadge(p.status) + indBadges(p, true) + '</div></div>' +
-    '<div class="row no-print">' + (canEdit ? '<button class="btn pri" data-act="update">تحديث المشروع</button><button class="btn" data-act="upload-here">رفع مستند</button>' : '') +
-    '<button class="btn" data-act="print">طباعة</button>' + (role() === 'admin' ? '<button class="btn danger" data-act="del-project">حذف المشروع</button>' : '') + '</div></div>';
-
-  if (i.overdue || i.approaching) {
-    // Show which date the alert is based on: the original contract date or the latest approved extension.
-    var lastExt = d.extensions.length ? d.extensions[d.extensions.length - 1] : null;
-    var basis = p.revisedEndDate
-      ? 'محسوب على تاريخ الإنجاز المعدّل بعد التمديد المعتمد' + (lastExt ? ' (قرار ' + esc(lastExt.approvalRef) + ' بتاريخ ' + fmtDate(lastExt.approvalDate) + ')' : '') + '.'
-      : 'محسوب على تاريخ الإنجاز حسب العقد الأصلي؛ لا توجد تمديدات معتمدة مسجلة.';
-    h += '<div class="warnbox" style="margin-top:12px">' + (i.overdue ? 'تجاوز المشروع تاريخ الإنجاز المعتمد (' + fmtDate(i.applicableEnd) + ') بـ ' + (-i.daysLeft) + ' يوماً.' :
-      'متبقٍ ' + i.daysLeft + ' يوماً على تاريخ الإنجاز المعتمد (' + fmtDate(i.applicableEnd) + ').') +
-      '<div class="small" style="margin-top:4px">' + basis + '</div></div>';
+  var st = stateOf(p), xp = expectedProgress(p);
+  // Time summary: days counted from the start order, then days left or past the contractual end date.
+  var startD = p.ntpDate, endD = i.applicableEnd, bar = '';
+  if (startD) {
+    var finished = !!p.actualCompletionDate, refD = p.actualCompletionDate || S.boot.today;
+    var run = dayDiff(startD, refD), gap = endD ? dayDiff(refD, endD) : null, cls = 'ok', gapLabel = 'الأيام المتبقية', gapText = '—';
+    if (gap !== null) {
+      if (finished) { gapLabel = gap < 0 ? 'التسليم بعد التاريخ التعاقدي' : gap > 0 ? 'التسليم قبل التاريخ التعاقدي' : 'التسليم'; gapText = gap ? dayCount(Math.abs(gap)) : 'في التاريخ التعاقدي'; cls = gap < 0 ? 'late' : 'done'; }
+      else if (gap < 0) { gapLabel = 'الأيام بعد تاريخ الإنهاء التعاقدي'; gapText = dayCount(-gap); cls = 'late'; }
+      else { gapText = dayCount(gap); cls = i.approaching ? 'soon' : 'ok'; }
+    }
+    var endNote = p.revisedEndDate && p.contractEndDate ? '<small>الأصلي ' + fmtDate(p.contractEndDate) + '، تغيّر بأمر تغييري</small>' : '';
+    bar = '<div class="facts time-facts"><div class="fact"><small>تاريخ أمر المباشرة</small><b>' + fmtDate(startD) + '</b></div>' +
+      '<div class="fact"><small>' + (finished ? 'المدة من أمر المباشرة حتى التسليم' : 'المدة من أمر المباشرة حتى اليوم') + '</small><b>' + (run < 0 ? 'لم تبدأ بعد' : dayCount(run)) + '</b></div>' +
+      '<div class="fact"><small>تاريخ الإنهاء التعاقدي</small><b>' + fmtDate(endD) + '</b>' + endNote + '</div>' +
+      '<div class="fact st-' + cls + ' gapfact"><small>' + gapLabel + '</small><b>' + gapText + '</b></div></div>';
   }
+  var h = '<div class="print-only"><b>منصة متابعة المشاريع</b>، تقرير مشروع، ' + fmtDate(S.boot.today) + '</div>' +
+    '<section class="exec pband">' + back + '<div class="dhead"><div><h1>' + esc(p.name) + '</h1><div class="psub">' + esc(deptName(p.deptId)) + (p.tenderNo ? '، رقم <span class="ltr">' + esc(p.tenderNo) + '</span>' : '') + '، رمز المشروع ' + esc(p.id) + '</div>' +
+    (p.lastEditAt ? '<div class="small psub">آخر تعديل: ' + fmtStamp(p.lastEditAt) + '، بواسطة ' + who(p.lastEditBy, true) + '</div>' : '') +
+    '</div><div class="row no-print dacts">' + (canEdit ? '<button class="btn pri" data-act="update">تحديث المشروع</button><button class="btn" data-act="upload-here">رفع مستند</button>' : '') +
+    '<button class="btn" data-act="print">طباعة</button>' + (role() === 'admin' ? '<button class="btn danger" data-act="del-project">حذف المشروع</button>' : '') + '</div></div></section>' + bar +
+    (p.fw ? (function () { var t = fwTime(p); return '<div class="facts"><div class="fact"><small>الموازنة المستخدمة</small><b>' + progressText(p) + '</b><small>' + money(p.fw.committed, p.currency) + ' من ' + money(p.fw.ceiling, p.currency) + '</small></div>' +
+      '<div class="fact"><small>الوقت المنقضي من مدة الاتفاقية</small><b>' + (t ? t.pct + '%' : '—') + '</b><small>' + (t ? dayCount(t.days) + ' من ' + dayCount(t.total) : 'التواريخ غير مكتملة') + '</small></div>'; })()
+    : '<div class="facts' + (xp === null ? ' facts3' : '') + '"><div class="fact"><small>الإنجاز الفعلي</small><b>' + progressText(p) + '</b></div>' + (xp === null ? '' : '<div class="fact"><small>المتوقع حسب التاريخ</small><b>' + xp + '%</b></div>')) +
+    '<div class="fact"><small>' + (isFw ? 'الموازنة الإجمالية' : 'قيمة المشروع') + '</small><b>' + money(p.contractValue, p.currency) + '</b></div><div class="fact"><small>المهندس المشرف</small><b>' + (p.supervisorEmail ? who(p.supervisorEmail) : esc(p.supervisor || '—')) + '</b></div></div>' +
+    '<div class="row pbadges">' + statusBadge(p.status) + indBadges(p, true) + '</div>';
 
   h += '<div class="grid2" style="margin-top:12px"><div class="card"><h2>الوضع الحالي</h2>' +
-    '<div class="big-progress"><b>' + progressText(p) + '</b>' + progressBar(p) + '</div>' +
-    (p.progressSource ? '<p class="muted small" style="margin-top:-8px">مصدر النسبة: ' + esc(p.progressSource) + '</p>' : '') +
+    '<div class="big-progress"><b>' + (isFw ? 'الموازنة المستخدمة ' : '') + progressText(p) + '</b>' + progressBar(p) + '</div>' +
+    (p.progressSource && !isFw && !/أوامر|أمر العمل/.test(p.progressSource) ? '<p class="muted small" style="margin-top:-8px">مصدر النسبة: ' + esc(p.progressSource) + '</p>' : '') +
     '<dl class="kv"><dt>الحالة</dt><dd>' + esc(p.status) + '</dd>' +
     '<dt>العائق</dt><dd>' + (p.obstacle ? '<div class="note">' + esc(p.obstacle) + '</div>' : '—') + '</dd>' +
     '<dt>الإجراء المطلوب</dt><dd>' + (p.requiredAction ? '<div class="note">' + esc(p.requiredAction) + '</div>' : '—') + '</dd>' +
@@ -632,34 +822,36 @@ function viewProject() {
     '<dt>آخر تحديث للوضع</dt><dd>' + (p.lastUpdateAt ? fmtStamp(p.lastUpdateAt) + ' · ' + who(p.lastUpdateBy) : 'لم يُحدَّث منذ إدخاله') + '</dd></dl></div>';
 
   h += '<div class="card"><h2>التواريخ</h2><dl class="kv">' +
-    '<dt>تاريخ أمر المباشرة</dt><dd>' + fmtDate(p.ntpDate) + '</dd>' +
     '<dt>مدة المشروع</dt><dd>' + (p.durationDays !== '' ? fmtNum(p.durationDays) + ' يوم' : '—') + '</dd>' +
-    '<dt>تاريخ الإنجاز حسب العقد</dt><dd>' + fmtDate(p.contractEndDate) + ' <span class="muted small">(الأصلي)</span></dd>' +
-    '<dt>التمديدات المعتمدة</dt><dd>' + (d.extensions.length ? d.extensions.map(function (x) {
+    '<dt>تاريخ الإنهاء التعاقدي الأصلي</dt><dd>' + fmtDate(p.contractEndDate) + '</dd>' +
+    '<dt>أوامر تغيير المدة</dt><dd>' + (d.extensions.length ? d.extensions.map(function (x) {
       return '<div class="small">+' + fmtNum(x.days) + ' يوم ← ' + fmtDate(x.newEndDate) + ' · قرار ' + esc(x.approvalRef) + ' بتاريخ ' + fmtDate(x.approvalDate) + (x.reason ? ' · ' + esc(x.reason) : '') + '</div>';
     }).join('') : 'لا يوجد') + '</dd>' +
-    '<dt>تاريخ الإنجاز المعدّل</dt><dd>' + fmtDate(p.revisedEndDate) + '</dd>' +
-    '<dt>التاريخ المعتمد للمتابعة</dt><dd><b>' + fmtDate(i.applicableEnd) + '</b></dd>' +
     '<dt>تاريخ التسليم الفعلي</dt><dd>' + fmtDate(p.actualCompletionDate) + '</dd></dl>' +
-    (canEdit ? '<div class="actions no-print"><button class="btn sm" data-act="extension">+ إضافة تمديد معتمد</button></div>' : '') + '</div></div>';
+    (canEdit ? '<div class="actions no-print"><button class="btn sm" data-act="extension">+ إضافة أمر تغييري لتمديد المدة</button></div>' : '') + '</div></div>';
 
   h += '<div class="card"><div class="row" style="justify-content:space-between"><h2>بيانات العقد</h2>' + (canEdit ? '<button class="btn sm no-print" data-act="contract">تعديل بيانات العقد</button>' : '') + '</div><dl class="kv">' +
     '<dt>طريقة التعاقد</dt><dd>' + (p.contractMethod ? esc(p.contractMethod) : '<span class="badge b-amber">غير محددة</span>') + '</dd>' +
     '<dt>رقم العطاء / الاستدراج / أمر الشراء</dt><dd class="ltr" style="text-align:right">' + esc(p.tenderNo || '—') + '</dd>' +
     '<dt>' + (isFw ? 'قرار المجلس (الموازنة السنوية)' : 'رقم القرار') + '</dt><dd>' + esc(p.decisionNo || '—') + (p.decisionDate ? ' · بتاريخ ' + fmtDate(p.decisionDate) : '') + '</dd>' +
     '<dt>الجهة الممولة</dt><dd>' + esc(p.funder || '—') + '</dd>' +
-    '<dt>الأولوية</dt><dd>' + esc(p.priority || '—') + '</dd>' +
     '<dt>' + (isFw ? 'الموازنة الإجمالية المعتمدة' : 'قيمة المشروع') + '</dt><dd>' + fmtNum(p.contractValue) + ' ' + esc(p.currency || '') + (p.currency ? '' : ' <span class="muted small">(العملة غير محددة)</span>') + '</dd>' +
     '<dt>المقاول</dt><dd>' + esc(p.contractor || '—') + '</dd>' +
     '<dt>المهندس المشرف</dt><dd>' + (p.supervisorEmail ? who(p.supervisorEmail, true) + (isFw ? '' : ' <span class="badge b-pri">يستلم تذكيرات المشروع</span>') : esc(p.supervisor || '—') + (p.supervisor && !isFw ? ' <span class="muted small">(غير مرتبط بحساب: التذكيرات لكل القسم)</span>' : '')) + '</dd>' +
     '<dt>ملاحظات</dt><dd>' + esc(p.notes || '—') + '</dd></dl></div>';
 
   if (isFw) h += frameworkSection(d, canEdit);
+  if (p.contractMethod === S.boot.recovery) h += recoverySection(d, canEdit);
 
   // Required documents checklist
   var have = {};
   d.attachments.forEach(function (a) { have[a.docType] = (have[a.docType] || 0) + 1; });
   var req = S.boot.requiredDocs || [];
+  if (p.contractMethod === S.boot.recovery && S.boot.recoveryNol) {
+    // Recovery projects: the fund's no-objection letter replaces the start order.
+    req = req.map(function (t) { return t === 'أمر المباشرة' ? S.boot.recoveryNol : t; });
+    if (req.indexOf(S.boot.recoveryNol) < 0) req = [S.boot.recoveryNol].concat(req);
+  }
   if (isFw) {
     // The agreement's own decision copy; copies of sub-decisions are checked on each sub-decision.
     req = req.concat([S.boot.decisionCopy]);
@@ -669,7 +861,7 @@ function viewProject() {
     var done = req.filter(function (t) { return have[t]; }).length;
     h += '<div class="card"><div class="row" style="justify-content:space-between"><h2>المستندات المطلوبة</h2><span class="badge ' + (done === req.length ? 'b-green' : 'b-amber') + '">' + done + ' من ' + req.length + '</span></div>' +
       req.map(function (t) {
-        return '<div class="att"><div><span style="font-size:18px;font-weight:700;color:' + (have[t] ? 'var(--green)' : 'var(--red)') + '">' + (have[t] ? '✓' : '✗') + '</span> ' + esc(t) +
+        return '<div class="att"><div><span class="yn ' + (have[t] ? 'y' : 'n') + '">' + ic(have[t] ? 'yes' : 'no') + '</span> ' + esc(t) +
           ' <span class="muted small">' + (have[t] ? '(مرفوع: ' + have[t] + ' ملف)' : '(غير مرفوع)') + '</span></div>' +
           (!have[t] && canEdit ? '<button class="btn sm pri no-print" data-act="upload-type" data-arg="' + esc(t) + '">رفع</button>' : '') + '</div>';
       }).join('') + '</div>';
@@ -852,7 +1044,7 @@ function openPhotoUpload(workOrderId) {
   openModal('رفع صور الموقع', '<form id="mf"><p class="small muted" style="margin-top:-6px">' + esc(p.name) + '</p>' +
     (orders.length ? fieldHtml('ph-wo', 'القرار الفرعي (اختياري)', '<select id="ph-wo"><option value="">— صور عامة للاتفاقية —</option>' + orders.map(function (w) {
       return '<option value="' + esc(w.id) + '"' + (w.id === workOrderId ? ' selected' : '') + '>' + esc(orderLabel(w.id)) + '</option>'; }).join('') + '</select>') : '') +
-    fieldHtml('ph-files', 'الصور', '<input id="ph-files" type="file" accept="image/*" multiple>', 'التقط صورة بالكاميرا أو اختر عدة صور. يُطبع تاريخ الالتقاط (أو تاريخ الرفع إن لم يتوفر) واسم المشروع على كل صورة ولا يمكن تعديله.') +
+    fieldHtml('ph-files', 'الصور', filePick('ph-files', 'image/*', true), 'التقط صورة بالكاميرا أو اختر عدة صور. يُطبع تاريخ الالتقاط (أو تاريخ الرفع إن لم يتوفر) واسم المشروع على كل صورة ولا يمكن تعديله.') +
     fieldHtml('ph-caption', 'وصف قصير (اختياري)', '<input id="ph-caption" placeholder="مثال: صب سقف الطابق الثاني">') +
     '<div id="ph-status" class="hidden"><div class="prog"><i id="ph-bar"></i></div><div class="small muted" id="ph-text"></div></div><div id="ph-done"></div>' +
     '<div class="actions"><button class="btn pri" type="submit" id="ph-save">رفع الصور</button><button class="btn" type="button" data-act="close-modal">إغلاق</button></div></form>',
@@ -899,8 +1091,9 @@ function photosSection(d, canEdit) {
   if (!list.length) return h + '<p class="muted">لا توجد صور بعد.</p></div>';
   var months = {};
   list.forEach(function (x) { (months[x.monthKey] = months[x.monthKey] || []).push(x); });
+  h += '<div class="ph-months">';
   Object.keys(months).sort().reverse().forEach(function (mk) {
-    h += '<div class="muted small" style="font-weight:600;margin:10px 0 6px">' + esc(mk.slice(5, 7) + '/' + mk.slice(0, 4)) + ' (' + months[mk].length + ')</div><div class="gallery">' +
+    h += '<div class="ph-month"><div class="muted small" style="font-weight:600;margin:10px 0 6px">' + esc(mk.slice(5, 7) + '/' + mk.slice(0, 4)) + ' (' + months[mk].length + ')</div><div class="gallery">' +
       months[mk].map(function (x) {
         var when = x.takenAt ? 'التُقطت ' + fmtDate(x.takenAt.slice(0, 10)) + ' ' + x.takenAt.slice(11, 16) : 'رُفعت ' + fmtStamp(x.uploadedAt);
         return '<div class="ph"><a href="#" data-act="photo-view" data-arg="' + esc(x.id) + '">' +
@@ -908,8 +1101,9 @@ function photosSection(d, canEdit) {
           '<div class="small">' + esc(when) + '</div>' + (x.caption ? '<div class="small muted">' + esc(x.caption) + '</div>' : '') +
           (x.workOrderId ? '<div class="small"><span class="badge b-blue">' + esc(orderLabel(x.workOrderId)) + '</span></div>' : '') +
           (canEdit ? '<button class="back small no-print" data-act="photo-del" data-arg="' + esc(x.id) + '">إزالة</button>' : '') + '</div>';
-      }).join('') + '</div>';
+      }).join('') + '</div></div>';
   });
+  h += '</div>';
   if (list.some(function (x) { return !x.thumb && x.hasThumb; })) h += '<div class="actions no-print"><button class="btn sm" data-act="photo-more">عرض المزيد من الصور</button></div>';
   return h + '</div>';
 }
@@ -927,7 +1121,8 @@ async function loadMoreThumbs() {
 // ---------- Framework agreements (annual tenders) ----------
 function orderLabel(id) {
   var w = ((S.detail && S.detail.workOrders) || []).filter(function (x) { return x.id === id; })[0];
-  return w ? 'القرار الفرعي ' + w.decisionNo + (w.site ? ' · ' + w.site : '') : 'قرار فرعي محذوف';
+  var rcL = S.detail && S.detail.project.contractMethod === S.boot.recovery;
+  return w ? (rcL ? 'الاستدراج ' + w.decisionNo + ' · ' + (w.contractor || '') : 'القرار الفرعي ' + w.decisionNo + (w.site ? ' · ' + w.site : '')) : (rcL ? 'استدراج محذوف' : 'قرار فرعي محذوف');
 }
 
 // Actual work cost compared with the budget (an exact match or the difference).
@@ -942,18 +1137,18 @@ function frameworkSection(d, canEdit) {
   var p = d.project, fw = p.fw || { ceiling: 0, committed: 0, remaining: 0, usedPct: null, orders: 0 };
   var cur = esc(p.currency || '');
   var pct = fw.usedPct === null ? 0 : fw.usedPct;
-  var barColor = pct > 100 ? 'var(--red)' : pct >= 90 ? '#d98a10' : 'var(--pri)';
+  var barColor = pct > 100 ? 'var(--red)' : pct >= 90 ? 'var(--st-soon)' : 'var(--plum)';
   var orders = d.workOrders || [], incs = d.budgetIncreases || [];
   var h = '<div class="card"><div class="row" style="justify-content:space-between"><h2>اتفاقية الإطار: الموازنة والقرارات الفرعية</h2>' +
     (canEdit ? '<div class="row no-print"><button class="btn sm pri" data-act="wo-new">+ إضافة قرار فرعي</button><button class="btn sm" data-act="budget-inc">زيادة الموازنة (أمر تغييري)</button></div>' : '') + '</div>' +
-    '<div class="kpis" style="margin:6px 0 10px">' +
-    '<div class="kpi pri" style="cursor:default"><div class="n" style="font-size:22px">' + fmtNum(fw.ceiling) + '</div><div class="l">سقف الموازنة ' + cur + (fw.increases ? '<br><span class="small">(' + fmtNum(fw.baseBudget) + ' + أوامر تغييرية ' + fmtNum(fw.increases) + ')</span>' : '') + '</div></div>' +
-    '<div class="kpi amber" style="cursor:default"><div class="n" style="font-size:22px">' + fmtNum(fw.committed) + '</div><div class="l">المُلتزم به في ' + fw.orders + ' قرار فرعي</div></div>' +
-    '<div class="kpi ' + (fw.remaining < 0 ? 'red' : 'grey') + '" style="cursor:default"><div class="n" style="font-size:22px">' + fmtNum(fw.remaining) + '</div><div class="l">المتبقي من الموازنة</div></div>' +
-    '</div><div class="bar" style="height:12px" title="نسبة المُلتزم به من السقف"><i style="width:' + Math.min(100, pct) + '%;background:' + barColor + '"></i></div>' +
-    '<p class="small muted" style="margin:4px 0 10px">مستخدم ' + (fw.usedPct === null ? '—' : fw.usedPct + '%') + ' من الموازنة' +
-    (pct >= 90 && pct <= 100 ? ' · <b style="color:var(--amber)">اقتربت الموازنة من السقف</b>' : '') + '</p>';
+    '<div class="facts fw-facts"><div class="fact"><small>سقف الموازنة</small><b>' + money(fw.ceiling, p.currency) + '</b>' + (fw.increases ? '<small>' + fmtNum(fw.baseBudget) + ' + أوامر تغييرية ' + fmtNum(fw.increases) + '</small>' : '') + '</div>' +
+    '<div class="fact"><small>المُلتزم به في ' + fw.orders + ' قرار فرعي</small><b>' + money(fw.committed, p.currency) + '</b></div>' +
+    '<div class="fact' + (fw.remaining < 0 ? ' st-late gapfact' : '') + '"><small>المتبقي من الموازنة</small><b>' + money(fw.remaining, p.currency) + '</b></div></div>' +
+    '<div class="bar fw-bar" title="نسبة المُلتزم به من السقف"><i style="width:' + Math.min(100, pct) + '%;background:' + barColor + '"></i></div>' +
+    '<p class="small muted" style="margin:6px 0 12px">مستخدم ' + (fw.usedPct === null ? '—' : fw.usedPct + '%') + ' من الموازنة' +
+    (pct >= 90 && pct <= 100 ? '، <b style="color:var(--amber)">اقتربت الموازنة من السقف</b>' : '') + '</p>';
 
+  if (fw.firstDate) h += '<p class="small note-rec">المبالغ محسوبة ابتداءً من أول قرار فرعي مُسجل في المنصة بتاريخ ' + fmtDate(fw.firstDate) + '. القرارات السابقة له غير مُدخلة.</p>';
   if (fw.costedOrders) {
     h += '<p class="small" style="margin:0 0 10px"><b>التكلفة الفعلية:</b> ' + fmtNum(fw.actualCost) + ' ' + cur + ' مقابل موازنة ' + fmtNum(fw.costedBudget) + ' (' + fw.costedOrders + ' من ' + fw.orders + ' قرار فرعي) ' + costBadge(fw.actualCost, fw.costedBudget, cur) + '</p>';
   }
@@ -971,21 +1166,92 @@ function frameworkSection(d, canEdit) {
     if (a.workOrderId) docsOf[a.workOrderId] = (docsOf[a.workOrderId] || 0) + 1;
     if (a.workOrderId && a.docType === S.boot.decisionCopy) copyOf[a.workOrderId] = true;
   });
-  h += '<div class="plist">' + orders.map(function (w) {
-    var badges = [];
-    if (w.actualCost !== '' && w.actualCost !== undefined) badges.push(costBadge(w.actualCost, w.budget, cur));
+  h += '<h2 class="wo-title">القرارات الفرعية</h2><div class="wo-list">' + orders.map(function (w) {
+    var badges = [], hasCost = w.actualCost !== '' && w.actualCost !== undefined;
+    if (hasCost) badges.push(costBadge(w.actualCost, w.budget, cur));
     if (!copyOf[w.id]) badges.push('<span class="badge b-red">نسخة القرار غير مرفوعة</span>');
-    return '<div class="pitem" style="cursor:default"><div><div class="nm">قرار ' + esc(w.decisionNo) + ' بتاريخ ' + fmtDate(w.decisionDate) + '</div>' +
-      '<div class="meta">' + (w.site ? esc(w.site) + ' · ' : '') + 'مستندات: ' + (docsOf[w.id] || 0) + '</div>' +
-      (w.notes ? '<div class="meta">' + esc(w.notes) + '</div>' : '') +
-      '<div class="badges">' + badges.join('') + '</div></div>' +
-      '<div class="small"><div class="muted">الموازنة</div><b>' + fmtNum(w.budget) + '</b> ' + cur +
-      (w.actualCost !== '' && w.actualCost !== undefined ? '<div class="muted" style="margin-top:4px">التكلفة الفعلية</div><b>' + fmtNum(w.actualCost) + '</b> ' + cur : '') + '</div>' +
-      '<div class="small">' + (canEdit ? '<div class="row no-print"><button class="btn sm" data-act="wo-edit" data-arg="' + esc(w.id) + '">تعديل</button>' +
+    return '<div class="wo-row"><div class="wo-main"><b>قرار رقم ' + esc(w.decisionNo) + '</b><span class="meta">بتاريخ ' + fmtDate(w.decisionDate) + (w.site ? '، ' + esc(w.site) : '') + '، المستندات: ' + (docsOf[w.id] || 0) + '</span>' +
+      (w.notes ? '<span class="meta">' + esc(w.notes) + '</span>' : '') + (badges.length ? '<div class="badges">' + badges.join('') + '</div>' : '') + '</div>' +
+      '<div class="wo-num"><small>الموازنة</small><b>' + money(w.budget, p.currency) + '</b></div>' +
+      '<div class="wo-num"><small>التكلفة الفعلية</small><b>' + (hasCost ? money(w.actualCost, p.currency) : '—') + '</b></div>' +
+      (canEdit ? '<div class="wo-acts no-print"><button class="btn sm" data-act="wo-edit" data-arg="' + esc(w.id) + '">تعديل</button>' +
         (copyOf[w.id] ? '' : '<button class="btn sm pri" data-act="wo-copy" data-arg="' + esc(w.id) + '">رفع نسخة القرار</button>') +
-        '<button class="btn sm" data-act="wo-upload" data-arg="' + esc(w.id) + '">رفع مستند</button></div>' : '') + '</div></div>';
+        '<button class="btn sm" data-act="wo-upload" data-arg="' + esc(w.id) + '">رفع مستند</button></div>' : '') + '</div>';
   }).join('') + '</div></div>';
   return h;
+}
+
+function recoverySection(d, canEdit) {
+  var p = d.project, rc = p.rc || { ceiling: 0, committed: 0, remaining: 0, usedPct: null, quotes: 0 };
+  var quotes = d.workOrders || [], incs = d.budgetIncreases || [], today = S.boot.today;
+  var h = '<div class="card"><div class="row" style="justify-content:space-between"><h2>مشروع تعافي: الموازنة والاستدراجات</h2>' +
+    (canEdit ? '<div class="row no-print"><button class="btn sm pri" data-act="rq-new">+ إضافة استدراج</button><button class="btn sm" data-act="budget-inc">زيادة الموازنة (أمر تغييري)</button></div>' : '') + '</div>' +
+    '<p class="small muted" style="margin:-4px 0 10px">الهدف تشغيل العمال المحليين، بتمويل كامل من ' + esc(S.boot.recoveryFunder) + '.</p>' +
+    '<div class="facts fw-facts"><div class="fact"><small>موازنة المشروع من الصندوق</small><b>' + money(rc.ceiling, p.currency) + '</b></div>' +
+    '<div class="fact"><small>المُلتزم به في ' + quoteCount(rc.quotes) + '</small><b>' + money(rc.committed, p.currency) + '</b><small>' + (rc.usedPct === null ? '—' : fmtNum(rc.usedPct) + '% من الموازنة') + '</small></div>' +
+    '<div class="fact' + (rc.remaining < 0 ? ' st-late gapfact' : '') + '"><small>المتبقي من الموازنة</small><b>' + money(rc.remaining, p.currency) + '</b></div></div>' +
+    '<div class="facts fw-facts workers"><div class="fact"><small>عدد العمال عند البدء</small><b>' + (rc.workersAtStart === '' ? '—' : fmtNum(rc.workersAtStart)) + '</b></div>' +
+    '<div class="fact"><small>العمال الفعليون في الموقع الآن</small><b>' + (rc.activeWorkers === '' ? '—' : fmtNum(rc.activeWorkers)) + '</b><small>يُحدَّث مع كل تحديث للمشروع</small></div>' +
+    '<div class="fact' + (rc.lateQuotes ? ' st-late gapfact' : '') + '"><small>استدراجات متأخرة عن تاريخ انتهائها</small><b>' + (rc.lateQuotes || 0) + '</b><small>' + (rc.doneQuotes || 0) + ' منتهية</small></div></div>';
+  if (incs.length) h += '<div class="small" style="margin:10px 0"><b>زيادات الموازنة بأوامر تغييرية:</b>' + incs.map(function (x) { return '<div>+' + fmtNum(x.amount) + '، أمر تغييري ' + esc(x.voNo) + ' بتاريخ ' + fmtDate(x.voDate) + (x.note ? '، ' + esc(x.note) : '') + '</div>'; }).join('') + '</div>';
+  if (!quotes.length) return h + '<p class="muted" style="margin-top:12px">لا توجد استدراجات بعد.' + (canEdit ? ' أضف أول استدراج.' : '') + '</p></div>';
+  var docsOf = {};
+  d.attachments.forEach(function (a) { if (a.workOrderId) docsOf[a.workOrderId] = (docsOf[a.workOrderId] || 0) + 1; });
+  var stName = { late: 'متأخر', done: 'منتهٍ', waiting: 'لم يبدأ', running: 'جارٍ' }, stKey = { late: 'late', done: 'done', waiting: 'stop', running: 'ok' };
+  h += '<h2 class="wo-title">الاستدراجات</h2><div class="wo-list">' + quotes.map(function (q) {
+    var s = q.actualCompletionDate ? 'done' : q.endDate && q.endDate < today ? 'late' : q.startDate && q.startDate > today ? 'waiting' : 'running';
+    var dd = s === 'late' ? 'متأخر ' + dayCount(dayDiff(q.endDate, today)) : s === 'running' && q.endDate ? 'متبقٍ ' + dayCount(dayDiff(today, q.endDate)) : stName[s];
+    return '<div class="wo-row"><div class="wo-main"><b>استدراج رقم ' + esc(q.decisionNo) + '، ' + esc(q.contractor || '') + '</b>' +
+      '<span class="meta">بتاريخ ' + fmtDate(q.decisionDate) + (q.workType ? '، ' + esc(q.workType) : '') + (q.site ? '، ' + esc(q.site) : '') + '، المستندات: ' + (docsOf[q.id] || 0) + '</span>' +
+      '<span class="meta">من ' + fmtDate(q.startDate) + ' إلى ' + fmtDate(q.endDate) + (q.actualCompletionDate ? '، انتهى فعلياً ' + fmtDate(q.actualCompletionDate) : '') + '</span>' +
+      (q.notes ? '<span class="meta">' + esc(q.notes) + '</span>' : '') + '</div>' +
+      '<div class="wo-num"><small>القيمة</small><b>' + money(q.budget, p.currency) + '</b></div>' +
+      '<div class="wo-num st-' + stKey[s] + '"><small>الحالة</small><b style="color:var(--s)">' + dd + '</b></div>' +
+      (canEdit ? '<div class="wo-acts no-print"><button class="btn sm" data-act="rq-edit" data-arg="' + esc(q.id) + '">تعديل</button><button class="btn sm" data-act="wo-upload" data-arg="' + esc(q.id) + '">رفع مستند</button></div>' : '') + '</div>';
+  }).join('') + '</div></div>';
+  return h;
+}
+
+function openQuotation(id) {
+  var d = S.detail, p = d.project, rc = p.rc || {};
+  var q = id ? (d.workOrders || []).filter(function (x) { return x.id === id; })[0] : {};
+  if (!q) return;
+  var reqId = rid(), room = (rc.remaining || 0) + (id ? Number(q.budget) || 0 : 0);
+  var f = function (k, label, type, hint) {
+    var v = q[k] === undefined ? '' : q[k], inp;
+    if (type === 'type') inp = '<select id="q-' + k + '"><option value="">— اختر النوع —</option>' + S.boot.quoteTypes.map(function (t) { return '<option' + (t === v ? ' selected' : '') + '>' + esc(t) + '</option>'; }).join('') + '</select>';
+    else if (type === 'textarea') inp = '<textarea id="q-' + k + '" style="min-height:60px">' + esc(v) + '</textarea>';
+    else inp = '<input id="q-' + k + '" type="' + type + '" value="' + esc(v) + '"' + (type === 'number' ? ' step="any" min="0" inputmode="decimal"' : '') + '>';
+    return fieldHtml('q-' + k, label, inp, hint);
+  };
+  openModal(id ? 'تعديل استدراج' : 'إضافة استدراج', '<form id="mf"><p class="small muted" style="margin-top:-6px">' + esc(p.name) + '</p>' +
+    '<div class="grid2">' + f('decisionNo', 'رقم الاستدراج *', 'text') + f('decisionDate', 'تاريخ الاستدراج *', 'date') + '</div>' +
+    f('contractor', 'المورد أو المقاول *', 'text') + '<div class="grid2">' + f('workType', 'نوع الاستدراج', 'type') + f('budget', 'قيمة الاستدراج * (' + esc(p.currency || 'العملة غير محددة') + ')', 'number', 'المتاح حالياً من موازنة المشروع: ' + fmtNum(room)) + '</div>' +
+    f('site', 'الموضوع', 'text') +
+    '<div class="grid2">' + f('startDate', 'تاريخ البدء', 'date') + f('endDate', 'تاريخ الانتهاء المتوقع', 'date') + '</div>' +
+    f('actualCompletionDate', 'تاريخ الانتهاء الفعلي', 'date', 'يُترك فارغاً حتى ينتهي التوريد أو الاستئجار.') + f('notes', 'ملاحظات', 'textarea') +
+    '<div class="actions"><button class="btn pri" type="submit" id="q-save">حفظ الاستدراج</button><button class="btn" type="button" data-act="close-modal">إلغاء</button>' +
+    (id ? '<button class="btn danger" type="button" id="q-del">حذف الاستدراج</button>' : '') + '</div></form>',
+    function () {
+      if (id) $('#q-del').addEventListener('click', async function () {
+        if (modalBusy) return;
+        var btn = this;
+        if (!btn.dataset.confirm) { btn.dataset.confirm = '1'; btn.textContent = 'اضغط مرة أخرى لتأكيد حذف الاستدراج'; return; }
+        setBusy(btn, true, 'جارٍ الحذف...');
+        try { await call('workorder.delete', { projectId: p.id, id: id }, { requestId: rid() }); setBusy(btn, false); closeModal(true); toast('تم حذف الاستدراج', 'ok'); await afterWrite(p.id); }
+        catch (e) { setBusy(btn, false); showErr(e.message); }
+      });
+      $('#mf').addEventListener('submit', async function (e) {
+        e.preventDefault(); if (modalBusy) return;
+        var data = {};
+        ['decisionNo', 'decisionDate', 'contractor', 'workType', 'site', 'budget', 'startDate', 'endDate', 'actualCompletionDate', 'notes'].forEach(function (k) { data[k] = val('q-' + k); });
+        var btn = $('#q-save'); setBusy(btn, true);
+        try {
+          var r = await call('workorder.save', { projectId: p.id, id: id || '', version: q.version, data: data }, { requestId: reqId });
+          setBusy(btn, false); closeModal(true); toast(r.unchanged ? 'لم يتغير شيء' : '✓ تم حفظ الاستدراج', 'ok'); await afterWrite(p.id);
+        } catch (err) { setBusy(btn, false); showErr(err.message); }
+      });
+    });
 }
 
 function openWorkOrder(id) {
@@ -1003,7 +1269,7 @@ function openWorkOrder(id) {
   };
   openModal(id ? 'تعديل قرار فرعي' : 'إضافة قرار فرعي', '<form id="mf"><p class="small muted" style="margin-top:-6px">' + esc(p.name) + '</p>' +
     f('decisionNo', 'رقم القرار *', 'text') + f('decisionDate', 'تاريخ القرار *', 'date') +
-    (hasCopy ? '' : fieldHtml('w-copy', 'نسخة عن قرار المجلس' + (id ? '' : ' *'), '<input id="w-copy" type="file" accept="application/pdf,image/*">', 'PDF أو صورة، بحد أقصى ' + esc(S.boot.settings.maxUploadMB) + ' ميغابايت.')) +
+    (hasCopy ? '' : fieldHtml('w-copy', 'نسخة عن قرار المجلس' + (id ? '' : ' *'), filePick('w-copy', 'application/pdf,image/*', false), 'PDF أو صورة، بحد أقصى ' + esc(S.boot.settings.maxUploadMB) + ' ميغابايت.')) +
     f('budget', 'موازنة القرار الفرعي * (' + esc(p.currency || 'العملة غير محددة') + ')', 'number', 'المتاح حالياً من موازنة الاتفاقية: ' + fmtNum(room)) +
     f('site', 'الموضوع', 'text') +
     f('actualCost', 'التكلفة الفعلية للأعمال (' + esc(p.currency || 'العملة غير محددة') + ')', 'number', 'تُقارن تلقائياً بموازنة القرار الفرعي.') +
@@ -1045,7 +1311,7 @@ function openWorkOrder(id) {
 
 function openBudgetIncrease() {
   var p = S.detail.project, reqId = rid();
-  openModal('زيادة الموازنة بأمر تغييري', '<form id="mf"><p class="small">سقف الموازنة الحالي: <b>' + fmtNum((p.fw || {}).ceiling) + '</b> ' + esc(p.currency || '') + '</p>' +
+  openModal('زيادة الموازنة بأمر تغييري', '<form id="mf"><p class="small">سقف الموازنة الحالي: <b>' + fmtNum((p.fw || p.rc || {}).ceiling) + '</b> ' + esc(p.currency || '') + '</p>' +
     fieldHtml('b-voNo', 'رقم الأمر التغييري *', '<input id="b-voNo">') + fieldHtml('b-voDate', 'تاريخ الأمر التغييري *', '<input id="b-voDate" type="date">') +
     fieldHtml('b-amount', 'قيمة الزيادة *', '<input id="b-amount" type="number" step="any" min="0" inputmode="decimal">') +
     fieldHtml('b-note', 'ملاحظة', '<textarea id="b-note" style="min-height:60px"></textarea>') +
@@ -1063,6 +1329,8 @@ function openBudgetIncrease() {
 }
 
 // One history entry: what kind of change, when, who, and old ← new values.
+function kindLabel(k) { return k === 'تمديد معتمد' ? 'أمر تغييري بالمدة' : k; }
+function settingText(t) { return String(t).split('تاريخ الإنجاز المعتمد').join('تاريخ الإنهاء التعاقدي').split('لتاريخ الإنجاز').join('لتاريخ الإنهاء التعاقدي').split('موعد الإنجاز').join('تاريخ الإنهاء التعاقدي'); }
 function historyItem(u, showProject) {
   var parts = [];
   if (u.changes) parts.push('<span style="white-space:pre-wrap">' + esc(u.changes) + '</span>');
@@ -1072,7 +1340,7 @@ function historyItem(u, showProject) {
     if (u.requiredAction) parts.push('الإجراء المطلوب: ' + esc(u.requiredAction));
   }
   if (u.note) parts.push('ملاحظة: ' + esc(u.note));
-  return '<li><div><b>' + esc(u.kind) + '</b>' + (showProject ? ' · <a href="#" data-act="open" data-arg="' + esc(u.projectId) + '">' + esc(u.projectName) + '</a>' : '') +
+  return '<li><div><b>' + esc(kindLabel(u.kind)) + '</b>' + (showProject ? ' · <a href="#" data-act="open" data-arg="' + esc(u.projectId) + '">' + esc(u.projectName) + '</a>' : '') +
     ' <span class="muted small">' + fmtStamp(u.at) + '</span> · ' + who(u.by, true) + '</div><div class="small">' + parts.join('<br>') + '</div></li>';
 }
 
@@ -1102,7 +1370,7 @@ function viewActivity() {
   return '<h1>سجل التعديلات</h1><p class="muted small" style="margin-top:-8px">كل تعديل على أي مشروع: من قام به ومتى وما الذي تغيّر (القيمة السابقة ← الجديدة). لا يمكن لأي مستخدم حذف هذا السجل من المنصة.</p>' +
     '<div class="filters"><input class="s" id="a-q" type="search" placeholder="بحث باسم المشروع أو محتوى التعديل..." value="' + esc(f.q || '') + '">' +
     '<select id="a-by">' + opt('', 'كل المستخدمين', f.by || '') + Object.keys(people).sort().map(function (e) { return opt(e, nameOf(e), f.by || ''); }).join('') + '</select>' +
-    '<select id="a-kind">' + opt('', 'كل أنواع التعديل', f.kind || '') + Object.keys(kinds).map(function (k) { return opt(k, k, f.kind || ''); }).join('') + '</select>' +
+    '<select id="a-kind">' + opt('', 'كل أنواع التعديل', f.kind || '') + Object.keys(kinds).map(function (k) { return opt(k, kindLabel(k), f.kind || ''); }).join('') + '</select>' +
     '<input id="a-from" type="date" title="من تاريخ" value="' + esc(f.from || '') + '"><span></span></div>' +
     '<p class="count" id="a-count">' + list.length + ' تعديل' + (S.activity.total > items.length ? ' (آخر ' + items.length + ' من ' + S.activity.total + ')' : '') + '</p>' +
     '<div class="card"><ul class="timeline" id="a-list">' + (list.length ? list.slice(0, 300).map(function (u) { return historyItem(u, true); }).join('') : '<p class="muted">لا توجد تعديلات مطابقة.</p>') + '</ul></div>';
@@ -1128,6 +1396,15 @@ function closeModal(force) {
   if (modalBusy && !force) { toast('العملية قيد التنفيذ، يرجى الانتظار', 'bad'); return; }
   $modal.innerHTML = '';
 }
+function filePick(id, accept, multiple) {
+  return '<label class="filepick"><input id="' + id + '" type="file" accept="' + accept + '"' + (multiple ? ' multiple' : '') + '><span class="fp-btn">' + (multiple ? 'اختيار الصور' : 'اختيار الملف') + '</span><span class="fp-name">لم يتم الاختيار بعد</span></label>';
+}
+document.addEventListener('change', function (e) {
+  var box = e.target && e.target.closest ? e.target.closest('.filepick') : null;
+  if (!box) return;
+  var f = e.target.files, name = box.querySelector('.fp-name');
+  name.textContent = !f || !f.length ? 'لم يتم الاختيار بعد' : f.length === 1 ? f[0].name : f.length + ' ملفات';
+});
 function fieldHtml(id, label, input, hint) {
   return '<div class="field"><label for="' + id + '">' + label + '</label>' + input + (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>';
 }
@@ -1149,9 +1426,12 @@ function openUpdate() {
   var reqId = rid();
   var opts = S.boot.statuses.filter(function (s) { return s !== 'غير محدد' || p.status === 'غير محدد'; })
     .map(function (s) { return '<option' + (s === p.status ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('');
+  var isFwU = p.contractMethod === S.boot.framework, isRcU = p.contractMethod === S.boot.recovery;
   openModal('تحديث المشروع', '<p class="muted small" style="margin-top:-6px">' + esc(p.name) + '</p><form id="mf">' +
-    fieldHtml('u-progress', 'نسبة الإنجاز الفعلية (%)', '<div class="range"><input type="range" id="u-range" min="0" max="100" step="1" value="' + (p.progress === '' ? 0 : p.progress) + '"><input type="number" id="u-progress" min="0" max="100" step="0.5" inputmode="decimal" value="' + esc(p.progress) + '"></div>',
-      'الإنجاز الفعلي للأعمال في الموقع، وليس الزمن المنقضي من مدة العقد.') +
+    (isFwU ? '<p class="small note-rec">اتفاقية الإطار تُتابَع بالموازنة المستخدمة في القرارات الفرعية، لذلك لا تُدخل نسبة إنجاز.</p>' : '') +
+    (isRcU ? fieldHtml('u-workers', 'عدد العمال الفعليين في الموقع الآن', '<input type="number" id="u-workers" min="0" step="1" inputmode="numeric" value="' + esc(p.activeWorkers === undefined ? '' : p.activeWorkers) + '">', 'عدد العمال المحليين العاملين فعلياً في الموقع اليوم.') : '') +
+    (isFwU ? '' : fieldHtml('u-progress', 'نسبة الإنجاز الفعلية (%)', '<div class="range"><input type="range" id="u-range" min="0" max="100" step="1" value="' + (p.progress === '' ? 0 : p.progress) + '"><input type="number" id="u-progress" min="0" max="100" step="0.5" inputmode="decimal" value="' + esc(p.progress) + '"></div>',
+      'الإنجاز الفعلي للأعمال في الموقع، وليس الزمن المنقضي من مدة العقد.')) +
     fieldHtml('u-status', 'الحالة الحالية', '<select id="u-status">' + opts + '</select>') +
     fieldHtml('u-obstacle', 'العائق (إن وجد)', '<textarea id="u-obstacle" placeholder="مثال: تأخر توريد المواد">' + esc(p.obstacle) + '</textarea>') +
     fieldHtml('u-action', 'الإجراء المطلوب (إن وجد)', '<textarea id="u-action" placeholder="ما المطلوب ومن الجهة المسؤولة؟">' + esc(p.requiredAction) + '</textarea>') +
@@ -1171,7 +1451,7 @@ function openUpdate() {
         setBusy(btn, true);
         try {
           await call('project.update', { id: p.id, version: p.version, data: {
-            progress: val('u-progress'), status: val('u-status'), obstacle: val('u-obstacle'), requiredAction: val('u-action'),
+            progress: isFwU ? '' : val('u-progress'), activeWorkers: isRcU ? val('u-workers') : undefined, status: val('u-status'), obstacle: val('u-obstacle'), requiredAction: val('u-action'),
             nextActionDate: val('u-next'), note: val('u-note') } }, { requestId: reqId });
           setBusy(btn, false); closeModal(true);
           toast('✓ تم حفظ التحديث بنجاح', 'ok');
@@ -1189,11 +1469,12 @@ async function afterWrite(projectId) {
 var CONTRACT_FORM = [
   ['name', 'اسم المشروع', 'text'], ['contractMethod', 'طريقة التعاقد', 'method'],
   ['tenderNo', 'رقم العطاء / الاستدراج / أمر الشراء', 'text'], ['decisionNo', 'رقم القرار', 'text'], ['decisionDate', 'تاريخ القرار', 'date'],
-  ['funder', 'الجهة الممولة', 'text'], ['priority', 'الأولوية', 'select:عالية,متوسطة,منخفضة'], ['contractValue', 'قيمة المشروع', 'number'],
+  ['funder', 'الجهة الممولة', 'text'], ['contractValue', 'قيمة المشروع', 'number'],
   ['currency', 'العملة (مطلوبة عند إدخال القيمة)', 'select:,شيكل,دولار أمريكي,دينار أردني,يورو'], ['durationDays', 'مدة المشروع (يوم)', 'number'],
-  ['ntpDate', 'تاريخ أمر المباشرة', 'date'], ['contractEndDate', 'تاريخ الإنجاز حسب العقد (الأصلي)', 'date'],
+  ['ntpDate', 'تاريخ أمر المباشرة', 'date'], ['contractEndDate', 'تاريخ الإنهاء التعاقدي الأصلي', 'date'],
   ['actualCompletionDate', 'تاريخ التسليم الفعلي', 'date'], ['contractor', 'المقاول', 'text'],
   ['supervisorEmail', 'المهندس المشرف (من مستخدمي القسم)', 'engineer'], ['supervisor', 'اسم المهندس المشرف (غير مسجل في المنصة)', 'text'],
+  ['workersAtStart', 'عدد العمال عند بدء المشروع', 'number'],
   ['notes', 'ملاحظات', 'textarea']
 ];
 
@@ -1221,7 +1502,7 @@ function openContract(isNew) {
       return '<option' + (m === v ? ' selected' : '') + '>' + esc(m) + '</option>'; }).join('') + '</select>';
     else if (type === 'textarea') inp = '<textarea id="' + id + '">' + esc(v) + '</textarea>';
     else inp = '<input id="' + id + '" type="' + type + '" value="' + esc(v) + '"' + (type === 'number' ? ' step="any" min="0" inputmode="decimal"' : '') + '>';
-    var hint = f[0] === 'contractEndDate' ? 'يُحسب تلقائياً = تاريخ أمر المباشرة + مدة المشروع. يُدخل يدوياً فقط إذا كانت المدة غير معروفة. التمديدات المعتمدة تُسجل من زر «إضافة تمديد معتمد» ولا تغيّر هذا التاريخ.'
+    var hint = f[0] === 'contractEndDate' ? 'يُحسب تلقائياً = تاريخ أمر المباشرة + مدة المشروع. يُدخل يدوياً فقط إذا كانت المدة غير معروفة. الأوامر التغييرية بتمديد المدة تُسجل من زر «إضافة أمر تغييري لتمديد المدة» وتبقي هذا التاريخ الأصلي محفوظاً.'
       : f[0] === 'supervisorEmail' ? 'تذكيرات هذا المشروع تُرسل للمهندس المختار ولرئيس القسم فقط. إذا لم يُختر مهندس تُرسل لكل القسم.' : '';
     return fieldHtml(id, f[1] + (f[0] === 'name' || (f[0] === 'contractMethod' && isNew) ? ' *' : ''), inp, hint);
   }).join('');
@@ -1245,10 +1526,13 @@ function openContract(isNew) {
       var setLabel = function (id, text) { var l = $modal.querySelector('label[for="' + id + '"]'); if (l) l.textContent = text; };
       // Framework agreement: the decision carries the annual budget (= ceiling); its engineer covers all sub-decisions.
       var syncName = function () {
-        var fw = method.value === S.boot.framework;
+        var fw = method.value === S.boot.framework, rcm = method.value === S.boot.recovery;
+        var wsF = $('#c-workersAtStart').closest('.field'), fund = $('#c-funder');
+        wsF.classList.toggle('hidden', !rcm);
+        if (rcm) { fund.value = S.boot.recoveryFunder; fund.readOnly = true; fund.style.background = '#f1f5f4'; } else if (fund.readOnly) { fund.readOnly = false; fund.style.background = ''; }
         setLabel('c-decisionNo', fw ? 'رقم قرار المجلس (الموازنة السنوية) *' : 'رقم القرار');
         setLabel('c-decisionDate', fw ? 'تاريخ القرار *' : 'تاريخ القرار');
-        setLabel('c-contractValue', fw ? 'الموازنة الإجمالية المعتمدة (السقف)' : 'قيمة المشروع');
+        setLabel('c-contractValue', fw ? 'الموازنة الإجمالية المعتمدة (السقف)' : rcm ? 'الموازنة الإجمالية من الصندوق (السقف)' : 'قيمة المشروع');
         var engHint = engField.querySelector('.hint');
         if (engHint) engHint.classList.toggle('hidden', fw);
         nameField.classList.toggle('hidden', !!eng.value);
@@ -1282,13 +1566,13 @@ function openContract(isNew) {
 function openExtension() {
   var p = S.detail.project;
   var reqId = rid();
-  openModal('إضافة تمديد معتمد', '<form id="mf"><p class="small">التاريخ المعتمد الحالي: <b>' + fmtDate(p.ind.applicableEnd) + '</b></p>' +
-    fieldHtml('x-ref', 'رقم/مرجع قرار الموافقة *', '<input id="x-ref">') +
+  openModal('إضافة أمر تغييري لتمديد المدة', '<form id="mf"><p class="small">تاريخ الإنهاء التعاقدي الحالي: <b>' + fmtDate(p.ind.applicableEnd) + '</b></p>' +
+    fieldHtml('x-ref', 'رقم/مرجع الأمر التغييري *', '<input id="x-ref">') +
     fieldHtml('x-date', 'تاريخ الموافقة *', '<input id="x-date" type="date">') +
-    fieldHtml('x-days', 'عدد أيام التمديد', '<input id="x-days" type="number" min="1" inputmode="numeric">', 'أدخل عدد الأيام أو تاريخ الإنجاز الجديد مباشرة.') +
-    fieldHtml('x-end', 'تاريخ الإنجاز الجديد', '<input id="x-end" type="date">') +
+    fieldHtml('x-days', 'عدد أيام الأمر التغييري', '<input id="x-days" type="number" min="1" inputmode="numeric">', 'أدخل عدد الأيام أو تاريخ الإنهاء التعاقدي الجديد مباشرة.') +
+    fieldHtml('x-end', 'تاريخ الإنهاء التعاقدي الجديد', '<input id="x-end" type="date">') +
     fieldHtml('x-reason', 'السبب', '<textarea id="x-reason" style="min-height:60px"></textarea>') +
-    '<div class="actions"><button class="btn pri" type="submit" id="x-save">حفظ التمديد</button><button class="btn" type="button" data-act="close-modal">إلغاء</button></div></form>',
+    '<div class="actions"><button class="btn pri" type="submit" id="x-save">حفظ الأمر التغييري</button><button class="btn" type="button" data-act="close-modal">إلغاء</button></div></form>',
     function () {
       $('#mf').addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -1296,7 +1580,7 @@ function openExtension() {
         var btn = $('#x-save'); setBusy(btn, true);
         try {
           await call('project.addExtension', { id: p.id, version: p.version, data: { approvalRef: val('x-ref'), approvalDate: val('x-date'), days: val('x-days'), newEndDate: val('x-end'), reason: val('x-reason') } }, { requestId: reqId });
-          setBusy(btn, false); closeModal(true); toast('✓ تم تسجيل التمديد وتحديث التاريخ المعتمد', 'ok');
+          setBusy(btn, false); closeModal(true); toast('✓ تم تسجيل الأمر التغييري وتحديث تاريخ الإنهاء التعاقدي', 'ok');
           await afterWrite(p.id);
         } catch (err) { setBusy(btn, false); showErr(err.message); }
       });
@@ -1353,11 +1637,12 @@ function uploadFormHtml(projectId, presetType, workOrderId) {
     : fieldHtml('up-proj', '1. اختر المشروع', '<select id="up-proj"><option value="">— اختر المشروع —</option>' + sortProjects(list).map(function (p) { return '<option value="' + esc(p.id) + '">' + esc(p.name) + '</option>'; }).join('') + '</select>');
   // Inside a framework agreement the file can belong to one of its work orders.
   var orders = projectId && S.detail && S.detail.project.id === projectId ? (S.detail.workOrders || []) : [];
-  var woSel = orders.length ? fieldHtml('up-wo', 'القرار الفرعي (اختياري)', '<select id="up-wo"><option value="">— مستند عام للاتفاقية —</option>' + orders.map(function (w) {
+  var rcUp = S.detail && S.detail.project.contractMethod === S.boot.recovery;
+  var woSel = orders.length ? fieldHtml('up-wo', rcUp ? 'الاستدراج (اختياري)' : 'القرار الفرعي (اختياري)', '<select id="up-wo"><option value="">— ' + (rcUp ? 'مستند عام للمشروع' : 'مستند عام للاتفاقية') + ' —</option>' + orders.map(function (w) {
     return '<option value="' + esc(w.id) + '"' + (w.id === workOrderId ? ' selected' : '') + '>' + esc(orderLabel(w.id)) + '</option>'; }).join('') + '</select>') : '';
   return '<form id="upf">' + projSel + woSel +
     fieldHtml('up-type', (projectId ? '1' : '2') + '. نوع المستند', '<select id="up-type"><option value="">— اختر النوع —</option>' + S.boot.docTypes.map(function (t) { return '<option' + (t === presetType ? ' selected' : '') + '>' + esc(t) + '</option>'; }).join('') + '</select>') +
-    fieldHtml('up-file', (projectId ? '2' : '3') + '. اختر الملف', '<input id="up-file" type="file" accept="application/pdf,image/*">', 'PDF أو صورة، بحد أقصى ' + esc(S.boot.settings.maxUploadMB) + ' ميغابايت.') +
+    fieldHtml('up-file', (projectId ? '2' : '3') + '. اختر الملف', filePick('up-file', 'application/pdf,image/*', false), 'PDF أو صورة، بحد أقصى ' + esc(S.boot.settings.maxUploadMB) + ' ميغابايت.') +
     '<div id="up-status" class="hidden"><div class="prog"><i id="up-bar"></i></div><div class="small muted" id="up-text"></div></div>' +
     '<div id="up-done"></div>' +
     '<div class="actions" id="up-actions"><button class="btn pri" type="submit" id="up-save">' + (projectId ? '3' : '4') + '. حفظ ورفع الملف</button><button class="btn hidden" type="button" id="up-cancel">إلغاء الرفع</button></div></form>';
@@ -1436,7 +1721,7 @@ function openAttachmentEdit(id) {
     fieldHtml('ae-type', 'نوع المستند', '<select id="ae-type">' + S.boot.docTypes.map(function (t) { return '<option' + (t === a.docType ? ' selected' : '') + '>' + esc(t) + '</option>'; }).join('') + '</select>') +
     '<div class="actions"><button class="btn" type="button" id="ae-save-type">حفظ النوع</button></div>' +
     '<hr style="border:0;border-top:1px solid var(--line);margin:16px 0">' +
-    fieldHtml('ae-file', 'استبدال الملف بملف آخر', '<input id="ae-file" type="file" accept="application/pdf,image/*">', 'يُستبدل الملف الحالي بالملف الجديد بنفس نوع المستند المختار أعلاه.') +
+    fieldHtml('ae-file', 'استبدال الملف بملف آخر', filePick('ae-file', 'application/pdf,image/*', false), 'يُستبدل الملف الحالي بالملف الجديد بنفس نوع المستند المختار أعلاه.') +
     '<div id="ae-status" class="hidden"><div class="prog"><i id="ae-bar"></i></div><div class="small muted" id="ae-text"></div></div>' +
     '<div class="actions"><button class="btn pri" type="button" id="ae-replace">استبدال الملف</button></div>' +
     '<hr style="border:0;border-top:1px solid var(--line);margin:16px 0">' +
@@ -1574,7 +1859,7 @@ function viewReport() {
   var groups = {};
   rows.forEach(function (p) { (groups[p.deptId] = groups[p.deptId] || []).push(p); });
   var n = 0;
-  var head = '<tr><th class="num">#</th><th>المشروع</th><th>الجهة الممولة</th><th>القيمة</th><th>أمر المباشرة</th><th>الإنجاز المعتمد</th><th>التسليم الفعلي</th><th>التأخير</th><th>الحالة / الإنجاز</th></tr>';
+  var head = '<tr><th class="num">#</th><th>المشروع</th><th>الجهة الممولة</th><th>القيمة</th><th>أمر المباشرة</th><th>تاريخ الإنهاء التعاقدي</th><th>التسليم الفعلي</th><th>التأخير</th><th>الحالة / الإنجاز</th></tr>';
   Object.keys(groups).sort(function (x, y) { return deptName(x) < deptName(y) ? -1 : 1; }).forEach(function (dk) {
     var list = groups[dk].sort(function (x, y) { return String(x.ntpDate) < String(y.ntpDate) ? -1 : 1; });
     var sub = {}; list.forEach(function (p) { addMoney(sub, p); });
@@ -1586,12 +1871,12 @@ function viewReport() {
           [p.contractMethod || 'طريقة التعاقد غير محددة', p.tenderNo, p.contractor].filter(String).map(esc).join(' · ') + '</div></td>' +
           '<td>' + esc(p.funder || '—') + '</td><td class="nowrap">' + (p.contractValue !== '' ? fmtNum(p.contractValue) + ' ' + esc(p.currency || '') : '—') + '</td>' +
           '<td class="nowrap">' + fmtDate(p.ntpDate) + '</td><td class="nowrap">' + fmtDate(p.ind.applicableEnd) +
-          (p.revisedEndDate ? '<div class="small muted">الأصلي ' + fmtDate(p.contractEndDate) + (ext ? ' · +' + ext + ' يوم تمديد' : '') + '</div>' : '') + '</td>' +
+          (p.revisedEndDate ? '<div class="small muted">الأصلي ' + fmtDate(p.contractEndDate) + (ext ? ' · +' + ext + ' يوم بأمر تغييري' : '') + '</div>' : '') + '</td>' +
           '<td class="nowrap">' + fmtDate(p.actualCompletionDate) + '</td><td class="nowrap">' + delayCell(delayOf(p, today)) + '</td>' +
           '<td class="nowrap">' + esc(p.status || 'غير محدد') + '<div class="small">' + progressText(p) + '</div></td></tr>';
         var orders = (S.regOrders || {})[p.id] || [];
         if (orders.length) row += orders.map(function (w) {
-          return '<tr class="wo"><td></td><td colspan="2">↳ قرار ' + esc(w.decisionNo) + ' بتاريخ ' + fmtDate(w.decisionDate) + (w.site ? '<span class="small muted"> · ' + esc(w.site) + '</span>' : '') + '</td>' +
+          return '<tr class="wo"><td></td><td colspan="2">↳ ' + (p.contractMethod === S.boot.recovery ? 'استدراج ' + esc(w.decisionNo) + '، ' + esc(w.contractor || '') : 'قرار ' + esc(w.decisionNo)) + ' بتاريخ ' + fmtDate(w.decisionDate) + (w.site ? '<span class="small muted"> · ' + esc(w.site) + '</span>' : '') + '</td>' +
             '<td class="nowrap">' + fmtNum(w.budget) + '</td><td colspan="5" class="small">' + (w.actualCost !== '' && w.actualCost !== undefined ? 'التكلفة الفعلية: ' + fmtNum(w.actualCost) : '') + '</td></tr>';
         }).join('');
         return row;
@@ -1621,11 +1906,11 @@ function viewAdmin() {
   if (t === 'users') {
     h += '<div class="card"><div class="row" style="justify-content:space-between"><h2>المستخدمون</h2><button class="btn pri sm" data-act="user-edit" data-arg="">+ إضافة مستخدم</button></div><div class="tscroll"><table class="t"><tr><th>الاسم</th><th>المسمى الوظيفي</th><th>البريد</th><th>الدور</th><th>الأقسام</th><th>مفعّل</th><th>يستلم التذكيرات</th><th>آخر دخول</th><th></th></tr>' +
       A.users.map(function (u) {
-        return '<tr><td>' + esc(u.name) + '</td><td>' + esc(u.title || '—') + '</td><td class="ltr" style="text-align:right">' + esc(u.email) + '</td><td>' + esc(A.roles[u.role] || u.role) + '</td><td>' + esc(dn(u.deptIds)) + '</td><td>' + (u.active === 'نعم' ? '✓' : '✗') + '</td><td>' + (u.notify === 'نعم' ? '✓' : '—') + '</td><td class="small">' + fmtStamp(u.lastLogin) + '</td><td><button class="btn sm" data-act="user-edit" data-arg="' + esc(u.email) + '">تعديل</button></td></tr>';
+        return '<tr><td>' + esc(u.name) + '</td><td>' + esc(u.title || '—') + '</td><td class="ltr" style="text-align:right">' + esc(u.email) + '</td><td>' + esc(A.roles[u.role] || u.role) + '</td><td>' + esc(dn(u.deptIds)) + '</td><td>' + '<span class="yn ' + (u.active === 'نعم' ? 'y' : 'n') + '">' + ic(u.active === 'نعم' ? 'yes' : 'no') + '</span>' + '</td><td>' + (u.notify === 'نعم' ? '<span class="yn y">' + ic('yes') + '</span>' : '—') + '</td><td class="small">' + fmtStamp(u.lastLogin) + '</td><td><button class="btn sm" data-act="user-edit" data-arg="' + esc(u.email) + '">تعديل</button></td></tr>';
       }).join('') + '</table></div><p class="muted small">رئيس القسم يرى ويحدّث مشاريع أقسامه فقط. الإدارة ترى كل المشاريع دون تعديل. مدير النظام يدير كل شيء. عند الحفظ تُحدَّث صلاحيات قراءة مجلدات المرفقات في Google Drive تلقائياً.</p></div>';
   } else if (t === 'depts') {
     h += '<div class="card"><div class="row" style="justify-content:space-between"><h2>الأقسام</h2><button class="btn pri sm" data-act="dept-edit" data-arg="">+ إضافة قسم</button></div><table class="t"><tr><th>الرمز</th><th>القسم</th><th>الدائرة</th><th>مفعّل</th><th></th></tr>' +
-      A.departments.map(function (d) { return '<tr><td>' + esc(d.id) + '</td><td>' + esc(d.name) + '</td><td>' + esc(d.parent) + '</td><td>' + (d.active === 'نعم' ? '✓' : '✗') + '</td><td><button class="btn sm" data-act="dept-edit" data-arg="' + esc(d.id) + '">تعديل</button></td></tr>'; }).join('') + '</table></div>';
+      A.departments.map(function (d) { return '<tr><td>' + esc(d.id) + '</td><td>' + esc(d.name) + '</td><td>' + esc(d.parent) + '</td><td>' + '<span class="yn ' + (d.active === 'نعم' ? 'y' : 'n') + '">' + ic(d.active === 'نعم' ? 'yes' : 'no') + '</span>' + '</td><td><button class="btn sm" data-act="dept-edit" data-arg="' + esc(d.id) + '">تعديل</button></td></tr>'; }).join('') + '</table></div>';
   } else if (t === 'settings') {
     h += '<div class="card" style="max-width:720px"><h2>الإعدادات</h2><form id="setf">' + A.settings.map(function (s) {
       if (s.key === 'requiredDocs') {
@@ -1637,12 +1922,12 @@ function viewAdmin() {
       var isYes = /^(نعم|لا)$/.test(s.value) || ['overdueReminders', 'remindersEnabled', 'updateReminders'].indexOf(s.key) >= 0;
       var inp = isYes ? '<select id="s-' + esc(s.key) + '"><option' + (s.value === 'نعم' ? ' selected' : '') + '>نعم</option><option' + (s.value !== 'نعم' ? ' selected' : '') + '>لا</option></select>'
         : '<input id="s-' + esc(s.key) + '" value="' + esc(s.value) + '"' + (s.key === 'extraRecipients' ? ' class="ltr"' : '') + '>';
-      return fieldHtml('s-' + esc(s.key), esc(s.description), inp);
+      return fieldHtml('s-' + esc(s.key), esc(settingText(s.description)), inp);
     }).join('') + '<div class="actions"><button class="btn pri" type="submit" id="s-save">حفظ الإعدادات</button></div></form></div>';
     setTimeout(bindSettings, 0);
   } else if (t === 'reminders') {
     h += '<div class="card"><h2>التذكيرات بالبريد</h2><p class="small">يفحص النظام المشاريع يومياً الساعة 7 صباحاً تقريباً، ولا يرسل إلا عند استحقاق أحد تذكيرين:</p><ul class="small">' +
-      '<li><b>تنبيه واحد قبل ' + esc(S.boot.settings.reminderDays) + ' يوماً</b> من تاريخ الإنجاز المعتمد، للمهندس المشرف ورئيس القسم ومدراء النظام والإدارة (يُعاد فقط إذا تغيّر التاريخ بتمديد معتمد).</li>' +
+      '<li><b>تنبيه واحد قبل ' + esc(S.boot.settings.reminderDays) + ' يوماً</b> من تاريخ الإنهاء التعاقدي، للمهندس المشرف ورئيس القسم ومدراء النظام والإدارة (يُعاد فقط إذا تغيّر التاريخ بأمر تغييري).</li>' +
       '<li><b>تذكير بالتحديث</b> للمهندس المشرف ورئيس القسم إذا لم يُحدَّث المشروع لمدة 30 يوماً، ويتكرر كل 30 يوماً حتى يُحدَّث.</li></ul><p class="small">المهندس المشرف يُختار في «تعديل بيانات العقد». المشروع بلا مهندس مرتبط بحساب تُرسل تذكيراته لكل رئيس قسم ومهندس في قسمه.</p>' +
       '<p class="small muted">لا تُرسل تذكيرات للمشاريع المنجزة أو المحذوفة. يستلم كل شخص رسالة واحدة تجمع مشاريعه. يمكن تعديل المدد من «الإعدادات».</p>' +
       '<div class="actions"><button class="btn" data-act="rem-preview">معاينة ما سيُرسل الآن</button><button class="btn pri" data-act="rem-run">إرسال التذكيرات المستحقة الآن</button></div><div id="rem-out"></div></div>' +
@@ -1735,6 +2020,8 @@ var ACT = {
   'login-back': function () { loginStage = 'email'; renderLogin(); },
   'login-resend': function () { sendCode(true); },
   reload: function () { start(); },
+  'ar-year': function (y) { S.arYear = y; render(); },
+  'print-page': function () { window.print(); },
   kpi: function (k) {
     S.f = { __set: 1, status: 'active', ind: k === 'active' ? '' : k };
     go(deptRole() ? 'mine' : 'list');
@@ -1765,6 +2052,8 @@ var ACT = {
     });
   },
   'wo-new': function () { openWorkOrder(''); },
+  'rq-new': function () { openQuotation(''); },
+  'rq-edit': function (id) { openQuotation(id); },
   'wo-edit': function (id) { openWorkOrder(id); },
   'wo-upload': function (id) { openUploadModal(S.detail.project.id, '', id); },
   'wo-copy': function (id) { openUploadModal(S.detail.project.id, S.boot.decisionCopy, id); },
