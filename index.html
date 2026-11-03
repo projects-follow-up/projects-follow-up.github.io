@@ -868,6 +868,7 @@ function viewProject() {
       }).join('') + '</div>';
   }
 
+  h += notesSection(d);
   h += photosSection(d, canEdit);
 
   // Attachments grouped by type
@@ -1078,6 +1079,62 @@ function openPhotoUpload(workOrderId) {
           refreshBoot().catch(function () { });
           call('project.get', { id: p.id }).then(function (nd) { S.detail = nd; }).catch(function () { });
         }
+      });
+    });
+}
+
+// Notes to the project engineer (sent by email; replies go to the sender's email).
+function notesSection(d) {
+  var notes = d.notes || [], nt = d.noteTo || { to: [] };
+  if (!d.canSendNote && !notes.length) return '';
+  var target = nt.to.length ? (nt.toEngineer ? 'تُرسل إلى مهندس المشروع: ' : 'لا يوجد مهندس مرتبط، تُرسل إلى رئيس القسم: ') + nt.to.map(function (e) { return who(e); }).join('، ')
+    : 'لا يوجد مهندس مرتبط بالمشروع ولا رئيس قسم مسجل، لا يمكن الإرسال.';
+  return '<div class="card"><div class="row" style="justify-content:space-between"><h2>ملاحظات لمهندس المشروع</h2>' +
+    (d.canSendNote && nt.to.length ? '<button class="btn sm pri no-print" data-act="note-new">إرسال ملاحظة</button>' : '') + '</div>' +
+    (d.canSendNote ? '<p class="muted small">' + target + '</p>' : '') +
+    (notes.length ? notes.map(function (n) {
+      return '<div class="att" style="align-items:flex-start"><div><div class="small"><b>' + who(n.by) + '</b> · ' + fmtStamp(n.at) + ' · إلى: ' + n.to.map(function (e) { return who(e); }).join('، ') + '</div>' +
+        '<div style="white-space:pre-wrap;margin-top:4px">' + esc(n.text) + '</div></div>' +
+        (n.canDelete ? '<button class="btn sm no-print" data-act="note-del" data-arg="' + esc(n.id) + '">حذف</button>' : '') + '</div>';
+    }).join('') : '<p class="muted small">لا توجد ملاحظات مرسلة.</p>') + '</div>';
+}
+function openNote() {
+  var d = S.detail, p = d.project, nt = d.noteTo, reqId = rid();
+  openModal('إرسال ملاحظة لمهندس المشروع', '<form id="mf"><p class="small">' + (nt.toEngineer ? 'إلى مهندس المشروع: ' : 'لا يوجد مهندس مرتبط، إلى رئيس القسم: ') + '<b>' + nt.to.map(function (e) { return who(e); }).join('، ') + '</b>. تصلك نسخة على بريدك، والرد يأتي إلى بريدك مباشرة.</p>' +
+    fieldHtml('n-text', 'نص الملاحظة *', '<textarea id="n-text" maxlength="2000" style="min-height:120px"></textarea>') +
+    (nt.toEngineer && nt.heads.length ? '<label class="small" style="display:flex;gap:6px;align-items:center;margin:4px 0 10px"><input type="checkbox" id="n-cc"> إرسال نسخة لرئيس القسم</label>' : '') +
+    '<div class="actions"><button class="btn pri" type="submit" id="n-save">إرسال</button><button class="btn" type="button" data-act="close-modal">إلغاء</button></div></form>',
+    function () {
+      $('#mf').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        if (modalBusy) return;
+        if (!val('n-text').trim()) { showErr('يرجى كتابة نص الملاحظة'); return; }
+        var btn = $('#n-save'); setBusy(btn, true);
+        try {
+          await call('note.send', { projectId: p.id, text: val('n-text'), ccHead: !!($('#n-cc') && $('#n-cc').checked) }, { requestId: reqId });
+          setBusy(btn, false); closeModal(true); toast('✓ تم إرسال الملاحظة بالبريد', 'ok');
+          await afterWrite(p.id);
+        } catch (err) { setBusy(btn, false); showErr(err.message); }
+      });
+    });
+}
+function openNoteDelete(id) {
+  var p = S.detail.project, n = (S.detail.notes || []).filter(function (x) { return x.id === id; })[0];
+  if (!n) return;
+  openModal('حذف الملاحظة', '<form id="mf"><p class="small">لا يمكن سحب بريد وصل للمستلم، لكن يمكن إبلاغه بأن الملاحظة ملغاة. تبقى الملاحظة محفوظة في السجل مع اسم من حذفها.</p>' +
+    '<div style="white-space:pre-wrap;background:var(--soft,#f6f3ee);padding:8px 10px;border-radius:8px;margin-bottom:10px" class="small">' + esc(n.text) + '</div>' +
+    '<label class="small" style="display:flex;gap:6px;align-items:center;margin:4px 0 10px"><input type="checkbox" id="n-notify" checked> إرسال بريد للمستلم بأن الملاحظة ملغاة</label>' +
+    '<div class="actions"><button class="btn danger" type="submit" id="n-del">حذف الملاحظة</button><button class="btn" type="button" data-act="close-modal">إلغاء</button></div></form>',
+    function () {
+      $('#mf').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        if (modalBusy) return;
+        var btn = $('#n-del'); setBusy(btn, true);
+        try {
+          await call('note.delete', { id: id, notify: $('#n-notify').checked }, { requestId: rid() });
+          setBusy(btn, false); closeModal(true); toast('✓ تم حذف الملاحظة', 'ok');
+          await afterWrite(p.id);
+        } catch (err) { setBusy(btn, false); showErr(err.message); }
       });
     });
 }
@@ -1345,7 +1402,7 @@ function historyItem(u, showProject) {
     ' <span class="muted small">' + fmtStamp(u.at) + '</span> · ' + who(u.by, true) + '</div><div class="small">' + parts.join('<br>') + '</div></li>';
 }
 
-// ---------- Activity log (admin + management) ----------
+// ---------- Activity log (admin + management + municipal engineer) ----------
 async function loadActivity() {
   try { S.activity = await call('activity.list'); if (S.view === 'activity') render(); }
   catch (e) { var b = document.getElementById('act'); if (b) b.innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
@@ -1908,7 +1965,7 @@ function viewAdmin() {
     h += '<div class="card"><div class="row" style="justify-content:space-between"><h2>المستخدمون</h2><button class="btn pri sm" data-act="user-edit" data-arg="">+ إضافة مستخدم</button></div><div class="tscroll"><table class="t"><tr><th>الاسم</th><th>المسمى الوظيفي</th><th>البريد</th><th>الدور</th><th>الأقسام</th><th>مفعّل</th><th>يستلم التذكيرات</th><th>آخر دخول</th><th></th></tr>' +
       A.users.map(function (u) {
         return '<tr><td>' + esc(u.name) + '</td><td>' + esc(u.title || '—') + '</td><td class="ltr" style="text-align:right">' + esc(u.email) + '</td><td>' + esc(A.roles[u.role] || u.role) + '</td><td>' + esc(dn(u.deptIds)) + '</td><td>' + '<span class="yn ' + (u.active === 'نعم' ? 'y' : 'n') + '">' + ic(u.active === 'نعم' ? 'yes' : 'no') + '</span>' + '</td><td>' + (u.notify === 'نعم' ? '<span class="yn y">' + ic('yes') + '</span>' : '—') + '</td><td class="small">' + fmtStamp(u.lastLogin) + '</td><td><button class="btn sm" data-act="user-edit" data-arg="' + esc(u.email) + '">تعديل</button></td></tr>';
-      }).join('') + '</table></div><p class="muted small">رئيس القسم يرى ويحدّث مشاريع أقسامه فقط. الإدارة ترى كل المشاريع دون تعديل. مدير النظام يدير كل شيء. عند الحفظ تُحدَّث صلاحيات قراءة مجلدات المرفقات في Google Drive تلقائياً.</p></div>';
+      }).join('') + '</table></div><p class="muted small">رئيس القسم يرى ويحدّث مشاريع أقسامه فقط. الإدارة ترى كل المشاريع دون تعديل. مهندس البلدية يرى كل المشاريع ويرسل ملاحظات لمهندسي المشاريع دون تعديل. مدير النظام يدير كل شيء. عند الحفظ تُحدَّث صلاحيات قراءة مجلدات المرفقات في Google Drive تلقائياً.</p></div>';
   } else if (t === 'depts') {
     h += '<div class="card"><div class="row" style="justify-content:space-between"><h2>الأقسام</h2><button class="btn pri sm" data-act="dept-edit" data-arg="">+ إضافة قسم</button></div><table class="t"><tr><th>الرمز</th><th>القسم</th><th>الدائرة</th><th>مفعّل</th><th></th></tr>' +
       A.departments.map(function (d) { return '<tr><td>' + esc(d.id) + '</td><td>' + esc(d.name) + '</td><td>' + esc(d.parent) + '</td><td>' + '<span class="yn ' + (d.active === 'نعم' ? 'y' : 'n') + '">' + ic(d.active === 'نعم' ? 'yes' : 'no') + '</span>' + '</td><td><button class="btn sm" data-act="dept-edit" data-arg="' + esc(d.id) + '">تعديل</button></td></tr>'; }).join('') + '</table></div>';
@@ -1969,7 +2026,7 @@ function openUserEdit(email) {
     fieldHtml('ue-name', 'الاسم', '<input id="ue-name" value="' + esc(u.name || '') + '" placeholder="مثال: م. أحمد خالد">') +
     fieldHtml('ue-title', 'المسمى الوظيفي', '<input id="ue-title" value="' + esc(u.title || '') + '" placeholder="مثال: رئيس قسم المشاريع، مهندس البلدية، مدير الدائرة الهندسية">') +
     fieldHtml('ue-role', 'الدور (الصلاحية) *', '<select id="ue-role">' + Object.keys(A.roles).map(function (r) { return '<option value="' + r + '"' + (u.role === r ? ' selected' : '') + '>' + esc(A.roles[r]) + '</option>'; }).join('') + '</select>',
-      'رئيس قسم / مهندس: يرى ويحدّث مشاريع الأقسام المختارة فقط · الإدارة: ترى كل المشاريع دون تعديل · مدير النظام: صلاحيات كاملة (مثل مدير الدائرة الهندسية)') +
+      'رئيس قسم / مهندس: يرى ويحدّث مشاريع الأقسام المختارة فقط · الإدارة: ترى كل المشاريع دون تعديل · مهندس البلدية: يرى كل المشاريع ويرسل ملاحظات لمهندسي المشاريع · مدير النظام: صلاحيات كاملة (مثل مدير الدائرة الهندسية)') +
     '<div class="field"><label>الأقسام (لرئيس القسم)</label>' + A.departments.map(function (d) { return '<label class="check" style="font-weight:400"><input type="checkbox" class="ue-dept" value="' + esc(d.id) + '"' + (ids.indexOf(d.id) >= 0 ? ' checked' : '') + '> ' + esc(d.name) + '</label>'; }).join('') + '</div>' +
     '<div class="field"><label class="check"><input type="checkbox" id="ue-active"' + (u.active === 'نعم' ? ' checked' : '') + '> الحساب مفعّل</label></div>' +
     '<div class="field"><label class="check"><input type="checkbox" id="ue-notify"' + (u.notify === 'نعم' ? ' checked' : '') + '> يستلم تذكيرات البريد</label></div>' +
@@ -2016,6 +2073,8 @@ async function adminAction(action, outId, fmt) {
 
 // ---------- Event delegation ----------
 var ACT = {
+  'note-new': function () { openNote(); },
+  'note-del': function (id) { openNoteDelete(id); },
   nav: function (v) { if (v === 'list' || v === 'mine') S.f = {}; if (v === 'admin') S.admin = null; if (v === 'activity') S.activity = null; go(v); },
   logout: function () { call('auth.logout', {}).catch(function () { }); endSession(); renderLogin(); },
   'login-back': function () { loginStage = 'email'; renderLogin(); },
