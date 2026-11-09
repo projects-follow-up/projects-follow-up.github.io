@@ -502,11 +502,11 @@ function homeView() { return deptRole() ? 'mine' : 'dash'; }
 
 function navItems() {
   var r = role(), items = [];
-  if (deptRole()) items.push(['mine', 'مشاريعي'], ['dash', 'لوحة المتابعة'], ['upload', 'رفع مستند'], ['report', 'سجل المشاريع'], ['annual', 'التقرير السنوي']);
+  if (deptRole()) items.push(['mine', 'مشاريعي'], ['dash', 'لوحة المتابعة'], ['upload', 'رفع مستند'], ['report', 'سجل المشاريع']);
   else {
     items.push(['dash', 'لوحة المتابعة'], ['list', 'جميع المشاريع']);
     if (r === 'admin') items.push(['upload', 'رفع مستند']);
-    items.push(['activity', 'سجل التعديلات'], ['report', 'سجل المشاريع'], ['annual', 'التقرير السنوي']);
+    items.push(['activity', 'سجل التعديلات'], ['report', 'سجل المشاريع']);
     if (r === 'admin') items.push(['admin', 'الإدارة']);
   }
   return items;
@@ -533,7 +533,7 @@ function render() {
   else if (v === 'upload') html = viewUploadPage();
   else if (v === 'report') html = viewReport();
   else if (v === 'archive') { S.f = { __set: 1, status: 'منجز' }; S.view = deptRole() ? 'mine' : 'list'; html = viewList(S.view); }
-  else if (v === 'annual') html = viewAnnual();
+  else if (v === 'annual') { S.rf = { status: 'all', year: String(S.boot.today).slice(0, 4) }; S.view = 'report'; html = viewReport(); }
   else if (v === 'admin') html = viewAdmin();
   else if (v === 'activity') html = viewActivity();
   else html = viewDash();
@@ -546,8 +546,7 @@ function afterRender(v) {
   if (v === 'project' && (!S.detail || S.detail.project.id !== S.params.id)) loadDetail(S.params.id);
   if (v === 'admin' && !S.admin) loadAdmin();
   if (v === 'activity') { if (!S.activity) loadActivity(); else bindActivity(); }
-  if (v === 'report') bindRegister();
-  if (v === 'annual') { var ay = document.getElementById('an-year'); if (ay) ay.addEventListener('change', function () { S.anYear = ay.value; render(); }); }
+  if (v === 'report' || v === 'annual') bindRegister();
 }
 
 async function refreshBoot() {
@@ -666,28 +665,6 @@ function viewDash() {
 // A finished project belongs to the year it ended; anything not finished stays alive and is never archived.
 function endYear(p) { return p.actualCompletionDate ? String(p.actualCompletionDate).slice(0, 4) : ''; }
 function finishedProjects() { return S.boot.projects.filter(function (p) { return p.status === 'منجز'; }); }
-function viewAnnual() {
-  var b = S.boot, today = b.today, nowY = String(today).slice(0, 4), years = {};
-  years[nowY] = 1;
-  b.projects.forEach(function (p) { if (endYear(p)) years[endYear(p)] = 1; if (p.ntpDate) years[String(p.ntpDate).slice(0, 4)] = 1; });
-  var ks = Object.keys(years).sort().reverse(), y = S.anYear && years[S.anYear] ? S.anYear : nowY;
-  var ended = b.projects.filter(function (p) { return p.status === 'منجز' && endYear(p) === y; });
-  var started = b.projects.filter(function (p) { return String(p.ntpDate).slice(0, 4) === y; });
-  var alive = b.projects.filter(function (p) { return p.status !== 'منجز' && p.ntpDate && String(p.ntpDate).slice(0, 4) <= y; });
-  var late = ended.filter(function (p) { return delayOf(p, today) > 0; });
-  var totals = function (ps) { var m = {}; ps.forEach(function (p) { if (cv(p) !== '' && cv(p) !== null) { var c = p.currency || ''; m[c] = (m[c] || 0) + Number(cv(p)); } }); return Object.keys(m).map(function (c) { return money(m[c], c) + (c ? '' : ' (عملة غير محددة)'); }).join('، ') || '—'; };
-  var fact = function (n, l) { return '<div class="fact"><small>' + l + '</small><b>' + n + '</b></div>'; };
-  var depts = b.departments.filter(function (d) { return ended.concat(started, alive).some(function (p) { return p.deptId === d.id; }); });
-  var inDept = function (ps, id) { return ps.filter(function (p) { return p.deptId === id; }); };
-  return '<style>@page{size:A4 landscape;margin:10mm}</style><div class="phead row" style="justify-content:space-between"><h1>التقرير السنوي ' + esc(y) + '</h1><div class="row no-print"><select id="an-year" aria-label="السنة">' +
-    ks.map(function (k) { return '<option' + (k === y ? ' selected' : '') + '>' + k + '</option>'; }).join('') + '</select><button class="btn pri" data-act="print">طباعة / حفظ PDF</button></div></div>' +
-    '<div class="facts">' + fact(ended.length, 'انتهت في ' + y) + fact(started.length, 'بدأت في ' + y) + fact(alive.length, 'ما زالت قائمة') + fact(late.length, 'انتهت متأخرة عن موعدها') + '</div>' +
-    '<div class="card" style="margin-top:14px"><h2>القيمة</h2><dl class="kv"><dt>قيمة المشاريع المنتهية</dt><dd>' + totals(ended) + '</dd><dt>قيمة المشاريع التي بدأت</dt><dd>' + totals(started) + '</dd><dt>قيمة المشاريع القائمة</dt><dd>' + totals(alive) + '</dd></dl></div>' +
-    '<div class="card"><h2>حسب القسم</h2><div class="tscroll"><table class="t"><tr><th>القسم</th><th class="num">انتهت</th><th class="num">بدأت</th><th class="num">ما زالت قائمة</th><th class="num">انتهت متأخرة</th></tr>' +
-    depts.map(function (d) { return '<tr><td>' + esc(d.name) + '</td><td class="num">' + inDept(ended, d.id).length + '</td><td class="num">' + inDept(started, d.id).length + '</td><td class="num">' + inDept(alive, d.id).length + '</td><td class="num">' + inDept(late, d.id).length + '</td></tr>'; }).join('') + '</table></div></div>' +
-    '<div class="sect"><h2>المشاريع التي انتهت في ' + esc(y) + '</h2>' + (ended.length ? '<div class="plist">' + ended.map(projectItem).join('') + '</div>' : '<div class="card muted">لا توجد مشاريع انتهت في هذه السنة.</div>') + '</div>';
-}
-
 // ---------- Lists ----------
 function projectItem(p) {
   var st = stateOf(p), x = expectedProgress(p), ms = [], i = p.ind, ft = p.fw ? fwTime(p) : null;
@@ -1987,6 +1964,29 @@ async function loadRegisterOrders() {
   try { S.regOrders = await call('report.workOrders'); if (S.view === 'report') render(); }
   catch (e) { S.regOrders = {}; toast(e.message, 'bad'); }
 }
+// A project belongs to year y if it finished in y, started in y, or was still running in y.
+function inYear(p, y) {
+  var ny = String(p.ntpDate || '').slice(0, 4);
+  return (p.status === 'منجز' && endYear(p) === y) || ny === y || (p.status !== 'منجز' && ny && ny <= y);
+}
+// Year summary (the former annual report), shown above the register when a year is chosen.
+function yearSummary(rows, y) {
+  var today = S.boot.today;
+  var ended = rows.filter(function (p) { return p.status === 'منجز' && endYear(p) === y; });
+  var started = rows.filter(function (p) { return String(p.ntpDate).slice(0, 4) === y; });
+  var alive = rows.filter(function (p) { return p.status !== 'منجز' && p.ntpDate && String(p.ntpDate).slice(0, 4) <= y; });
+  var late = ended.filter(function (p) { return delayOf(p, today) > 0; });
+  var totals = function (ps) { var m = {}; ps.forEach(function (p) { if (cv(p) !== '' && cv(p) !== null) { var c = p.currency || ''; m[c] = (m[c] || 0) + Number(cv(p)); } }); return Object.keys(m).map(function (c) { return money(m[c], c) + (c ? '' : ' (عملة غير محددة)'); }).join('، ') || '—'; };
+  var fact = function (n, l) { return '<div class="fact"><small>' + l + '</small><b>' + n + '</b></div>'; };
+  var depts = S.boot.departments.filter(function (d) { return rows.some(function (p) { return p.deptId === d.id; }); });
+  var inDept = function (ps, id) { return ps.filter(function (p) { return p.deptId === id; }).length; };
+  return '<div class="rep-year"><h2>ملخص سنة ' + esc(y) + '</h2>' +
+    '<div class="facts">' + fact(ended.length, 'انتهت في ' + esc(y)) + fact(started.length, 'بدأت في ' + esc(y)) + fact(alive.length, 'ما زالت قائمة') + fact(late.length, 'انتهت متأخرة عن موعدها') + '</div>' +
+    '<div class="grid2" style="margin-top:10px"><div class="card"><h2>القيمة</h2><dl class="kv"><dt>المشاريع المنتهية</dt><dd>' + totals(ended) + '</dd><dt>المشاريع التي بدأت</dt><dd>' + totals(started) + '</dd><dt>المشاريع القائمة</dt><dd>' + totals(alive) + '</dd></dl></div>' +
+    '<div class="card"><h2>حسب القسم</h2><div class="tscroll"><table class="t"><tr><th>القسم</th><th class="num">انتهت</th><th class="num">بدأت</th><th class="num">ما زالت قائمة</th><th class="num">انتهت متأخرة</th></tr>' +
+    depts.map(function (d) { return '<tr><td>' + esc(d.name) + '</td><td class="num">' + inDept(ended, d.id) + '</td><td class="num">' + inDept(started, d.id) + '</td><td class="num">' + inDept(alive, d.id) + '</td><td class="num">' + inDept(late, d.id) + '</td></tr>'; }).join('') +
+    '</table></div></div></div></div>';
+}
 function registerRows() {
   var f = S.rf, b = S.boot, today = b.today;
   return b.projects.filter(function (p) {
@@ -1995,7 +1995,7 @@ function registerRows() {
     if (f.status === 'completed' && p.status !== 'منجز') return false;
     if (f.method && (f.method === 'none' ? p.contractMethod : p.contractMethod !== f.method)) return false;
     if (f.funder && p.funder !== f.funder) return false;
-    if (f.year && String(p.ntpDate).slice(0, 4) !== f.year) return false;
+    if (f.year && !inYear(p, f.year)) return false;
     if (f.late && !(delayOf(p, today) > 0)) return false;
     return true;
   });
@@ -2006,7 +2006,8 @@ function viewReport() {
   var f = S.rf, b = S.boot, today = b.today;
   var opt = function (v, l, cur) { return '<option value="' + esc(v) + '"' + (String(cur || '') === String(v) ? ' selected' : '') + '>' + esc(l) + '</option>'; };
   var funders = {}, years = {};
-  b.projects.forEach(function (p) { if (p.funder) funders[p.funder] = 1; if (p.ntpDate) years[String(p.ntpDate).slice(0, 4)] = 1; });
+  years[String(today).slice(0, 4)] = 1;
+  b.projects.forEach(function (p) { if (p.funder) funders[p.funder] = 1; if (p.ntpDate) years[String(p.ntpDate).slice(0, 4)] = 1; if (endYear(p)) years[endYear(p)] = 1; });
   var rows = registerRows();
   var money = function (m) { return Object.keys(m).map(function (c) { return fmtNum(m[c]) + ' ' + esc(c === '-' ? '(دون عملة)' : c); }).join(' · ') || '—'; };
   var addMoney = function (m, p) { if (cv(p) !== '' && cv(p) !== null) { var c = p.currency || '-'; m[c] = (m[c] || 0) + Number(cv(p)); } };
@@ -2019,22 +2020,23 @@ function viewReport() {
     var d = delayOf(p, today); if (d > 0) { late++; lateDays += d; }
   });
   var filtersTxt = [f.dept ? deptName(f.dept) : 'كل الأقسام', { all: 'كل الحالات', active: 'المشاريع النشطة', completed: 'المنجزة' }[f.status],
-    f.method ? (f.method === 'none' ? 'طريقة تعاقد غير محددة' : f.method) : '', f.funder || '', f.year ? 'سنة ' + f.year : '', f.late ? 'المتأخرة فقط' : ''].filter(String).join(' · ');
+    f.method ? (f.method === 'none' ? 'طريقة تعاقد غير محددة' : f.method) : '', f.funder || '', f.year ? 'المشاريع التي انتهت أو بدأت أو كانت قائمة في ' + f.year : '', f.late ? 'المتأخرة فقط' : ''].filter(String).join(' · ');
   var h = '<style>@page{size:A4 landscape;margin:10mm}</style>' +
-    '<div class="rep-head"><img src="' + PM_LOGO + '" alt="بلدية نابلس"><div><div class="rep-title">سجل المشاريع</div>' +
+    '<div class="rep-head"><img src="' + PM_LOGO + '" alt="بلدية نابلس"><div><div class="rep-title">سجل المشاريع' + (f.year ? ' لسنة ' + esc(f.year) : '') + '</div>' +
     '<div class="small">' + esc(filtersTxt) + ' · بتاريخ ' + fmtDate(today) + ' · أعدّه: ' + esc(b.user.name || b.user.email) + '</div></div></div>' +
     '<div class="filters no-print" style="margin-top:12px">' +
     '<select id="r-status">' + opt('all', 'كل الحالات', f.status) + opt('active', 'المشاريع النشطة', f.status) + opt('completed', 'المنجزة', f.status) + '</select>' +
     (b.departments.length > 1 ? '<select id="r-dept">' + opt('', 'كل الأقسام', f.dept) + b.departments.map(function (d) { return opt(d.id, d.name, f.dept); }).join('') + '</select>' : '<input type="hidden" id="r-dept" value="">') +
     '<select id="r-method">' + opt('', 'كل طرق التعاقد', f.method) + b.contractMethods.map(function (m) { return opt(m, m, f.method); }).join('') + opt('none', 'طريقة التعاقد غير محددة', f.method) + '</select>' +
     '<select id="r-funder">' + opt('', 'كل الجهات الممولة', f.funder) + Object.keys(funders).sort().map(function (x) { return opt(x, x, f.funder); }).join('') + '</select>' +
-    '<select id="r-year">' + opt('', 'كل السنوات', f.year) + Object.keys(years).sort().reverse().map(function (y) { return opt(y, 'سنة أمر المباشرة ' + y, f.year); }).join('') + '</select>' +
+    '<select id="r-year" aria-label="السنة">' + opt('', 'كل السنوات', f.year) + Object.keys(years).sort().reverse().map(function (y) { return opt(y, 'سنة ' + y, f.year); }).join('') + '</select>' +
     '<label class="check" style="font-weight:400"><input type="checkbox" id="r-late"' + (f.late ? ' checked' : '') + '> المتأخرة فقط</label>' +
     '<button class="btn pri" data-act="print">طباعة / حفظ PDF</button></div>' +
     '<div class="rep-sum"><div><b>' + rows.length + '</b> مشروع</div><div>القيمة الإجمالية: <b>' + money(totals) + '</b></div>' +
     '<div>المتأخرة: <b style="color:var(--red)">' + late + '</b>' + (late ? ' (مجموع التأخير ' + lateDays + ' يوم)' : '') + '</div>' +
     '<div class="small">' + Object.keys(byStatus).map(function (k) { return esc(k) + ': ' + byStatus[k]; }).join(' · ') + '</div>' +
-    '<div class="small">' + Object.keys(byMethod).map(function (k) { return esc(k) + ': ' + byMethod[k]; }).join(' · ') + '</div></div>';
+    '<div class="small">' + Object.keys(byMethod).map(function (k) { return esc(k) + ': ' + byMethod[k]; }).join(' · ') + '</div></div>' +
+    (f.year && rows.length ? yearSummary(rows, f.year) : '');
   if (!rows.length) return h + '<div class="card muted">لا توجد مشاريع مطابقة.</div>';
   var groups = {};
   rows.forEach(function (p) { (groups[p.deptId] = groups[p.deptId] || []).push(p); });
