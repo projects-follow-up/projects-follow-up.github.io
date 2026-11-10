@@ -217,7 +217,7 @@ main.wrap{max-width:1180px}
 .plist{gap:0;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .pitem{width:100%;border:0;border-bottom:1px solid var(--line);border-radius:0;background:none;padding:0;padding-inline-end:16px;grid-template-columns:96px minmax(0,1fr) 190px 165px;gap:16px;text-align:start;font:inherit;color:inherit}
 .pitem:last-child{border-bottom:0}.pitem:hover{background:#faf8f4;border-color:var(--line)}
-.thumb{align-self:stretch;min-height:82px;background:linear-gradient(135deg,#e7e3ea 0 62%,#dcd6e0 62%);display:grid;place-items:center;color:#7d7289}.thumb .i{width:28px;height:28px}
+.thumb{position:relative;overflow:hidden;align-self:stretch;min-height:82px;background:linear-gradient(135deg,#e7e3ea 0 62%,#dcd6e0 62%);display:grid;place-items:center;color:#7d7289}.thumb .i{width:28px;height:28px}.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .pmain{display:flex;flex-direction:column;gap:1px;padding-block:10px;min-width:0}.pmain .nm{font-size:15px}
 .miss{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:12.5px;color:var(--muted);margin-top:4px}.miss span{display:inline-flex;align-items:center;gap:4px}.miss .i{width:16px;height:16px}
 .pprog{display:flex;flex-direction:column;gap:6px}.mrow{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.mrow .meta{font-size:12.5px;color:var(--muted)}
@@ -551,6 +551,7 @@ function render() {
   else html = viewDash();
   $app.innerHTML = shell(html);
   afterRender(v);
+  if (v === 'dash' || v === 'mine' || v === 'list') loadCovers();
 }
 
 function afterRender(v) {
@@ -678,6 +679,29 @@ function viewDash() {
 function endYear(p) { return p.actualCompletionDate ? String(p.actualCompletionDate).slice(0, 4) : ''; }
 function finishedProjects() { return S.boot.projects.filter(function (p) { return p.status === 'منجز'; }); }
 // ---------- Lists ----------
+// List pictures: each project's latest site photo, fetched after the list shows (icon until then / when none).
+function coverHtml(id) {
+  var u = S.covers && S.covers[id];
+  return u && /^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(u) ? '<img src="' + u + '" alt="">' : ic('image');
+}
+function paintCovers() {
+  Array.prototype.forEach.call(document.querySelectorAll('.pitem[data-arg]'), function (el) {
+    var t = el.querySelector('.thumb');
+    if (t && S.covers && S.covers[el.dataset.arg] && !t.querySelector('img')) t.innerHTML = coverHtml(el.dataset.arg);
+  });
+}
+function loadCovers() {
+  S.covers = S.covers || {};
+  var need = [];
+  Array.prototype.forEach.call(document.querySelectorAll('.pitem[data-arg]'), function (el) { var id = el.dataset.arg; if (!(id in S.covers) && need.indexOf(id) < 0) need.push(id); });
+  paintCovers();
+  if (!need.length || S.coverBusy) return;
+  need = need.slice(0, 80);
+  need.forEach(function (id) { S.covers[id] = ''; });
+  S.coverBusy = true;
+  call('photo.covers', { ids: need }).then(function (r) { var c = (r && r.covers) || {}; for (var k in c) S.covers[k] = c[k]; })
+    .catch(function () { }).then(function () { S.coverBusy = false; paintCovers(); loadCovers(); });
+}
 function projectItem(p) {
   var st = stateOf(p), x = expectedProgress(p), ms = [], i = p.ind, ft = p.fw ? fwTime(p) : null;
   var live = i.active;
@@ -686,7 +710,7 @@ function projectItem(p) {
   if (live && i.missingDocs) ms.push('<span title="' + esc(p.missingDocs.join('، ')) + '">' + ic('file') + (p.missingDocs.length === 1 ? 'مستند ناقص واحد' : p.missingDocs.length + ' مستندات ناقصة') + '</span>');
   if (live && i.stale) ms.push('<span>' + ic('stale') + (i.daysSinceUpdate === null ? 'لم يُحدَّث بعد' : 'آخر تحديث قبل ' + dayCount(i.daysSinceUpdate)) + '</span>');
   return '<button type="button" class="pitem" data-act="open" data-arg="' + esc(p.id) + '">' +
-    '<span class="thumb">' + ic('image') + '</span>' +
+    '<span class="thumb">' + coverHtml(p.id) + '</span>' +
     '<span class="pmain"><span class="nm">' + esc(p.name) + '</span><span class="meta">' + esc(deptName(p.deptId)) + (p.contractor ? '، ' + esc(p.contractor) : '') +
     (p.tenderNo ? '، رقم <span class="ltr">' + esc(p.tenderNo) + '</span>' : '') + '</span>' +
     (p.fw ? '<span class="meta">اتفاقية إطار: ' + p.fw.orders + ' قرار فرعي، المستخدم ' + money(p.fw.committed, p.currency) + ' من ' + money(p.fw.ceiling, p.currency) + '</span>' : '') +
@@ -744,6 +768,7 @@ function bindFilters() {
     S.f.q = val('f-q'); S.f.status = val('f-status'); S.f.ind = val('f-ind'); S.f.dept = val('f-dept'); S.f.funder = val('f-funder'); S.f.eng = val('f-eng'); S.f.year = val('f-year'); if (S.f.year && S.f.status === 'active') { S.f.status = 'all'; document.getElementById('f-status').value = 'all'; } S.f.method = val('f-method');
     var list = sortProjects(filterProjects(S.f));
     $('#f-count').textContent = list.length + ' مشروع';
+    setTimeout(loadCovers, 0);
     $('#f-list').innerHTML = list.length ? list.map(projectItem).join('') : '<div class="card muted">لا توجد مشاريع مطابقة. جرّب تغيير البحث أو الفلاتر.</div>';
   };
   ['f-q'].forEach(function (id) { var el = document.getElementById(id); el && el.addEventListener('input', upd); });
@@ -1058,6 +1083,7 @@ function openPhotoUpload(workOrderId) {
         $('#ph-done').innerHTML = (ok ? '<div class="okbox">✓ تم رفع ' + ok + ' صورة</div>' : '') + (errors.length ? '<div class="err">' + errors.map(esc).join('<br>') + '</div>' : '');
         if (ok) {
           toast('✓ تم رفع ' + ok + ' صورة', 'ok');
+          if (S.covers) delete S.covers[p.id];
           refreshBoot().catch(function () { });
           call('project.get', { id: p.id }).then(function (nd) { S.detail = nd; }).catch(function () { });
         }
@@ -1505,6 +1531,7 @@ function openUpdate() {
 }
 
 async function afterWrite(projectId) {
+  if (projectId && S.covers) delete S.covers[projectId];
   try { await refreshBoot(); } catch (e) { }
   if (projectId && S.view === 'project') { await loadDetail(projectId); } else render();
 }
