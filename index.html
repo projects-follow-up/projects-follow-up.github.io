@@ -343,9 +343,9 @@ function val(id) { var el = document.getElementById(id); if (!el) return ''; ret
 
 function call(action, payload, opts) {
   return rawCall(action, payload, opts).catch(function (e) {
-    var admin = false; try { admin = role() === 'admin'; } catch (x) { }
+    var admin = false; try { admin = editAll(); } catch (x) { }
     if (e.override && admin && !(payload || {}).force &&
-      window.confirm(e.message + '\n\nأنت مدير النظام: هل تريد الحفظ رغم ذلك؟ سيُسجَّل ذلك في سجل التعديلات.')) {
+      window.confirm(e.message + '\n\nلديك صلاحية الحفظ رغم ذلك. هل تريد الحفظ؟ سيُسجَّل ذلك في سجل التعديلات.')) {
       return rawCall(action, Object.assign({}, payload, { force: true }), opts);
     }
     throw e;
@@ -402,11 +402,13 @@ function who(email, withTitle) {
   if (!p || !p.name) return '<span class="ltr">' + esc(email) + '</span>';
   return '<span title="' + esc(email) + '">' + esc(p.name) + (withTitle && p.title ? ' <span class="muted">(' + esc(p.title) + ')</span>' : '') + '</span>';
 }
+// Admin and municipal engineer edit every project (the municipal engineer does not run the platform).
+function editAll() { return role() === 'admin' || role() === 'city_engineer'; }
 function isMgmt() { return role() === 'admin' || role() === 'management'; }
 function deptName(id) { var d = (S.boot.departments || []).filter(function (x) { return x.id === id; })[0]; return d ? d.name : id; }
 function proj(id) { return S.boot.projects.filter(function (p) { return p.id === id; })[0]; }
 function editableProjects() {
-  if (role() === 'admin') return S.boot.projects;
+  if (editAll()) return S.boot.projects;
   if (!deptRole()) return [];
   return S.boot.projects.filter(function (p) { return S.boot.user.deptIds.indexOf(p.deptId) >= 0; });
 }
@@ -515,7 +517,7 @@ function navItems() {
   if (deptRole()) items.push(['mine', 'مشاريعي'], ['dash', 'لوحة المتابعة'], ['upload', 'رفع مستند'], ['report', 'سجل المشاريع']);
   else {
     items.push(['dash', 'لوحة المتابعة'], ['list', 'جميع المشاريع']);
-    if (r === 'admin') items.push(['upload', 'رفع مستند']);
+    if (editAll()) items.push(['upload', 'رفع مستند']);
     items.push(['activity', 'سجل التعديلات'], ['report', 'سجل المشاريع']);
     if (r === 'admin') items.push(['admin', 'الإدارة']);
   }
@@ -662,7 +664,7 @@ function viewDash() {
     '<div class="ekpi">' + kpi('overdue', cnt('overdue'), IND.overdue.label) + kpi('approaching', cnt('approaching'), IND.approaching.label) + kpi('stopped', cnt('stopped'), IND.stopped.label) + kpi('active', active.length, 'المشاريع النشطة') + '</div></section>';
   if (!ps.length) {
     return html + '<div class="card" style="text-align:center;padding:30px"><h2>لا توجد مشاريع بعد</h2><p class="muted">ابدأ بإضافة أول مشروع، ثم يقوم رؤساء الأقسام بتحديثه.</p>' +
-      (role() === 'admin' || deptRole() ? '<button class="btn pri" data-act="new-project">+ إضافة مشروع جديد</button>' : '') + '</div>';
+      (editAll() || deptRole() ? '<button class="btn pri" data-act="new-project">+ إضافة مشروع جديد</button>' : '') + '</div>';
   }
   html += budgetMap(active);
   var attention = sortProjects(active.filter(function (p) { return attentionScore(p) <= 5; }));
@@ -721,7 +723,7 @@ function viewList(v) {
   var opt = function (value, label, cur) { return '<option value="' + esc(value) + '"' + (String(cur || '') === String(value) ? ' selected' : '') + '>' + esc(label) + '</option>'; };
   var list = sortProjects(filterProjects(f));
   var head = v === 'mine' ? 'مشاريعي' : 'جميع المشاريع';
-  var canAdd = role() === 'admin' || deptRole();
+  var canAdd = editAll() || deptRole();
   return '<div class="row" style="justify-content:space-between"><h1>' + head + '</h1>' + (canAdd ? '<button class="btn" data-act="new-project">+ مشروع جديد</button>' : '') + '</div>' +
     '<div class="filters">' +
     '<input class="s" id="f-q" aria-label="بحث في المشاريع" type="search" placeholder="بحث: اسم المشروع، رقم العطاء، المقاول، المهندس..." value="' + esc(f.q || '') + '">' +
@@ -1332,7 +1334,7 @@ function openWorkOrder(id) {
         ['decisionNo', 'decisionDate', 'site', 'budget', 'actualCost', 'notes']
           .forEach(function (k) { data[k] = val('w-' + k); });
         var copy = $('#w-copy') ? $('#w-copy').files[0] : null;
-        if (!id && !copy && !(role() === 'admin' && window.confirm('لم تُرفق النسخة. أنت مدير النظام: هل تريد الحفظ بدونها؟ ستظهر كمستند ناقص حتى تُرفع.'))) return showErr('يرجى إرفاق نسخة عن قرار المجلس');
+        if (!id && !copy && !(editAll() && window.confirm('لم تُرفق النسخة. لديك صلاحية الحفظ بدونها: هل تريد ذلك؟ ستظهر كمستند ناقص حتى تُرفع.'))) return showErr('يرجى إرفاق نسخة عن قرار المجلس');
         if (copy && copy.size > Number(S.boot.settings.maxUploadMB) * 1048576) return showErr('حجم الملف (' + fmtSize(copy.size) + ') أكبر من الحد المسموح (' + S.boot.settings.maxUploadMB + ' ميغابايت)');
         if (copy && !/^(application\/pdf|image\/)/.test(mimeOf(copy))) return showErr('يُسمح فقط بملفات PDF والصور');
         var btn = $('#w-save'); setBusy(btn, true);
@@ -1535,7 +1537,7 @@ function openContract(isNew) {
   var p = isNew ? {} : S.detail.project;
   var voAfter = '', keepFuture = false;
   var reqId = rid();
-  var depts = role() === 'admin' ? S.boot.departments : S.boot.departments.filter(function (d) { return S.boot.user.deptIds.indexOf(d.id) >= 0; });
+  var depts = editAll() ? S.boot.departments : S.boot.departments.filter(function (d) { return S.boot.user.deptIds.indexOf(d.id) >= 0; });
   var inputs = CONTRACT_FORM.map(function (f) {
     var id = 'c-' + f[0], v = p[f[0]] === undefined ? '' : p[f[0]], type = f[2], inp;
     var engLocked = type === 'engineer' && role() === 'engineer' && !!S.boot.engineerOwn;
@@ -1598,7 +1600,7 @@ function openContract(isNew) {
         CONTRACT_FORM.forEach(function (f) { data[f[0]] = val('c-' + f[0]); });
         if ($('#c-deptId')) data.deptId = val('c-deptId');
         if (data.actualCompletionDate && data.actualCompletionDate > S.boot.today && !keepFuture && (isNew || data.actualCompletionDate !== p.actualCompletionDate)) {
-          if (isNew && role() !== 'admin') return showErr('تاريخ التسليم الفعلي لم يأتِ بعد. اتركه فارغاً، وبعد حفظ المشروع سجّل الموعد الجديد كأمر تغييري بالمدة.');
+          if (isNew && !editAll()) return showErr('تاريخ التسليم الفعلي لم يأتِ بعد. اتركه فارغاً، وبعد حفظ المشروع سجّل الموعد الجديد كأمر تغييري بالمدة.');
           if (isNew) { keepFuture = true; return $('#mf').requestSubmit(); } // admin: the server asks "save anyway"
           return futureHandover(data.actualCompletionDate, function () { voAfter = data.actualCompletionDate; $('#c-actualCompletionDate').value = ''; $('#mf').requestSubmit(); }, p,
             function () { keepFuture = true; $('#mf').requestSubmit(); });
@@ -1664,7 +1666,7 @@ function futureHandover(date, yes, p, keep) {
   var e = $modal.querySelector('.err');
   if (!e) { e = document.createElement('div'); e.className = 'err'; $modal.querySelector('form').prepend(e); }
   e.innerHTML = '<b>تاريخ التسليم الفعلي (' + fmtDate(date) + ') لم يأتِ بعد.</b><br>هل هو موعد جديد للتسليم ' + w.by + '؟' +
-    '<div class="row" style="margin-top:8px"><button type="button" class="btn sm pri" id="fh-yes">نعم، سجّله ' + (w.rc ? 'كموافقة من الصندوق' : 'كأمر تغييري') + '</button><button type="button" class="btn sm" id="fh-no">لا، سأصحح التاريخ</button>' + (keep && role() === 'admin' ? '<button type="button" class="btn sm" id="fh-keep">حفظه كما هو (مدير النظام)</button>' : '') + '</div>' +
+    '<div class="row" style="margin-top:8px"><button type="button" class="btn sm pri" id="fh-yes">نعم، سجّله ' + (w.rc ? 'كموافقة من الصندوق' : 'كأمر تغييري') + '</button><button type="button" class="btn sm" id="fh-no">لا، سأصحح التاريخ</button>' + (keep && editAll() ? '<button type="button" class="btn sm" id="fh-keep">حفظه كما هو</button>' : '') + '</div>' +
     '<div class="small" style="margin-top:6px">عند الاختيار «نعم» يُحفظ باقي التعديل بدون تاريخ تسليم، ثم يُفتح نموذج ' + w.one.replace('أمر تغييري', 'الأمر التغييري') + ' وفيه هذا التاريخ.</div>';
   e.scrollIntoView({ block: 'nearest' });
   $('#fh-yes').addEventListener('click', function () { e.remove(); yes(); });
@@ -1740,7 +1742,7 @@ function openVO(id, presetEnd) {
         if (t !== 'مدة' && (data.valueChange === '' || Number(data.valueChange) === 0)) return showErr('يرجى إدخال ' + (w.rc ? 'مقدار زيادة الموازنة' : 'قيمة التغيير'));
         if (t !== 'مدة' && w.rc && Number(data.valueChange) < 0) return showErr('موافقة الصندوق تسجل زيادة الموازنة فقط (رقم أكبر من صفر)');
         var copy = $('#v-copy') ? $('#v-copy').files[0] : null;
-        if (!id && !copy && !(role() === 'admin' && window.confirm('لم تُرفق النسخة. أنت مدير النظام: هل تريد الحفظ بدونها؟ ستظهر كمستند ناقص حتى تُرفع.'))) return showErr('يرجى إرفاق ' + w.copy);
+        if (!id && !copy && !(editAll() && window.confirm('لم تُرفق النسخة. لديك صلاحية الحفظ بدونها: هل تريد ذلك؟ ستظهر كمستند ناقص حتى تُرفع.'))) return showErr('يرجى إرفاق ' + w.copy);
         if (copy) { var ce = checkFile(copy); if (ce) return showErr(ce); }
         var btn = $('#v-save'); setBusy(btn, true);
         try {
@@ -2104,7 +2106,7 @@ function viewAdmin() {
     h += '<div class="card"><div class="row" style="justify-content:space-between"><h2>المستخدمون</h2><button class="btn pri sm" data-act="user-edit" data-arg="">+ إضافة مستخدم</button></div><div class="tscroll"><table class="t"><tr><th>الاسم</th><th>المسمى الوظيفي</th><th>البريد</th><th>الدور</th><th>الأقسام</th><th>مفعّل</th><th>يستلم التذكيرات</th><th>آخر دخول</th><th></th></tr>' +
       A.users.map(function (u) {
         return '<tr><td>' + esc(u.name) + '</td><td>' + esc(u.title || '—') + '</td><td class="ltr" style="text-align:right">' + esc(u.email) + '</td><td>' + esc(A.roles[u.role] || u.role) + '</td><td>' + esc(dn(u.deptIds)) + '</td><td>' + '<span class="yn ' + (u.active === 'نعم' ? 'y' : 'n') + '">' + ic(u.active === 'نعم' ? 'yes' : 'no') + '</span>' + '</td><td>' + (u.notify === 'نعم' ? '<span class="yn y">' + ic('yes') + '</span>' : '—') + '</td><td class="small">' + fmtStamp(u.lastLogin) + '</td><td><button class="btn sm" data-act="user-edit" data-arg="' + esc(u.email) + '">تعديل</button></td></tr>';
-      }).join('') + '</table></div><p class="muted small">رئيس القسم يرى ويحدّث كل مشاريع أقسامه. ' + (S.boot.engineerOwn ? 'المهندس يرى ويحدّث فقط المشاريع المختار لها كمهندس مشرف.' : 'المهندس يرى ويحدّث مشاريع أقسامه.') + ' الإدارة ترى كل المشاريع دون تعديل. مهندس البلدية يرى كل المشاريع ويرسل ملاحظات لمهندسي المشاريع دون تعديل. مدير النظام يدير كل شيء.</p></div>';
+      }).join('') + '</table></div><p class="muted small">رئيس القسم يرى ويحدّث كل مشاريع أقسامه. ' + (S.boot.engineerOwn ? 'المهندس يرى ويحدّث فقط المشاريع المختار لها كمهندس مشرف.' : 'المهندس يرى ويحدّث مشاريع أقسامه.') + ' الإدارة ترى كل المشاريع دون تعديل. مهندس البلدية يعدّل كل المشاريع ويرسل ملاحظات لمهندسي المشاريع، دون إدارة المنصة. مدير النظام يدير كل شيء.</p></div>';
   } else if (t === 'depts') {
     h += '<div class="card"><div class="row" style="justify-content:space-between"><h2>الأقسام</h2><button class="btn pri sm" data-act="dept-edit" data-arg="">+ إضافة قسم</button></div><table class="t"><tr><th>الرمز</th><th>القسم</th><th>الدائرة</th><th>مفعّل</th><th></th></tr>' +
       A.departments.map(function (d) { return '<tr><td>' + esc(d.id) + '</td><td>' + esc(d.name) + '</td><td>' + esc(d.parent) + '</td><td>' + '<span class="yn ' + (d.active === 'نعم' ? 'y' : 'n') + '">' + ic(d.active === 'نعم' ? 'yes' : 'no') + '</span>' + '</td><td><button class="btn sm" data-act="dept-edit" data-arg="' + esc(d.id) + '">تعديل</button></td></tr>'; }).join('') + '</table></div>';
@@ -2165,7 +2167,7 @@ function openUserEdit(email) {
     fieldHtml('ue-name', 'الاسم', '<input id="ue-name" value="' + esc(u.name || '') + '" placeholder="مثال: م. أحمد خالد">') +
     fieldHtml('ue-title', 'المسمى الوظيفي', '<input id="ue-title" value="' + esc(u.title || '') + '" placeholder="مثال: رئيس قسم المشاريع، مهندس البلدية، مدير الدائرة الهندسية">') +
     fieldHtml('ue-role', 'الدور (الصلاحية) *', '<select id="ue-role">' + Object.keys(A.roles).map(function (r) { return '<option value="' + r + '"' + (u.role === r ? ' selected' : '') + '>' + esc(A.roles[r]) + '</option>'; }).join('') + '</select>',
-      'رئيس قسم: يرى ويحدّث كل مشاريع الأقسام المختارة · مهندس: ' + (S.boot.engineerOwn ? 'يرى ويحدّث فقط المشاريع المختار لها كمهندس مشرف' : 'يرى ويحدّث مشاريع الأقسام المختارة') + ' · الإدارة: ترى كل المشاريع دون تعديل · مهندس البلدية: يرى كل المشاريع ويرسل ملاحظات لمهندسي المشاريع · مدير النظام: صلاحيات كاملة (مثل مدير الدائرة الهندسية)') +
+      'رئيس قسم: يرى ويحدّث كل مشاريع الأقسام المختارة · مهندس: ' + (S.boot.engineerOwn ? 'يرى ويحدّث فقط المشاريع المختار لها كمهندس مشرف' : 'يرى ويحدّث مشاريع الأقسام المختارة') + ' · الإدارة: ترى كل المشاريع دون تعديل · مهندس البلدية: يعدّل كل المشاريع ويرسل ملاحظات لمهندسي المشاريع، دون إدارة المنصة · مدير النظام: صلاحيات كاملة (مثل مدير الدائرة الهندسية)') +
     '<div class="field"><label>الأقسام (لرئيس القسم)</label>' + A.departments.map(function (d) { return '<label class="check" style="font-weight:400"><input type="checkbox" class="ue-dept" value="' + esc(d.id) + '"' + (ids.indexOf(d.id) >= 0 ? ' checked' : '') + '> ' + esc(d.name) + '</label>'; }).join('') + '</div>' +
     '<div class="field"><label class="check"><input type="checkbox" id="ue-active"' + (u.active === 'نعم' ? ' checked' : '') + '> الحساب مفعّل</label></div>' +
     '<div class="field"><label class="check"><input type="checkbox" id="ue-notify"' + (u.notify === 'نعم' ? ' checked' : '') + '> يستلم تذكيرات البريد</label></div>' +
